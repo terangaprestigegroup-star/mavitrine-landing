@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Boutique — MaVitrine.sn</title>
+<meta name="description" content="Découvrez notre boutique professionnelle">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--w:#fff;--r:14px;--r2:20px;--shg:0 4px 20px rgba(29,185,84,.35);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;padding-bottom:90px;}
+
+/* HEADER BOUTIQUE */
+.boutique-header{background:linear-gradient(135deg,var(--p),#1a0d8a);padding:28px 16px 20px;text-align:center;position:relative;overflow:hidden;}
+.boutique-header::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:rgba(255,255,255,.06);border-radius:50%}
+.boutique-header::after{content:'';position:absolute;bottom:-30px;left:-30px;width:100px;height:100px;background:rgba(255,255,255,.04);border-radius:50%}
+.b-logo{width:64px;height:64px;background:rgba(255,255,255,.2);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px;position:relative;z-index:1}
+.b-name{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:4px;position:relative;z-index:1}
+.b-tag{font-size:13px;color:rgba(255,255,255,.7);margin-bottom:10px;position:relative;z-index:1}
+.b-certified{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:50px;padding:4px 12px;font-size:11px;color:white;font-weight:600;position:relative;z-index:1}
+.b-info-row{display:flex;justify-content:center;gap:16px;margin-top:12px;position:relative;z-index:1}
+.b-info-item{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.8)}
+
+/* ACTIONS */
+.actions-bar{background:white;padding:12px 16px;display:flex;gap:8px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;}
+.btn-wa-main{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:white;border:none;border-radius:50px;padding:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);text-decoration:none}
+.btn-call{display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--sur);border:1px solid var(--line);border-radius:50%;text-decoration:none;font-size:18px;flex-shrink:0}
+.btn-share{display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--sur);border:1px solid var(--line);border-radius:50%;cursor:pointer;font-size:18px;flex-shrink:0}
+
+/* FILTER */
+.filter-bar{padding:12px 16px;overflow-x:auto;display:flex;gap:8px;background:white;border-bottom:1px solid var(--line);}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{padding:7px 14px;border-radius:50px;font-size:12px;font-weight:600;border:1.5px solid var(--line);background:white;color:var(--ink3);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.filter-chip.active{background:var(--p);color:white;border-color:var(--p)}
+
+/* PRODUITS GRID */
+.produits-section{padding:16px}
+.produits-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.produit-card{background:white;border-radius:var(--r2);overflow:hidden;border:1px solid var(--line);cursor:pointer;transition:transform .15s}
+.produit-card:active{transform:scale(.97)}
+.produit-img{height:130px;background:var(--sur);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;overflow:hidden}
+.produit-img img{width:100%;height:100%;object-fit:cover}
+.stock-badge{position:absolute;top:8px;right:8px;border-radius:50px;padding:3px 8px;font-size:10px;font-weight:700}
+.badge-dispo{background:#DCFCE7;color:var(--gd)}
+.badge-limite{background:#FEF3C7;color:#92400E}
+.badge-rupture{background:#FEE2E2;color:#DC2626}
+.produit-body{padding:10px 12px}
+.produit-nom{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;line-height:1.3}
+.produit-cat{font-size:10px;color:var(--ink3);margin-bottom:6px}
+.produit-prix{font-size:15px;font-weight:800;color:var(--p);font-family:'Bricolage Grotesque',sans-serif}
+.produit-btn{display:block;width:100%;margin-top:8px;padding:8px;background:var(--gl);color:var(--gd);border:none;border-radius:8px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 16px;color:var(--ink3)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;color:var(--ink2);margin-bottom:6px}
+
+/* DETAIL MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:flex-end;}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:24px 24px 0 0;width:100%;max-height:85vh;overflow-y:auto}
+.modal-img{height:220px;background:var(--sur);display:flex;align-items:center;justify-content:center;font-size:60px;overflow:hidden;border-radius:24px 24px 0 0}
+.modal-img img{width:100%;height:100%;object-fit:cover}
+.modal-body{padding:20px}
+.modal-nom{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.modal-prix{font-size:24px;font-weight:800;color:var(--p);font-family:'Bricolage Grotesque',sans-serif;margin-bottom:12px}
+.modal-desc{font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:16px}
+.modal-close-btn{position:absolute;top:16px;right:16px;width:32px;height:32px;background:rgba(0,0,0,.3);border:none;border-radius:50%;color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-commander{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#25D366;color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 4px 12px rgba(37,211,102,.3)}
+
+/* FOOTER VITRINE */
+.footer-vitrine{text-align:center;padding:24px 16px;color:var(--ink3)}
+.footer-powered{display:inline-flex;align-items:center;gap:6px;font-size:12px;text-decoration:none;color:var(--ink3)}
+.footer-powered strong{color:var(--p)}
+
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,var(--sur) 25%,var(--line) 50%,var(--sur) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:8px}
+@keyframes shimmer{to{background-position:-200% 0}}
+
+/* LOADING */
+.loading-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.loading-card{background:white;border-radius:var(--r2);overflow:hidden;border:1px solid var(--line)}
+.loading-img{height:130px}.loading-body{padding:12px}
+.loading-line{height:12px;margin-bottom:8px}
+.loading-line-short{height:12px;width:60%}
+
+/* STICKY WA */
+.sticky-wa{position:fixed;bottom:0;left:0;right:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:white;border-top:1px solid var(--line);box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:100}
+.sticky-wa a{display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:white;border-radius:50px;padding:14px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;text-decoration:none;box-shadow:var(--shg)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="boutique-header" id="boutique-header">
+  <div class="b-logo" id="b-logo">🛍️</div>
+  <div class="b-name" id="b-name">Chargement...</div>
+  <div class="b-tag" id="b-tag"></div>
+  <div class="b-certified" id="b-certified" style="display:none">✓ Boutique certifiée MaVitrine</div>
+  <div class="b-info-row" id="b-info-row"></div>
+</div>
+
+<!-- ACTIONS -->
+<div class="actions-bar">
+  <a href="#" id="btn-wa" class="btn-wa-main" target="_blank">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Commander sur WhatsApp
+  </a>
+  <a href="#" id="btn-tel" class="btn-call" title="Appeler">📞</a>
+  <button class="btn-share" onclick="partager()" title="Partager">📤</button>
+</div>
+
+<!-- FILTER -->
+<div class="filter-bar" id="filter-bar">
+  <button class="filter-chip active" onclick="filterCat('',this)">Tout</button>
+</div>
+
+<!-- PRODUITS -->
+<div class="produits-section">
+  <div class="loading-grid" id="loading-state">
+    <div class="loading-card"><div class="loading-img skeleton"></div><div class="loading-body"><div class="loading-line skeleton"></div><div class="loading-line-short skeleton"></div></div></div>
+    <div class="loading-card"><div class="loading-img skeleton"></div><div class="loading-body"><div class="loading-line skeleton"></div><div class="loading-line-short skeleton"></div></div></div>
+    <div class="loading-card"><div class="loading-img skeleton"></div><div class="loading-body"><div class="loading-line skeleton"></div><div class="loading-line-short skeleton"></div></div></div>
+    <div class="loading-card"><div class="loading-img skeleton"></div><div class="loading-body"><div class="loading-line skeleton"></div><div class="loading-line-short skeleton"></div></div></div>
+  </div>
+  <div class="produits-grid" id="produits-grid" style="display:none"></div>
+  <div class="empty" id="empty-state" style="display:none">
+    <div class="empty-icon">📦</div>
+    <div class="empty-title">Aucun produit disponible</div>
+    <p>Cette boutique n'a pas encore ajouté de produits.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer-vitrine">
+  <a href="mavitrine-landing.html" class="footer-powered">
+    Boutique créée avec <strong>MaVitrine.sn</strong> 🇸🇳
+  </a>
+</div>
+
+<!-- STICKY WA -->
+<div class="sticky-wa">
+  <a href="#" id="sticky-wa-btn" target="_blank">
+    💬 Commander sur WhatsApp
+  </a>
+</div>
+
+<!-- MODAL DETAIL PRODUIT -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" style="position:relative">
+    <button class="modal-close-btn" onclick="closeModalBtn()">✕</button>
+    <div class="modal-img" id="modal-img">📦</div>
+    <div class="modal-body">
+      <div class="modal-nom" id="modal-nom"></div>
+      <div class="modal-prix" id="modal-prix"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <a href="#" id="modal-wa-btn" class="btn-commander" target="_blank">
+        💬 Commander ce produit sur WhatsApp
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://mavitrine-sn-bphm.vercel.app';
+let vitrine = {};
+let allProduits = [];
+let currentCat = '';
+
+// Récupérer slug depuis URL
+const slug = new URLSearchParams(window.location.search).get('slug') || '';
+
+window.onload = async () => {
+  if (!slug) {
+    document.getElementById('b-name').textContent = 'Boutique introuvable';
+    return;
+  }
+
+  // Track visite
+  fetch(API + '/api/analytics/track', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({vitrine_slug: slug, event_type: 'view', source: document.referrer || 'direct'})
+  }).catch(()=>{});
+
+  await chargerVitrine();
+};
+
+async function chargerVitrine() {
+  try {
+    const res = await fetch(API + '/api/vitrines/' + slug);
+    if (!res.ok) {
+      document.getElementById('b-name').textContent = 'Boutique introuvable';
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'block';
+      return;
+    }
+    const data = await res.json();
+    vitrine = data.vitrine;
+    allProduits = data.produits || [];
+
+    // Update meta
+    document.title = vitrine.nom_boutique + ' — MaVitrine.sn';
+
+    // Update header
+    document.getElementById('b-name').textContent = vitrine.nom_boutique || 'Ma Boutique';
+    document.getElementById('b-tag').textContent = vitrine.slogan || '';
+
+    if (vitrine.is_verified) {
+      document.getElementById('b-certified').style.display = 'inline-flex';
+    }
+
+    // Info row
+    const infoItems = [];
+    if (vitrine.ville) infoItems.push('📍 ' + vitrine.ville);
+    if (vitrine.horaires) infoItems.push('🕐 ' + vitrine.horaires);
+    if (infoItems.length) {
+      document.getElementById('b-info-row').innerHTML = infoItems.map(i =>
+        `<div class="b-info-item">${i}</div>`).join('');
+    }
+
+    // Couleur theme
+    if (vitrine.couleur_theme) {
+      document.querySelector('.boutique-header').style.background = vitrine.couleur_theme;
+    }
+
+    // WA links
+    const phone = vitrine.telephone_public || '';
+    const waMsg = encodeURIComponent('Bonjour 👋 Je viens de voir votre boutique MaVitrine.sn et je suis intéressé(e) !');
+    const waUrl = 'https://wa.me/' + phone + '?text=' + waMsg;
+    document.getElementById('btn-wa').href = waUrl;
+    document.getElementById('sticky-wa-btn').href = waUrl;
+    document.getElementById('btn-tel').href = 'tel:+' + phone;
+
+    // Filtres catégories
+    const cats = [...new Set(allProduits.map(p => p.categorie).filter(Boolean))];
+    const filterBar = document.getElementById('filter-bar');
+    cats.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-chip';
+      btn.textContent = cat;
+      btn.onclick = () => filterCat(cat, btn);
+      filterBar.appendChild(btn);
+    });
+
+    // Afficher produits
+    document.getElementById('loading-state').style.display = 'none';
+    renderProduits(allProduits);
+
+  } catch(e) {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'block';
+  }
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = cat ? allProduits.filter(p => p.categorie === cat) : allProduits;
+  renderProduits(filtered);
+}
+
+function renderProduits(produits) {
+  const grid = document.getElementById('produits-grid');
+  const empty = document.getElementById('empty-state');
+
+  if (!produits.length) {
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  grid.style.display = 'grid';
+  empty.style.display = 'none';
+
+  const stockBadge = s => {
+    if (s === 'rupture') return '<div class="stock-badge badge-rupture">Rupture</div>';
+    if (s === 'limite') return '<div class="stock-badge badge-limite">Limité</div>';
+    return '<div class="stock-badge badge-dispo">Dispo</div>';
+  };
+
+  grid.innerHTML = produits.map(p => `
+    <div class="produit-card" onclick="ouvrirProduit('${p.id}')">
+      <div class="produit-img">
+        ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}" onerror="this.parentElement.textContent='📦'">` : '📦'}
+        ${stockBadge(p.stock_status)}
+      </div>
+      <div class="produit-body">
+        <div class="produit-nom">${p.nom}</div>
+        ${p.categorie ? `<div class="produit-cat">${p.categorie}</div>` : ''}
+        <div class="produit-prix">${Number(p.prix).toLocaleString('fr-FR')} FCFA</div>
+        <button class="produit-btn">💬 Commander</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function ouvrirProduit(id) {
+  const p = allProduits.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('modal-img').innerHTML = p.image_url
+    ? `<img src="${p.image_url}" alt="${p.nom}" onerror="this.parentElement.textContent='📦'">`
+    : '📦';
+  document.getElementById('modal-nom').textContent = p.nom;
+  document.getElementById('modal-prix').textContent = Number(p.prix).toLocaleString('fr-FR') + ' FCFA';
+  document.getElementById('modal-desc').textContent = p.description || '';
+
+  const phone = vitrine.telephone_public || '';
+  const msg = encodeURIComponent(`Bonjour 👋 Je suis intéressé(e) par "${p.nom}" à ${Number(p.prix).toLocaleString('fr-FR')} FCFA. Est-ce disponible ?`);
+  document.getElementById('modal-wa-btn').href = 'https://wa.me/' + phone + '?text=' + msg;
+
+  // Track click
+  fetch(API + '/api/analytics/track', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({vitrine_slug: slug, event_type: 'whatsapp_click'})
+  }).catch(()=>{});
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+function closeModalBtn() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+async function partager() {
+  const url = window.location.href;
+  const nom = vitrine.nom_boutique || 'Ma boutique';
+  if (navigator.share) {
+    await navigator.share({ title: nom, text: 'Découvrez ' + nom, url }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(() => alert('Lien copié !')).catch(()=>{});
+  }
+}
+</script>
+</body>
+</html>
