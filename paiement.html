@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MaVitrine.sn — Passer Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ob:rgba(245,97,26,.1);--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--r:14px;--r2:20px;--shg:0 4px 20px rgba(29,185,84,.35);--shp:0 4px 20px rgba(61,43,232,.25);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;padding-bottom:40px;}
+nav{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100;}
+.nav-back{width:36px;height:36px;background:var(--sur);border:none;border-radius:50%;font-size:16px;cursor:pointer;}
+.nav-title{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;}
+.hero-prix{background:linear-gradient(135deg,var(--p),#1a0d8a);padding:28px 20px;text-align:center;color:white;}
+.hero-tag{display:inline-block;background:rgba(255,255,255,.15);border-radius:50px;padding:4px 14px;font-size:12px;font-weight:600;margin-bottom:12px;}
+.hero-title{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;}
+.hero-price{font-family:'Bricolage Grotesque',sans-serif;font-size:36px;font-weight:800;margin:8px 0 2px;}
+.hero-day{font-size:13px;opacity:.8;margin-bottom:16px;}
+.feats-list{list-style:none;display:flex;flex-direction:column;gap:8px;text-align:left;}
+.feats-list li{display:flex;align-items:center;gap:8px;font-size:13px;opacity:.9;}
+.feats-list li::before{content:'✅';font-size:12px;}
+.card{background:white;border-radius:var(--r2);margin:16px;padding:20px;border:1px solid var(--line);}
+.card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line);}
+.plan-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.plan-opt{background:var(--sur);border:1.5px solid var(--line);border-radius:var(--r);padding:14px 12px;cursor:pointer;text-align:center;transition:all .15s;}
+.plan-opt.selected{background:var(--pb);border-color:var(--p);}
+.plan-opt-name{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--ink);}
+.plan-opt-price{font-size:12px;color:var(--ink3);margin-top:3px;}
+.plan-opt.selected .plan-opt-name{color:var(--p);}
+.methode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.methode-btn{background:var(--sur);border:1.5px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:center;transition:all .15s;}
+.methode-btn.selected{background:var(--gl);border-color:var(--g);}
+.methode-icon{font-size:24px;margin-bottom:4px;}
+.methode-name{font-size:12px;font-weight:700;color:var(--ink2);}
+.methode-btn.selected .methode-name{color:var(--gd);}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px;}
+.field input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;}
+.field input:focus{border-color:var(--g);background:white;}
+.instructions{background:var(--sur);border-radius:var(--r);padding:14px;margin-bottom:14px;display:none;}
+.instructions.show{display:block;}
+.instr-title{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:8px;}
+.instr-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:12px;color:var(--ink2);}
+.instr-num{width:20px;height:20px;background:var(--g);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.numero-dest{background:white;border:1.5px solid var(--g);border-radius:var(--r);padding:10px 14px;font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:var(--gd);text-align:center;margin:8px 0;cursor:pointer;}
+.btn-submit{width:100%;padding:14px;background:var(--g);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:var(--shg);display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-submit:disabled{opacity:.6;}
+.btn-submit .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.note{font-size:11px;color:var(--ink3);text-align:center;margin-top:12px;line-height:1.5;}
+.toast{position:fixed;top:70px;left:16px;right:16px;z-index:300;border-radius:var(--r);padding:12px 16px;font-size:14px;font-weight:600;display:none;align-items:center;gap:8px;}
+.toast.show{display:flex;}
+.toast-success{background:var(--gl);border:1px solid rgba(29,185,84,.3);color:var(--gd);}
+.toast-error{background:#FFF1F1;border:1px solid #FECACA;color:#DC2626;}
+.success-card{text-align:center;padding:20px 0;display:none;}
+.success-icon{font-size:56px;margin-bottom:14px;}
+.success-title{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;}
+.success-sub{font-size:13px;color:var(--ink3);line-height:1.5;margin-bottom:20px;}
+.btn-dashboard{display:flex;align-items:center;justify-content:center;width:100%;padding:14px;background:var(--p);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;text-decoration:none;box-shadow:var(--shp);}
+</style>
+</head>
+<body>
+<div class="toast toast-success" id="toast-success">✅ <span id="toast-msg"></span></div>
+<div class="toast toast-error" id="toast-error">❌ <span id="toast-err"></span></div>
+<nav>
+  <button class="nav-back" onclick="history.back()">←</button>
+  <div class="nav-title">Passer Premium</div>
+</nav>
+
+<div class="hero-prix">
+  <div class="hero-tag">⭐ Offre limitée — 50 premiers</div>
+  <div class="hero-title">Vendez encore plus</div>
+  <div class="hero-price" id="hero-price">3 000 FCFA</div>
+  <div class="hero-day">/mois · = 100 FCFA/jour seulement</div>
+  <ul class="feats-list">
+    <li>Produits illimités</li>
+    <li>Statistiques de visites</li>
+    <li>Assistant Vente IA WhatsApp</li>
+    <li>Catalogue PDF exportable</li>
+    <li>Boutique certifiée MaVitrine</li>
+    <li>Sans branding MaVitrine</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="card-title">Choisir un plan</div>
+  <div class="plan-select">
+    <div class="plan-opt selected" onclick="selectPlan('premium',3000,this)">
+      <div class="plan-opt-name">Premium</div>
+      <div class="plan-opt-price">3 000 FCFA/mois</div>
+    </div>
+    <div class="plan-opt" onclick="selectPlan('business',7000,this)">
+      <div class="plan-opt-name">Business</div>
+      <div class="plan-opt-price">7 000 FCFA/mois</div>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="form-card">
+  <div class="card-title">Choisir le mode de paiement</div>
+  <div class="methode-grid">
+    <div class="methode-btn" onclick="selectMethode('wave',this)">
+      <div class="methode-icon">🌊</div>
+      <div class="methode-name">Wave</div>
+    </div>
+    <div class="methode-btn" onclick="selectMethode('orange_money',this)">
+      <div class="methode-icon">🟠</div>
+      <div class="methode-name">Orange Money</div>
+    </div>
+  </div>
+
+  <div class="instructions" id="instructions">
+    <div class="instr-title" id="instr-title">Instructions Wave</div>
+    <div class="instr-step"><div class="instr-num">1</div><div>Ouvrez votre application Wave</div></div>
+    <div class="instr-step"><div class="instr-num">2</div><div>Envoyez le montant exact au numéro ci-dessous</div></div>
+    <div class="numero-dest" id="numero-dest" onclick="copyNum()">221 71 128 84 39</div>
+    <div class="instr-step"><div class="instr-num">3</div><div>Notez l'ID de transaction et collez-le ci-dessous</div></div>
+    <div class="field">
+      <label>ID de transaction *</label>
+      <input type="text" id="id-transaction" placeholder="Ex: WV-123456789">
+    </div>
+    <button class="btn-submit" onclick="soumettre()" id="btn-submit">
+      <span id="btn-text">Soumettre le paiement</span>
+      <span class="spinner" id="spinner"></span>
+    </button>
+    <div class="note">⏱️ Validation sous 2h par notre équipe.<br>Vous recevrez une confirmation sur WhatsApp.</div>
+  </div>
+
+  <div class="success-card" id="success-card">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Paiement soumis !</div>
+    <div class="success-sub">Nous validons votre paiement sous 2h.<br>Vous recevrez une confirmation sur WhatsApp.</div>
+    <a href="dashboard.html" class="btn-dashboard">Retour au tableau de bord</a>
+  </div>
+</div>
+
+<script>
+const API='https://mavitrine-sn-bphm.vercel.app';
+const NUMERO='221711288439';
+let token='',selectedPlan='premium',selectedMethode='',selectedMontant=3000;
+
+window.onload=()=>{
+  token=localStorage.getItem('mv_token');
+  if(!token)return window.location.href='connexion.html';
+};
+
+function selectPlan(plan,montant,btn){
+  selectedPlan=plan;selectedMontant=montant;
+  document.querySelectorAll('.plan-opt').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('hero-price').textContent=montant.toLocaleString('fr-FR')+' FCFA';
+  if(selectedMethode)updateInstructions();
+}
+
+function selectMethode(methode,btn){
+  selectedMethode=methode;
+  document.querySelectorAll('.methode-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateInstructions();
+  document.getElementById('instructions').classList.add('show');
+}
+
+function updateInstructions(){
+  const labels={'wave':'Wave','orange_money':'Orange Money'};
+  document.getElementById('instr-title').textContent='Instructions '+labels[selectedMethode];
+  document.getElementById('numero-dest').textContent=NUMERO.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,'$1 $2 $3 $4 $5');
+}
+
+function copyNum(){
+  navigator.clipboard.writeText(NUMERO).then(()=>showToast('Numéro copié !','success')).catch(()=>{});
+}
+
+async function soumettre(){
+  const idTx=document.getElementById('id-transaction').value.trim();
+  if(!selectedMethode)return showToast('Choisissez un mode de paiement','error');
+  if(!idTx)return showToast('Entrez l\'ID de transaction','error');
+
+  const btn=document.getElementById('btn-text');
+  const sp=document.getElementById('spinner');
+  const submitBtn=document.getElementById('btn-submit');
+  btn.style.display='none';sp.style.display='block';submitBtn.disabled=true;
+
+  try{
+    const res=await fetch(API+'/api/payments/initier',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({plan:selectedPlan,methode:selectedMethode,id_transaction:idTx})
+    });
+    const data=await res.json();
+    btn.style.display='block';sp.style.display='none';submitBtn.disabled=false;
+    if(!res.ok)return showToast(data.error||'Erreur','error');
+    document.getElementById('form-card').querySelector('.instructions').style.display='none';
+    document.getElementById('success-card').style.display='block';
+  }catch(e){
+    btn.style.display='block';sp.style.display='none';submitBtn.disabled=false;
+    showToast('Erreur réseau','error');
+  }
+}
+
+function showToast(msg,type='success'){
+  const el=document.getElementById('toast-'+type);
+  document.getElementById(type==='success'?'toast-msg':'toast-err').textContent=msg;
+  el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
