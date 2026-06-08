@@ -113,8 +113,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 .prog-dot.done{background:var(--g)}
 
 /* STEP */
-.step{display:none}
-.step.active{display:block}
+.step{display:none !important}.step.active{display:block !important}
 
 /* SUCCESS */
 .success-card{text-align:center;padding:10px 0}
@@ -192,7 +191,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 
     <div class="field">
       <label>Numéro WhatsApp</label>
-      <input type="tel" id="telephone" placeholder="🇸🇳 +221 · Ex: 77 123 45 67" inputmode="numeric" style="width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;" onfocus="this.style.borderColor='var(--g)'" onblur="this.style.borderColor='var(--line)'">
+      <div style="display:flex;align-items:center;border:1.5px solid var(--line);border-radius:var(--r);background:var(--sur);overflow:hidden;" id="tel-wrap">
+        <span style="padding:14px 10px 14px 16px;font-size:14px;font-weight:600;color:#17a349;white-space:nowrap;flex-shrink:0">🇸🇳 +221</span>
+        <span style="width:1px;height:20px;background:var(--line);flex-shrink:0"></span>
+        <input type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric" style="flex:1;padding:14px 16px;border:none;background:transparent;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;min-width:0" onfocus="document.getElementById('tel-wrap').style.borderColor='var(--g)'" onblur="document.getElementById('tel-wrap').style.borderColor='var(--line)'">
+      </div>
 
     <div class="field">
       <label>Nom de votre boutique</label>
