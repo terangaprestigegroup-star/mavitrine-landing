@@ -20,6 +20,7 @@
 html{-webkit-text-size-adjust:100%}
 body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#F0FDF4 0%,#F5F3FF 60%,#FFF7F0 100%);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;padding:0 0 40px;}
 
+.phone-wrap{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:var(--r);background:var(--sur);overflow:hidden;transition:border-color .2s}.phone-wrap:focus-within{border-color:var(--g);background:white}.phone-prefix-label{padding:14px 10px 14px 14px;font-size:14px;font-weight:600;color:var(--gd);white-space:nowrap;flex-shrink:0;background:transparent;border:none;pointer-events:none}.phone-input-only{flex:1;padding:14px 14px 14px 4px;border:none;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--ink);background:transparent;outline:none;-webkit-appearance:none;}
 /* NAV */
 nav{display:flex;align-items:center;justify-content:space-between;padding:16px;background:rgba(255,255,255,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100;}
 .nav-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--ink);text-decoration:none}
@@ -51,7 +52,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 .field-hint{font-size:11px;color:var(--ink3);margin-top:5px}
 
 /* PHONE INPUT */
-.phone-wrap{position:relative;width:100%}.phone-flag{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:600;color:#17a349;pointer-events:none;z-index:1;white-space:nowrap}.phone-full{width:100%;padding:14px 16px 14px 72px;border:1.5px solid var(--line);border-radius:var(--r);font-size:15px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;}.phone-full:focus{border-color:var(--g);background:white}
+
 .phone-prefix{width:90px;flex-shrink:0;min-width:90px;text-align:center;font-weight:600;background:#F0FDF4;border-color:rgba(29,185,84,.3);color:var(--gd);}
 .phone-input{flex:1}
 
@@ -191,12 +192,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 
     <div class="field">
       <label>Numéro WhatsApp</label>
-      <div class="phone-wrap">
-        <span class="phone-flag">🇸🇳 +221</span>
-        <input class="phone-full" type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric">
-      </div>
-      <div class="field-hint">Nous vous enverrons un code de confirmation</div>
-    </div>
+      <input type="tel" id="telephone" placeholder="🇸🇳 +221 · Ex: 77 123 45 67" inputmode="numeric" style="width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;" onfocus="this.style.borderColor='var(--g)'" onblur="this.style.borderColor='var(--line)'">
 
     <div class="field">
       <label>Nom de votre boutique</label>
