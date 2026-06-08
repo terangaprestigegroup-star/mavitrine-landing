@@ -112,6 +112,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .btn-primary .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+
+.upload-zone{border:1.5px dashed var(--line);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;background:var(--sur);transition:border-color .2s;}
+.upload-zone:active{border-color:var(--g);background:var(--gl);}
 /* ALERT */
 .toast{position:fixed;top:70px;left:16px;right:16px;z-index:300;border-radius:var(--r);padding:12px 16px;font-size:14px;font-weight:600;display:none;align-items:center;gap:8px}
 .toast.show{display:flex}
@@ -290,8 +293,20 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       </div>
     </div>
     <div class="field">
-      <label>Lien image (URL)</label>
-      <input type="url" id="p-img" placeholder="https://... (optionnel)">
+      <label>Photo du produit</label>
+      <div class="upload-zone" onclick="document.getElementById('p-img-file').click()">
+        <input type="file" id="p-img-file" accept="image/*" style="display:none" onchange="previewImage(this)">
+        <div id="upload-preview" style="display:none;position:relative">
+          <img id="preview-img" style="width:100%;height:140px;object-fit:cover;border-radius:10px">
+          <button onclick="clearImage(event)" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.5);color:white;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer">✕</button>
+        </div>
+        <div id="upload-placeholder">
+          <div style="font-size:28px;margin-bottom:8px">📷</div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink2)">Appuyez pour ajouter une photo</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:4px">Depuis votre galerie · Max 3MB</div>
+        </div>
+      </div>
+      <input type="hidden" id="p-img" value="">
     </div>
 
     <button class="btn-primary" onclick="sauvegarderProduit()">
@@ -302,6 +317,32 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 </div>
 
 <script>
+
+function previewImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 3 * 1024 * 1024) {
+    showToast('Image trop grande. Max 3MB', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('preview-img').src = e.target.result;
+    document.getElementById('p-img').value = e.target.result;
+    document.getElementById('upload-preview').style.display = 'block';
+    document.getElementById('upload-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage(e) {
+  e.stopPropagation();
+  document.getElementById('p-img').value = '';
+  document.getElementById('p-img-file').value = '';
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('upload-placeholder').style.display = 'block';
+}
+
 const API = 'https://mavitrine-sn-bphm.vercel.app';
 let token = '';
 let user = {};
@@ -441,6 +482,10 @@ function openModal(id=null) {
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
   editingId = null;
+  document.getElementById('p-img').value = '';
+  document.getElementById('p-img-file').value = '';
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('upload-placeholder').style.display = 'block';
 }
 
 function closeModalOutside(e) {
