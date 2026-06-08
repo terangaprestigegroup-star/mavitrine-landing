@@ -164,6 +164,8 @@ function selectMethode(methode,btn){
 function updateInstructions(){
   const labels={'wave':'Wave','orange_money':'Orange Money'};
   document.getElementById('instr-title').textContent='Instructions '+labels[selectedMethode];
+  const appNames={'wave':'Wave','orange_money':'Orange Money'};
+  document.querySelectorAll('.instr-step div')[0].textContent='Ouvrez votre application '+appNames[selectedMethode];
   document.getElementById('numero-dest').textContent=NUMERO.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,'$1 $2 $3 $4 $5');
 }
 
