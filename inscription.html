@@ -51,7 +51,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 .field-hint{font-size:11px;color:var(--ink3);margin-top:5px}
 
 /* PHONE INPUT */
-.phone-row{display:flex;gap:8px;width:100%}.phone-input{flex:1;min-width:0}
+.phone-wrap{position:relative;width:100%}.phone-flag{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:600;color:#17a349;pointer-events:none;z-index:1}.phone-full{width:100%;padding:14px 16px 14px 80px;border:1.5px solid var(--line);border-radius:var(--r);font-size:15px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;}.phone-full:focus{border-color:var(--g);background:white}
 .phone-prefix{width:90px;flex-shrink:0;min-width:90px;text-align:center;font-weight:600;background:#F0FDF4;border-color:rgba(29,185,84,.3);color:var(--gd);}
 .phone-input{flex:1}
 
@@ -191,9 +191,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 
     <div class="field">
       <label>Numéro WhatsApp</label>
-      <div class="phone-row">
-        <input class="phone-prefix" value="🇸🇳 +221" readonly>
-        <input class="phone-input" type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric">
+      <div class="phone-wrap">
+        <span class="phone-flag">🇸🇳 +221</span>
+        <input class="phone-full" type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric">
       </div>
       <div class="field-hint">Nous vous enverrons un code de confirmation</div>
     </div>
