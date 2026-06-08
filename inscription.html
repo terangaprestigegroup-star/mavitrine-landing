@@ -231,7 +231,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
   </div>
 
   <!-- STEP 2 : Secteur d'activité -->
-  <div class="step" id="step2">
+  <div class="step" id="step2" style="display:none">
     <div class="card-header">
       <div class="card-icon">🏪</div>
       <div class="card-title">Votre activité</div>
@@ -285,7 +285,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
   </div>
 
   <!-- STEP 3 : Succès -->
-  <div class="step" id="step3">
+  <div class="step" id="step3" style="display:none">
     <div class="success-card">
       <span class="success-icon">🎉</span>
       <div class="success-title">Boutique créée !</div>
@@ -345,7 +345,8 @@ function setLoading(step, loading) {
 function goStep2() {
   hideAlerts();
   const nom = document.getElementById('nom').value.trim();
-  const tel = document.getElementById('telephone').value.trim().replace(/\s/g, '');
+  let tel = document.getElementById('telephone').value.trim().replace(/\s/g, '').replace(/^0+/,'');
+  if(!tel.startsWith('221'))tel='221'+tel;
   const boutique = document.getElementById('nom_boutique').value.trim();
   const ville = document.getElementById('ville').value;
 
@@ -383,7 +384,8 @@ async function inscrire() {
   if (!selectedSecteur) return showAlert('Choisissez votre secteur d\'activité');
 
   const nom = document.getElementById('nom').value.trim();
-  const tel = document.getElementById('telephone').value.trim().replace(/\s/g, '');
+  let tel = document.getElementById('telephone').value.trim().replace(/\s/g, '').replace(/^0+/,'');
+  if(!tel.startsWith('221'))tel='221'+tel;
   const ville = document.getElementById('ville').value;
 
   setLoading(2, true);
@@ -394,7 +396,7 @@ async function inscrire() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nom,
-        telephone: tel,
+        telephone: tel.startsWith('221')?tel:'221'+tel,
         type_business: selectedSecteur,
         ville
       })
