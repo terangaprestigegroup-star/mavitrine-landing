@@ -250,7 +250,8 @@ async function envoyerOTP() {
   const tel = document.getElementById('telephone').value.trim().replace(/\s/g, '');
   if (!tel || tel.length < 8) return showAlert('Entrez votre numéro WhatsApp');
 
-  phoneFormatted = tel;
+  phoneFormatted = tel.replace(/^0+/,'');
+  if(!phoneFormatted.startsWith('221'))phoneFormatted='221'+phoneFormatted;
   setLoading(1, true);
 
   try {
