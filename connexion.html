@@ -39,7 +39,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 .field input::placeholder{color:var(--ink3)}
 .field-hint{font-size:11px;color:var(--ink3);margin-top:5px}
 
-.phone-wrap{position:relative;width:100%}.phone-flag{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:600;color:#17a349;pointer-events:none;z-index:1;white-space:nowrap}.phone-full{width:100%;padding:14px 16px 14px 72px;border:1.5px solid var(--line);border-radius:var(--r);font-size:15px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;}.phone-full:focus{border-color:var(--g);background:white}
+
 .phone-prefix{width:70px;flex-shrink:0;text-align:center;font-weight:600;background:#F0FDF4;border-color:rgba(29,185,84,.3);color:var(--gd);}
 .phone-input{flex:1}
 
@@ -122,12 +122,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 
     <div class="field">
       <label>Numéro WhatsApp</label>
-      <div class="phone-wrap">
-        <span class="phone-flag">🇸🇳 +221</span>
-        <input class="phone-full" type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric" autofocus>
-      </div>
-      <div class="field-hint">Le numéro utilisé lors de votre inscription</div>
-    </div>
+      <input type="tel" id="telephone" placeholder="🇸🇳 +221 · Ex: 77 123 45 67" inputmode="numeric" style="width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;" onfocus="this.style.borderColor='var(--g)'" onblur="this.style.borderColor='var(--line)'">
 
     <button class="btn-submit" onclick="envoyerOTP()">
       <span id="btn1-text">Recevoir mon code →</span>
