@@ -51,8 +51,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 .field-hint{font-size:11px;color:var(--ink3);margin-top:5px}
 
 /* PHONE INPUT */
-.phone-row{display:flex;gap:8px}
-.phone-prefix{width:90px;flex-shrink:0;text-align:center;font-weight:600;background:#F0FDF4;border-color:rgba(29,185,84,.3);color:var(--gd);}
+.phone-row{display:flex;gap:8px;width:100%}.phone-input{flex:1;min-width:0}
+.phone-prefix{width:90px;flex-shrink:0;min-width:90px;text-align:center;font-weight:600;background:#F0FDF4;border-color:rgba(29,185,84,.3);color:var(--gd);}
 .phone-input{flex:1}
 
 /* VILLE SELECT */
@@ -351,7 +351,7 @@ function goStep2() {
   const ville = document.getElementById('ville').value;
 
   if (!nom) return showAlert('Entrez votre nom complet');
-  if (!tel || tel.length < 8) return showAlert('Entrez votre numéro WhatsApp');
+  if (!tel || tel.replace(/\D/g,'').length < 7) return showAlert('Entrez votre numéro WhatsApp');
   if (!boutique) return showAlert('Entrez le nom de votre boutique');
   if (!ville) return showAlert('Choisissez votre ville');
 
