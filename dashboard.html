@@ -383,7 +383,7 @@ async function loadProduits() {
       headers: { 'Authorization': 'Bearer ' + token }
     });
     const data = await res.json();
-    produits = data.produits || [];
+    produits = (data.produits || []).reverse();
     canAdd = data.peut_ajouter !== false;
 
     if (!canAdd) {
@@ -496,7 +496,7 @@ async function sauvegarderProduit() {
         document.getElementById('limit-banner').style.display = 'flex';
         return showToast('Limite atteinte. Passez Premium !', 'error');
       }
-      return showToast(data.error || 'Erreur', 'error');
+      return showToast(data.error || 'Données invalides', 'error');
     }
 
     closeModal();
@@ -506,7 +506,8 @@ async function sauvegarderProduit() {
 
   } catch(e) {
     setModalLoading(false);
-    showToast('Erreur réseau', 'error');
+    // Only show network error if really a network issue
+    if(e instanceof TypeError) showToast('Erreur réseau. Vérifiez votre connexion.', 'error');
   }
 }
 
