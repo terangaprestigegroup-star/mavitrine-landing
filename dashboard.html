@@ -467,14 +467,13 @@ async function sauvegarderProduit() {
 
   setModalLoading(true);
 
-  const body = {
-    nom,
-    prix: parseFloat(prix),
-    stock_status: document.getElementById('p-stock').value,
-    description: document.getElementById('p-desc').value.trim() || undefined,
-    categorie: document.getElementById('p-cat').value || undefined,
-    image_url: document.getElementById('p-img').value.trim() || undefined,
-  };
+  const body = {nom, prix: parseFloat(prix), stock_status: document.getElementById('p-stock').value};
+  const desc = document.getElementById('p-desc').value.trim();
+  const cat = document.getElementById('p-cat').value;
+  const img = document.getElementById('p-img').value.trim();
+  if(desc) body.description = desc;
+  if(cat) body.categorie = cat;
+  if(img) body.image_url = img;;
 
   try {
     const url = editingId
