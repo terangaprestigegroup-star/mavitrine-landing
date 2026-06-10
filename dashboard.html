@@ -501,13 +501,13 @@ async function sauvegarderProduit() {
 
     closeModal();
     showToast(editingId ? 'Produit modifié ✅' : 'Produit ajouté ✅', 'success');
-    await loadProduits();
-    await loadStats();
+    try { await loadProduits(); await loadStats(); } catch(e2) {}
 
   } catch(e) {
     setModalLoading(false);
-    // Only show network error if really a network issue
-    if(e instanceof TypeError) showToast('Erreur réseau. Vérifiez votre connexion.', 'error');
+    if(e.message && e.message.includes('fetch')) {
+      showToast('Erreur réseau. Vérifiez votre connexion.', 'error');
+    }
   }
 }
 
