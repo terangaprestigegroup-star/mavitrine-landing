@@ -47,6 +47,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 .btn-submit:disabled{opacity:.6}
 .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* PIN */
+.pin-label{font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:10px;display:block}
+.pin-row{display:flex;gap:8px;justify-content:center;margin-bottom:6px}
+.pin-digit{width:42px;height:50px;border:1.5px solid var(--line);border-radius:var(--r);font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:700;text-align:center;background:var(--sur);color:var(--ink);outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.pin-digit:focus{border-color:var(--g);background:white}
+.pin-digit.filled{border-color:var(--g);background:var(--gl)}
+.pin-hint{font-size:11px;color:var(--ink3);text-align:center;margin-bottom:4px}
 .login-link{text-align:center;font-size:13px;color:var(--ink3);margin-top:16px}
 .login-link a{color:var(--p);font-weight:600;text-decoration:none}
 .cgu{font-size:11px;color:var(--ink3);text-align:center;margin-top:12px;line-height:1.6}
@@ -131,6 +139,19 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
     <button class="secteur-btn" onclick="sel(this,'Autre activité')"><span class="secteur-icon">🏪</span><span class="secteur-name">Autre activité</span></button>
   </div>
 
+  <div class="field">
+    <span class="pin-label">Créez votre code PIN (6 chiffres) *</span>
+    <div class="pin-row">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p1" oninput="nextPin(this,'p2')" onkeydown="prevPin(event,this,'')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p2" oninput="nextPin(this,'p3')" onkeydown="prevPin(event,this,'p1')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p3" oninput="nextPin(this,'p4')" onkeydown="prevPin(event,this,'p2')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p4" oninput="nextPin(this,'p5')" onkeydown="prevPin(event,this,'p3')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p5" oninput="nextPin(this,'p6')" onkeydown="prevPin(event,this,'p4')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p6" oninput="this.classList.add('filled')" onkeydown="prevPin(event,this,'p5')">
+    </div>
+    <div class="pin-hint">🔒 Ce code vous servira à chaque connexion — retenez-le bien</div>
+  </div>
+
   <button class="btn-submit" onclick="inscrire()" id="btn-submit">
     <span id="btn-text">Créer ma boutique gratuitement →</span>
     <span class="spinner" id="spinner"></span>
@@ -169,6 +190,24 @@ function showAlert(msg,type='error'){
   setTimeout(()=>el.style.display='none',5000);
 }
 
+
+function nextPin(cur, nextId){
+  if(cur.value.length===1){
+    cur.classList.add('filled');
+    if(nextId){const n=document.getElementById(nextId);if(n)n.focus();}
+  }
+  if(!cur.value) cur.classList.remove('filled');
+}
+function prevPin(e,cur,prevId){
+  if(e.key==='Backspace'&&!cur.value&&prevId){
+    const p=document.getElementById(prevId);
+    if(p){p.value='';p.classList.remove('filled');p.focus();}
+  }
+}
+function getPin(){
+  return ['p1','p2','p3','p4','p5','p6'].map(i=>document.getElementById(i).value).join('');
+}
+
 async function inscrire(){
   const nom=document.getElementById('nom').value.trim();
   let tel=document.getElementById('telephone').value.trim().replace(/\s/g,'').replace(/^\+/,'');
@@ -180,6 +219,8 @@ async function inscrire(){
   if(!boutique)return showAlert('Entrez le nom de votre boutique');
   if(!ville)return showAlert('Choisissez votre ville');
   if(!secteur)return showAlert('Choisissez votre secteur d\'activité');
+  const pin=getPin();
+  if(pin.length!==6)return showAlert('Créez votre code PIN (6 chiffres)');
 
   if(!tel.startsWith('221'))tel='221'+tel;
 
@@ -192,7 +233,7 @@ async function inscrire(){
     const res=await fetch(API+'/api/auth/inscription',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({nom,telephone:tel,type_business:secteur,ville})
+      body:JSON.stringify({nom,telephone:tel,type_business:secteur,ville,pin})
     });
     const data=await res.json();
 
