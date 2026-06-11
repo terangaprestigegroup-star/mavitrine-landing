@@ -6,399 +6,387 @@
 <title>MaVitrine.sn — Connexion</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);
-  --p:#3D2BE8;--pb:rgba(61,43,232,.08);
-  --o:#F5611A;
-  --ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;
-  --sur:#F7F7F8;--line:#E8E8EB;--w:#fff;
-  --r:14px;--r2:20px;
-  --shg:0 4px 20px rgba(29,185,84,.35);
-  --shp:0 4px 20px rgba(61,43,232,.25);
-}
+:root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--r:14px;--shg:0 4px 20px rgba(29,185,84,.35);--shp:0 4px 20px rgba(61,43,232,.25);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
-body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#F0FDF4 0%,#F5F3FF 60%,#FFF7F0 100%);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;padding:0 0 40px;}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#F0FDF4 0%,#F5F3FF 60%,#FFF7F0 100%);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;padding-bottom:40px;}
 
+/* NAV */
 nav{display:flex;align-items:center;justify-content:space-between;padding:16px;background:rgba(255,255,255,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100;}
 .nav-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--ink);text-decoration:none}
 .nav-logo span{color:var(--o)}
-.nav-link{font-size:13px;color:var(--ink3);text-decoration:none;font-weight:500}
 
-.card{background:white;border-radius:24px;padding:28px 20px;margin:32px 16px 0;box-shadow:0 2px 24px rgba(0,0,0,.07);}
+/* TABS */
+.tabs-wrap{padding:16px 16px 0}
+.tabs{display:flex;background:var(--sur);border-radius:50px;padding:4px;gap:4px}
+.tab{flex:1;padding:10px;border:none;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;background:transparent;color:var(--ink3);transition:all .2s}
+.tab.active{background:white;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.1)}
 
-.card-header{text-align:center;margin-bottom:28px}
-.card-icon{width:56px;height:56px;background:var(--gl);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px}
-.card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:6px}
-.card-sub{font-size:14px;color:var(--ink3);line-height:1.5}
+/* CARD */
+.card{background:white;border-radius:20px;padding:24px 20px;margin:16px;box-shadow:0 2px 24px rgba(0,0,0,.07);}
+.card-icon{width:52px;height:52px;background:var(--gl);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px}
+.card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:4px}
+.card-sub{font-size:13px;color:var(--ink3);text-align:center;margin-bottom:24px}
 
+/* FORM */
 .field{margin-bottom:16px}
-.field label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px;letter-spacing:.02em}
-.field input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r);font-size:15px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;transition:border-color .2s,background .2s;-webkit-appearance:none;}
-.field input:focus{border-color:var(--g);background:white}
-.field input::placeholder{color:var(--ink3)}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px}
+.tel-row{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:var(--r);background:var(--sur);overflow:hidden;transition:border-color .2s}
+.tel-row:focus-within{border-color:var(--g);background:white}
+.tel-prefix{padding:13px 10px 13px 14px;font-size:13px;font-weight:700;color:var(--gd);white-space:nowrap;flex-shrink:0}
+.tel-sep{width:1px;height:18px;background:var(--line);flex-shrink:0}
+.tel-input{flex:1;padding:13px 14px;border:none;background:transparent;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;min-width:0}
 .field-hint{font-size:11px;color:var(--ink3);margin-top:5px}
 
+/* PIN */
+.pin-label{font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:10px;display:block}
+.pin-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px}
+.pin-digit{width:46px;height:54px;border:1.5px solid var(--line);border-radius:var(--r);font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;text-align:center;background:var(--sur);color:var(--ink);outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.pin-digit:focus{border-color:var(--g);background:white}
+.pin-digit.filled{border-color:var(--g);background:var(--gl)}
+.pin-hint{font-size:11px;color:var(--ink3);text-align:center;margin-bottom:16px}
 
-.phone-prefix{width:70px;flex-shrink:0;text-align:center;font-weight:600;background:#F0FDF4;border-color:rgba(29,185,84,.3);color:var(--gd);}
-.phone-input{flex:1}
-
-.btn-submit{width:100%;padding:15px;background:var(--g);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;cursor:pointer;box-shadow:var(--shg);display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s,transform .15s;margin-top:8px;}
-.btn-submit:active{transform:scale(.97)}
-.btn-submit:disabled{opacity:.6;cursor:not-allowed}
-.btn-submit .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.divider{display:flex;align-items:center;gap:10px;margin:20px 0;color:var(--ink3);font-size:12px}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
-
-.register-link{text-align:center;font-size:13px;color:var(--ink3)}
-.register-link a{color:var(--p);font-weight:600;text-decoration:none}
-
-.alert{border-radius:var(--r);padding:12px 14px;font-size:13px;margin-bottom:16px;display:none}
+/* ALERT */
+.alert{border-radius:var(--r);padding:11px 14px;font-size:13px;margin-bottom:14px;display:none}
 .alert-error{background:#FFF1F1;border:1px solid #FECACA;color:#DC2626}
 .alert-success{background:var(--gl);border:1px solid rgba(29,185,84,.3);color:var(--gd)}
 
-.step{display:none}
-.step.active{display:block}
+/* BTN */
+.btn-submit{width:100%;padding:15px;background:var(--g);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:var(--shg);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.btn-submit:disabled{opacity:.6}
+.btn-outline{width:100%;padding:14px;background:white;color:var(--ink2);border:1.5px solid var(--line);border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.progress{display:flex;gap:6px;justify-content:center;margin-bottom:20px}
-.prog-dot{width:8px;height:8px;border-radius:50%;background:var(--line)}
-.prog-dot.active{background:var(--g);width:20px;border-radius:4px}
-.prog-dot.done{background:var(--g)}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--ink3);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
 
-/* OTP */
-.otp-info{background:var(--sur);border-radius:var(--r);padding:14px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px}
-.otp-icon{font-size:20px;flex-shrink:0}
-.otp-text{font-size:13px;color:var(--ink2);line-height:1.5}
-.otp-text strong{color:var(--ink)}
-
-.otp-input-row{display:flex;gap:8px;justify-content:center;margin:20px 0}
-.otp-digit{
-  width:46px;height:54px;border:1.5px solid var(--line);border-radius:var(--r);
-  font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;
-  text-align:center;background:var(--sur);color:var(--ink);outline:none;
-  transition:border-color .2s,background .2s;
-  -webkit-appearance:none;
-}
-.otp-digit:focus{border-color:var(--g);background:white}
-
-.resend{text-align:center;font-size:12px;color:var(--ink3);margin-top:12px}
-.resend button{background:none;border:none;color:var(--p);font-weight:600;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.resend button:disabled{color:var(--ink3);cursor:not-allowed}
+.note{font-size:11px;color:var(--ink3);text-align:center;margin-top:12px;line-height:1.6}
+.note a{color:var(--p);text-decoration:none;font-weight:600}
 
 /* SUCCESS */
 .success-card{text-align:center;padding:10px 0}
-.success-icon{font-size:56px;margin-bottom:16px;display:block}
-.success-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:8px}
-.success-sub{font-size:14px;color:var(--ink3);line-height:1.6;margin-bottom:24px}
-.btn-dashboard{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;background:var(--p);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;text-decoration:none;box-shadow:var(--shp);}
+.success-icon{font-size:52px;margin-bottom:14px;display:block}
+.success-title{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px}
+.success-sub{font-size:13px;color:var(--ink3);line-height:1.6;margin-bottom:20px}
+.btn-dashboard{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--p);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;text-decoration:none;box-shadow:var(--shp)}
+
+/* OTP SECTION */
+.otp-info{background:var(--sur);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink2);line-height:1.5}
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="index.html" class="nav-logo">🇸🇳 MaVitrine<span>.sn</span></a>
-  <a href="inscription.html" class="nav-link">Créer un compte</a>
+  <a href="mavitrine-landing.html" class="nav-logo">🇸🇳 MaVitrine<span>.sn</span></a>
 </nav>
 
-<div class="card">
+<!-- TABS -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('connexion',this)">Connexion</button>
+    <button class="tab" onclick="showTab('inscription',this)">Créer un compte</button>
+  </div>
+</div>
 
-  <div class="progress">
-    <div class="prog-dot active" id="dot1"></div>
-    <div class="prog-dot" id="dot2"></div>
+<!-- CONNEXION CARD -->
+<div class="card" id="card-connexion">
+  <div class="card-icon">🔐</div>
+  <div class="card-title">Se connecter</div>
+  <div class="card-sub">Entrez votre numéro et code PIN</div>
+
+  <div class="alert alert-error" id="err-connexion"></div>
+
+  <div class="field">
+    <label>Numéro WhatsApp</label>
+    <div class="tel-row">
+      <span class="tel-prefix">🇸🇳 +221</span>
+      <span class="tel-sep"></span>
+      <input class="tel-input" type="tel" id="tel-connexion" placeholder="77 123 45 67" inputmode="numeric">
+    </div>
+    <div class="field-hint">Le numéro utilisé lors de votre inscription</div>
   </div>
 
-  <div class="alert alert-error" id="alert-error"></div>
-  <div class="alert alert-success" id="alert-success"></div>
-
-  <!-- STEP 1 : Téléphone -->
-  <div class="step active" id="step1">
-    <div class="card-header">
-      <div class="card-icon">🔐</div>
-      <div class="card-title">Se connecter</div>
-      <div class="card-sub">Entrez votre numéro WhatsApp pour recevoir un code</div>
+  <div class="field">
+    <span class="pin-label">Code PIN (6 chiffres)</span>
+    <div class="pin-row">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c1" oninput="nextPin(this,'c2')" onkeydown="prevPin(event,this,'')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c2" oninput="nextPin(this,'c3')" onkeydown="prevPin(event,this,'c1')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c3" oninput="nextPin(this,'c4')" onkeydown="prevPin(event,this,'c2')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c4" oninput="nextPin(this,'c5')" onkeydown="prevPin(event,this,'c3')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c5" oninput="nextPin(this,'c6')" onkeydown="prevPin(event,this,'c4')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c6" oninput="autoConnect()" onkeydown="prevPin(event,this,'c5')">
     </div>
-
-    <div class="field">
-      <label>Numéro WhatsApp</label>
-      <input type="tel" id="telephone" placeholder="🇸🇳 +221 · Ex: 77 123 45 67" inputmode="numeric" style="width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;" onfocus="this.style.borderColor='var(--g)'" onblur="this.style.borderColor='var(--line)'">
-
-    <button class="btn-submit" onclick="envoyerOTP()">
-      <span id="btn1-text">Recevoir mon code →</span>
-      <span class="spinner" id="spinner1"></span>
-    </button>
-
-    <div class="divider">ou</div>
-    <div class="register-link">
-      Pas encore de compte ? <a href="inscription.html">S'inscrire gratuitement</a>
-    </div>
+    <div class="pin-hint">Votre code PIN créé lors de l'inscription</div>
   </div>
 
-  <!-- STEP 2 : OTP -->
-  <div class="step" id="step2">
-    <div class="card-header">
-      <div class="card-icon">💬</div>
-      <div class="card-title">Code de vérification</div>
-      <div class="card-sub" id="otp-sub">Entrez le code envoyé sur WhatsApp</div>
-    </div>
+  <button class="btn-submit" onclick="connecter()" id="btn-connexion">
+    <span id="btn-conn-text">Se connecter →</span>
+    <span class="spinner" id="spin-conn"></span>
+  </button>
 
-    <div class="otp-info">
-      <span class="otp-icon">📱</span>
-      <div class="otp-text">Code envoyé au <strong id="phone-display"></strong><br>Vérifiez vos messages WhatsApp</div>
-    </div>
+  <div class="divider">ou</div>
 
-    <div class="otp-input-row">
-      <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" id="otp1" onInput="nextOTP(this,'otp2')" onKeydown="prevOTP(event,this,'')">
-      <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" id="otp2" onInput="nextOTP(this,'otp3')" onKeydown="prevOTP(event,this,'otp1')">
-      <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" id="otp3" onInput="nextOTP(this,'otp4')" onKeydown="prevOTP(event,this,'otp2')">
-      <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" id="otp4" onInput="nextOTP(this,'otp5')" onKeydown="prevOTP(event,this,'otp3')">
-      <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" id="otp5" onInput="nextOTP(this,'otp6')" onKeydown="prevOTP(event,this,'otp4')">
-      <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" id="otp6" onInput="autoVerify()" onKeydown="prevOTP(event,this,'otp5')">
-    </div>
+  <button class="btn-outline" onclick="useOTP()">Recevoir un code par SMS</button>
 
-    <button class="btn-submit" onclick="verifierOTP()">
-      <span id="btn2-text">Vérifier le code →</span>
-      <span class="spinner" id="spinner2"></span>
-    </button>
+  <div class="note">PIN oublié ? <a href="#" onclick="useOTP();return false">Recevoir un code SMS</a></div>
+</div>
 
-    <div class="resend">
-      <span id="countdown-text">Renvoyer le code dans <strong id="countdown">60</strong>s</span>
-      <button id="resend-btn" disabled onclick="renvoyerOTP()">Renvoyer le code</button>
-    </div>
+<!-- OTP FALLBACK CARD -->
+<div class="card" id="card-otp" style="display:none">
+  <div class="card-icon">💬</div>
+  <div class="card-title">Code de vérification</div>
+  <div class="card-sub" id="otp-sub">Code envoyé par SMS</div>
 
-    <div style="text-align:center;margin-top:12px">
-      <button onclick="backStep1()" style="background:none;border:none;color:var(--ink3);font-size:13px;cursor:pointer">← Changer de numéro</button>
-    </div>
+  <div class="alert alert-error" id="err-otp"></div>
+  <div class="alert alert-success" id="suc-otp"></div>
+
+  <div class="otp-info">
+    📱 Code envoyé au <strong id="otp-phone-display"></strong>. Vérifiez vos messages.
   </div>
 
-  <!-- STEP 3 : Succès -->
-  <div class="step" id="step3">
-    <div class="success-card">
-      <span class="success-icon">✅</span>
-      <div class="success-title">Connecté !</div>
-      <div class="success-sub" id="success-msg">Bienvenue sur MaVitrine.sn</div>
-      <a href="dashboard.html" class="btn-dashboard">
-        🛍️ Aller sur mon tableau de bord
-      </a>
+  <div class="field">
+    <span class="pin-label">Code reçu (6 chiffres)</span>
+    <div class="pin-row">
+      <input class="pin-digit" type="text" maxlength="1" inputmode="numeric" id="o1" oninput="nextPin(this,'o2')" onkeydown="prevPin(event,this,'')">
+      <input class="pin-digit" type="text" maxlength="1" inputmode="numeric" id="o2" oninput="nextPin(this,'o3')" onkeydown="prevPin(event,this,'o1')">
+      <input class="pin-digit" type="text" maxlength="1" inputmode="numeric" id="o3" oninput="nextPin(this,'o4')" onkeydown="prevPin(event,this,'o2')">
+      <input class="pin-digit" type="text" maxlength="1" inputmode="numeric" id="o4" oninput="nextPin(this,'o5')" onkeydown="prevPin(event,this,'o3')">
+      <input class="pin-digit" type="text" maxlength="1" inputmode="numeric" id="o5" oninput="nextPin(this,'o6')" onkeydown="prevPin(event,this,'o4')">
+      <input class="pin-digit" type="text" maxlength="1" inputmode="numeric" id="o6" oninput="autoVerify()" onkeydown="prevPin(event,this,'o5')">
     </div>
   </div>
 
+  <button class="btn-submit" onclick="verifierOTP()" id="btn-otp">
+    <span id="btn-otp-text">Vérifier →</span>
+    <span class="spinner" id="spin-otp"></span>
+  </button>
+
+  <button class="btn-outline" onclick="showConnexion()">← Retour</button>
+</div>
+
+<!-- SUCCESS CARD -->
+<div class="card" id="card-success" style="display:none">
+  <div class="success-card">
+    <span class="success-icon">✅</span>
+    <div class="success-title">Connecté !</div>
+    <div class="success-sub" id="success-msg">Bienvenue sur MaVitrine.sn</div>
+    <a href="dashboard.html" class="btn-dashboard">🛍️ Mon tableau de bord</a>
+  </div>
+</div>
+
+<!-- INSCRIPTION REDIRECT -->
+<div class="card" id="card-inscription" style="display:none">
+  <div class="card-icon">👋</div>
+  <div class="card-title">Créer un compte</div>
+  <div class="card-sub">Rejoignez MaVitrine.sn gratuitement</div>
+  <a href="inscription.html" class="btn-submit" style="text-decoration:none;margin-top:0">
+    Créer mon compte gratuitement →
+  </a>
+  <div style="text-align:center;font-size:13px;color:var(--ink3);margin-top:14px">
+    Déjà inscrit ? <button onclick="showTab('connexion',document.querySelector('.tab'))" style="background:none;border:none;color:var(--p);font-weight:600;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Se connecter</button>
+  </div>
 </div>
 
 <script>
-const API = 'https://mavitrine-sn-bphm.vercel.app';
-let phoneFormatted = '';
-let countdownTimer;
+const API='https://mavitrine-sn-bphm.vercel.app';
+let otpPhone='';
 
-// Vérifier si déjà connecté
-window.onload = () => {
-  const token = localStorage.getItem('mv_token');
-  if (token) window.location.href = 'dashboard.html';
+window.onload=()=>{
+  if(localStorage.getItem('mv_token'))window.location.href='dashboard.html';
 };
 
-function showAlert(msg, type='error') {
-  const el = document.getElementById('alert-' + type);
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 5000);
+function showTab(tab, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('card-connexion').style.display = tab==='connexion'?'block':'none';
+  document.getElementById('card-inscription').style.display = tab==='inscription'?'block':'none';
+  document.getElementById('card-otp').style.display='none';
 }
 
-function hideAlerts() {
-  document.getElementById('alert-error').style.display = 'none';
-  document.getElementById('alert-success').style.display = 'none';
+function showConnexion(){
+  document.getElementById('card-otp').style.display='none';
+  document.getElementById('card-connexion').style.display='block';
 }
 
-function setLoading(step, loading) {
-  const btn = document.getElementById('btn' + step + '-text');
-  const spinner = document.getElementById('spinner' + step);
-  const submitBtn = btn.closest('button');
-  if (loading) {
-    btn.style.display = 'none';
-    spinner.style.display = 'block';
-    submitBtn.disabled = true;
-  } else {
-    btn.style.display = 'block';
-    spinner.style.display = 'none';
-    submitBtn.disabled = false;
+function nextPin(cur, nextId){
+  if(cur.value.length===1 && nextId){
+    cur.classList.add('filled');
+    const next=document.getElementById(nextId);
+    if(next) next.focus();
+  }
+  if(!cur.value) cur.classList.remove('filled');
+}
+
+function prevPin(e, cur, prevId){
+  if(e.key==='Backspace'&&!cur.value&&prevId){
+    const prev=document.getElementById(prevId);
+    if(prev){prev.value='';prev.classList.remove('filled');prev.focus();}
   }
 }
 
-function startCountdown() {
-  let seconds = 60;
-  const countEl = document.getElementById('countdown');
-  const resendBtn = document.getElementById('resend-btn');
-  const countdownText = document.getElementById('countdown-text');
-  resendBtn.disabled = true;
-  resendBtn.style.display = 'none';
-  countdownText.style.display = 'inline';
-
-  countdownTimer = setInterval(() => {
-    seconds--;
-    countEl.textContent = seconds;
-    if (seconds <= 0) {
-      clearInterval(countdownTimer);
-      countdownText.style.display = 'none';
-      resendBtn.style.display = 'inline';
-      resendBtn.disabled = false;
-    }
-  }, 1000);
+function getPin(prefix){
+  return ['1','2','3','4','5','6'].map(i=>document.getElementById(prefix+i).value).join('');
 }
 
-async function envoyerOTP() {
-  hideAlerts();
-  const tel = document.getElementById('telephone').value.trim().replace(/\s/g, '');
-  if (!tel || tel.length < 8) return showAlert('Entrez votre numéro WhatsApp');
+function showErr(id, msg){
+  const el=document.getElementById(id);
+  el.textContent=msg;el.style.display='block';
+  setTimeout(()=>el.style.display='none',5000);
+}
 
-  phoneFormatted = tel.replace(/^0+/,'');
-  if(!phoneFormatted.startsWith('221'))phoneFormatted='221'+phoneFormatted;
-  setLoading(1, true);
+function setLoading(btnId, spinnerId, loading){
+  const btn=document.getElementById(btnId);
+  const sp=document.getElementById(spinnerId);
+  const parent=btn.closest('button')||btn;
+  btn.style.display=loading?'none':'block';
+  sp.style.display=loading?'block':'none';
+  if(parent.tagName==='BUTTON') parent.disabled=loading;
+}
 
-  try {
-    const res = await fetch(API + '/api/auth/otp/envoyer', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ telephone: tel })
+function autoConnect(){
+  const pin=getPin('c');
+  if(pin.length===6) setTimeout(connecter, 200);
+}
+
+function autoVerify(){
+  const code=getPin('o');
+  if(code.length===6) setTimeout(verifierOTP, 200);
+}
+
+async function connecter(){
+  let tel=document.getElementById('tel-connexion').value.trim().replace(/\s/g,'');
+  const pin=getPin('c');
+  if(!tel||tel.replace(/\D/g,'').length<7) return showErr('err-connexion','Entrez votre numéro WhatsApp');
+  if(pin.length!==6) return showErr('err-connexion','Entrez votre code PIN (6 chiffres)');
+  if(!tel.startsWith('221')) tel='221'+tel;
+
+  setLoading('btn-conn-text','spin-conn',true);
+
+  try{
+    // Use OTP verify endpoint with PIN as code
+    const res=await fetch(API+'/api/auth/otp/verifier',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({telephone:tel, code:pin})
     });
+    const data=await res.json();
+    setLoading('btn-conn-text','spin-conn',false);
 
-    const data = await res.json();
-    setLoading(1, false);
-
-    if (!res.ok) {
-      if (res.status === 404) return showAlert('Numéro non trouvé. Inscrivez-vous d\'abord.');
-      return showAlert(data.error || 'Erreur envoi du code');
+    if(!res.ok){
+      // Reset PIN
+      ['c1','c2','c3','c4','c5','c6'].forEach(id=>{
+        const el=document.getElementById(id);
+        el.value='';el.classList.remove('filled');
+      });
+      document.getElementById('c1').focus();
+      if(res.status===400) return showErr('err-connexion','Code PIN incorrect');
+      if(res.status===404) return showErr('err-connexion','Numéro non trouvé. Inscrivez-vous d\'abord.');
+      return showErr('err-connexion', data.error||'Erreur connexion');
     }
 
-    // Afficher step 2
-    document.getElementById('step1').classList.remove('active');
-    document.getElementById('step2').classList.add('active');
-    document.getElementById('dot1').classList.remove('active');
-    document.getElementById('dot1').classList.add('done');
-    document.getElementById('dot2').classList.add('active');
-    document.getElementById('phone-display').textContent = '+221 ' + tel;
+    localStorage.setItem('mv_token',data.token);
+    localStorage.setItem('mv_user',JSON.stringify(data.user));
 
-    // En dev, afficher le code
-    if (data.code) {
-      showAlert('Code de test : ' + data.code, 'success');
-      // Auto-remplir en dev
-      const digits = data.code.split('');
-      digits.forEach((d, i) => {
-        const input = document.getElementById('otp' + (i+1));
-        if (input) input.value = d;
+    // Get slug
+    try{
+      const r2=await fetch(API+'/api/auth/moi',{headers:{'Authorization':'Bearer '+data.token}});
+      const d2=await r2.json();
+      if(d2.user?.slug) localStorage.setItem('mv_slug',d2.user.slug);
+    }catch(e){}
+
+    document.getElementById('card-connexion').style.display='none';
+    document.getElementById('card-success').style.display='block';
+    document.getElementById('success-msg').innerHTML=`Bienvenue <strong>${data.user.nom}</strong> 👋`;
+    setTimeout(()=>window.location.href='dashboard.html', 1200);
+
+  }catch(e){
+    setLoading('btn-conn-text','spin-conn',false);
+    showErr('err-connexion','Erreur réseau. Vérifiez votre connexion.');
+  }
+}
+
+async function useOTP(){
+  let tel=document.getElementById('tel-connexion').value.trim().replace(/\s/g,'');
+  if(!tel||tel.replace(/\D/g,'').length<7){
+    showErr('err-connexion','Entrez d\'abord votre numéro WhatsApp');
+    return;
+  }
+  if(!tel.startsWith('221')) tel='221'+tel;
+  otpPhone=tel;
+
+  try{
+    const res=await fetch(API+'/api/auth/otp/envoyer',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({telephone:tel})
+    });
+    const data=await res.json();
+
+    if(!res.ok){
+      if(res.status===404) return showErr('err-connexion','Numéro non trouvé. Inscrivez-vous d\'abord.');
+      return showErr('err-connexion', data.error||'Erreur envoi code');
+    }
+
+    document.getElementById('card-connexion').style.display='none';
+    document.getElementById('card-otp').style.display='block';
+    document.getElementById('otp-phone-display').textContent='+221 '+tel.replace('221','');
+
+    if(data.code){
+      document.getElementById('suc-otp').textContent='Code test : '+data.code;
+      document.getElementById('suc-otp').style.display='block';
+      const digits=data.code.split('');
+      digits.forEach((d,i)=>{
+        const el=document.getElementById('o'+(i+1));
+        if(el){el.value=d;el.classList.add('filled');}
       });
     }
-
-    startCountdown();
-    document.getElementById('otp1').focus();
-
-  } catch (err) {
-    setLoading(1, false);
-    showAlert('Erreur réseau. Vérifiez votre connexion.');
+  }catch(e){
+    showErr('err-connexion','Erreur réseau');
   }
 }
 
-async function renvoyerOTP() {
-  clearInterval(countdownTimer);
-  ['otp1','otp2','otp3','otp4','otp5','otp6'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  await envoyerOTP();
-}
+async function verifierOTP(){
+  const code=getPin('o');
+  if(code.length!==6) return showErr('err-otp','Entrez les 6 chiffres du code');
 
-function nextOTP(current, nextId) {
-  if (current.value.length === 1 && nextId) {
-    const next = document.getElementById(nextId);
-    if (next) next.focus();
-  }
-}
+  setLoading('btn-otp-text','spin-otp',true);
 
-function prevOTP(event, current, prevId) {
-  if (event.key === 'Backspace' && !current.value && prevId) {
-    const prev = document.getElementById(prevId);
-    if (prev) { prev.value = ''; prev.focus(); }
-  }
-}
-
-function autoVerify() {
-  const code = ['otp1','otp2','otp3','otp4','otp5','otp6']
-    .map(id => document.getElementById(id).value).join('');
-  if (code.length === 6) setTimeout(verifierOTP, 200);
-}
-
-async function verifierOTP() {
-  hideAlerts();
-  const code = ['otp1','otp2','otp3','otp4','otp5','otp6']
-    .map(id => document.getElementById(id).value).join('');
-
-  if (code.length !== 6) return showAlert('Entrez les 6 chiffres du code');
-
-  setLoading(2, true);
-
-  try {
-    const res = await fetch(API + '/api/auth/otp/verifier', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ telephone: phoneFormatted, code })
+  try{
+    const res=await fetch(API+'/api/auth/otp/verifier',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({telephone:otpPhone, code})
     });
+    const data=await res.json();
+    setLoading('btn-otp-text','spin-otp',false);
 
-    const data = await res.json();
-    setLoading(2, false);
-
-    if (!res.ok) {
-      if (res.status === 400) {
-        ['otp1','otp2','otp3','otp4','otp5','otp6'].forEach(id => {
-          document.getElementById(id).style.borderColor = '#DC2626';
-        });
-        return showAlert(data.error || 'Code incorrect');
-      }
-      return showAlert(data.error || 'Erreur vérification');
+    if(!res.ok){
+      ['o1','o2','o3','o4','o5','o6'].forEach(id=>{
+        const el=document.getElementById(id);
+        el.value='';el.classList.remove('filled');
+      });
+      return showErr('err-otp', data.error||'Code incorrect');
     }
 
-    // Sauvegarde
-    localStorage.setItem('mv_token', data.token);
-    localStorage.setItem('mv_user', JSON.stringify(data.user));
+    localStorage.setItem('mv_token',data.token);
+    localStorage.setItem('mv_user',JSON.stringify(data.user));
 
-    // Récupérer le slug
-    try {
-      const profileRes = await fetch(API + '/api/auth/moi', {
-        headers: { 'Authorization': 'Bearer ' + data.token }
-      });
-      const profileData = await profileRes.json();
-      if (profileData.user?.slug) {
-        localStorage.setItem('mv_slug', profileData.user.slug);
-      }
-    } catch(e) {}
+    try{
+      const r2=await fetch(API+'/api/auth/moi',{headers:{'Authorization':'Bearer '+data.token}});
+      const d2=await r2.json();
+      if(d2.user?.slug) localStorage.setItem('mv_slug',d2.user.slug);
+    }catch(e){}
 
-    clearInterval(countdownTimer);
+    document.getElementById('card-otp').style.display='none';
+    document.getElementById('card-success').style.display='block';
+    document.getElementById('success-msg').innerHTML=`Bienvenue <strong>${data.user.nom}</strong> 👋`;
+    setTimeout(()=>window.location.href='dashboard.html', 1200);
 
-    // Step succès
-    document.getElementById('step2').classList.remove('active');
-    document.getElementById('step3').classList.add('active');
-    document.getElementById('dot2').classList.remove('active');
-    document.getElementById('dot2').classList.add('done');
-
-    document.getElementById('success-msg').innerHTML =
-      `Bienvenue <strong>${data.user.nom}</strong> 👋<br>Vous êtes connecté sur votre boutique.`;
-
-    setTimeout(() => window.location.href = 'dashboard.html', 1500);
-
-  } catch (err) {
-    setLoading(2, false);
-    showAlert('Erreur réseau. Vérifiez votre connexion.');
+  }catch(e){
+    setLoading('btn-otp-text','spin-otp',false);
+    showErr('err-otp','Erreur réseau');
   }
-}
-
-function backStep1() {
-  clearInterval(countdownTimer);
-  document.getElementById('step2').classList.remove('active');
-  document.getElementById('step1').classList.add('active');
-  document.getElementById('dot2').classList.remove('active');
-  document.getElementById('dot1').classList.remove('done');
-  document.getElementById('dot1').classList.add('active');
-  ['otp1','otp2','otp3','otp4','otp5','otp6'].forEach(id => {
-    document.getElementById(id).value = '';
-    document.getElementById(id).style.borderColor = '';
-  });
 }
 </script>
 </body>
