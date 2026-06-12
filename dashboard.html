@@ -115,6 +115,25 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 
 .upload-zone{border:1.5px dashed var(--line);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;background:var(--sur);transition:border-color .2s;}
 .upload-zone:active{border-color:var(--g);background:var(--gl);}
+
+/* COMMANDES */
+.commande-card{background:white;border-radius:var(--r2);border:1px solid var(--line);padding:14px 16px;margin-bottom:10px;}
+.commande-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.commande-produit{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--ink);}
+.commande-prix{font-size:14px;font-weight:800;color:var(--p);}
+.commande-date{font-size:11px;color:var(--ink3);margin-bottom:8px;}
+.commande-statut{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;}
+.statut-nouvelle{background:#FEF3C7;color:#92400E;}
+.statut-confirmee{background:var(--gl);color:var(--gd);}
+.statut-livree{background:#EDE9FE;color:#5B21B6;}
+.commande-actions{display:flex;gap:8px;margin-top:10px;}
+.btn-confirmer{flex:1;padding:8px;background:var(--gl);color:var(--gd);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-wa-reply{flex:1;padding:8px;background:#25D36622;color:#128C7E;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.commandes-empty{text-align:center;padding:30px;color:var(--ink3);}
+.commandes-tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;}
+.commandes-tabs::-webkit-scrollbar{display:none}
+.ctab{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:600;border:1.5px solid var(--line);background:white;color:var(--ink3);cursor:pointer;white-space:nowrap;}
+.ctab.active{background:var(--p);color:white;border-color:var(--p);}
 /* ALERT */
 .toast{position:fixed;top:70px;left:16px;right:16px;z-index:300;border-radius:var(--r);padding:12px 16px;font-size:14px;font-weight:600;display:none;align-items:center;gap:8px}
 .toast.show{display:flex}
@@ -307,6 +326,86 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 
 <script>
 
+
+
+let allCommandes = [];
+let currentCommandeFilter = 'toutes';
+
+async function loadCommandes() {
+  try {
+    const res = await fetch(API + '/api/commandes/mes-commandes', {
+      headers: {'Authorization': 'Bearer ' + token}
+    });
+    const data = await res.json();
+    allCommandes = data.commandes || [];
+    renderCommandes(allCommandes);
+  } catch(e) {
+    document.getElementById('commandes-list').innerHTML = '<div class="commandes-empty">Erreur chargement</div>';
+  }
+}
+
+function filterCommandes(filtre, btn) {
+  currentCommandeFilter = filtre;
+  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = filtre === 'toutes' ? allCommandes : allCommandes.filter(c => c.statut === filtre);
+  renderCommandes(filtered);
+}
+
+function renderCommandes(commandes) {
+  const list = document.getElementById('commandes-list');
+  if (!commandes.length) {
+    list.innerHTML = '<div class="commandes-empty">📭<br>Aucune commande</div>';
+    return;
+  }
+  list.innerHTML = commandes.map(c => {
+    const date = new Date(c.created_at).toLocaleDateString('fr-FR', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    const statutLabel = {nouvelle:'🆕 Nouvelle', confirmee:'✅ Confirmée', livree:'📦 Livrée'}[c.statut] || c.statut;
+    const statutClass = 'statut-' + c.statut;
+    return `
+    <div class="commande-card">
+      <div class="commande-header">
+        <div class="commande-produit">${c.produit_nom}</div>
+        <div class="commande-prix">${Number(c.produit_prix).toLocaleString('fr-FR')} FCFA</div>
+      </div>
+      <div class="commande-date">📅 ${date}</div>
+      <span class="commande-statut ${statutClass}">${statutLabel}</span>
+      <div class="commande-actions">
+        ${c.statut === 'nouvelle' ? `<button class="btn-confirmer" onclick="changerStatut('${c.id}','confirmee')">✅ Confirmer</button>` : ''}
+        ${c.statut === 'confirmee' ? `<button class="btn-confirmer" onclick="changerStatut('${c.id}','livree')">📦 Marquer livré</button>` : ''}
+        ${c.client_telephone ? `<button class="btn-wa-reply" onclick="window.open('https://wa.me/${c.client_telephone}','_blank')">💬 Répondre WA</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function changerStatut(id, statut) {
+  try {
+    await fetch(API + '/api/commandes/' + id + '/statut', {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({statut})
+    });
+    await loadCommandes();
+    showToast('Statut mis à jour ✅', 'success');
+  } catch(e) {
+    showToast('Erreur mise à jour', 'error');
+  }
+}
+
+function showSection(section, btn) {
+  // Hide all sections
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (section === 'accueil') {
+    document.getElementById('main-content').style.display = 'block';
+  } else if (section === 'commandes') {
+    document.getElementById('commandes-section').style.display = 'block';
+    loadCommandes();
+  }
+}
 
 const API = 'https://mavitrine-sn-bphm.vercel.app';
 let token = '';
@@ -569,5 +668,23 @@ function deconnexion() {
   window.location.href = 'connexion.html';
 }
 </script>
+
+<!-- COMMANDES SECTION -->
+<div class="section" id="commandes-section" style="display:none;padding:16px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;">MES COMMANDES</div>
+    <button onclick="loadCommandes()" style="background:var(--sur);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">↻ Actualiser</button>
+  </div>
+  <div class="commandes-tabs">
+    <button class="ctab active" onclick="filterCommandes('toutes',this)">Toutes</button>
+    <button class="ctab" onclick="filterCommandes('nouvelle',this)">Nouvelles</button>
+    <button class="ctab" onclick="filterCommandes('confirmee',this)">Confirmées</button>
+    <button class="ctab" onclick="filterCommandes('livree',this)">Livrées</button>
+  </div>
+  <div id="commandes-list">
+    <div class="commandes-empty">Chargement...</div>
+  </div>
+</div>
+
 </body>
 </html>
