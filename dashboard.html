@@ -174,6 +174,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   </div>
 </div>
 
+<!-- MAIN CONTENT -->
+<div id="main-content">
+
 <!-- STATS -->
 <div class="section">
   <div class="section-title">Statistiques</div>
@@ -251,9 +254,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 
 <!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <button class="bnav-item active">
+  <button class="bnav-item active" id="nav-accueil" onclick="showSection('accueil',this)">
     <span class="bnav-icon">🏠</span>
     <span class="bnav-label">Accueil</span>
+  </button>
+  <button class="bnav-item" id="nav-commandes" onclick="showSection('commandes',this)">
+    <span class="bnav-icon">📋</span>
+    <span class="bnav-label">Commandes</span>
   </button>
   <button class="bnav-item" onclick="window.location.href='profil.html'">
     <span class="bnav-icon">⚙️</span>
@@ -668,6 +675,8 @@ function deconnexion() {
   window.location.href = 'connexion.html';
 }
 </script>
+
+</div><!-- end main-content -->
 
 <!-- COMMANDES SECTION -->
 <div class="section" id="commandes-section" style="display:none;padding:16px;">
