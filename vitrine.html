@@ -309,18 +309,38 @@ function ouvrirProduit(id) {
   document.getElementById('modal-prix').textContent = Number(p.prix).toLocaleString('fr-FR') + ' FCFA';
   document.getElementById('modal-desc').textContent = p.description || '';
 
-  const phone = vitrine.telephone_public || '';
-  const msg = encodeURIComponent(`Bonjour 👋 Je suis intéressé(e) par "${p.nom}" à ${Number(p.prix).toLocaleString('fr-FR')} FCFA. Est-ce disponible ?`);
-  document.getElementById('modal-wa-btn').href = 'https://wa.me/' + phone + '?text=' + msg;
-
-  // Track click
-  fetch(API + '/api/analytics/track', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({vitrine_slug: slug, event_type: 'whatsapp_click'})
-  }).catch(()=>{});
+  // Store current product for commander
+  document.getElementById('modal-wa-btn').onclick = (e) => {
+    e.preventDefault();
+    commander(p);
+  };
 
   document.getElementById('modal-overlay').classList.add('open');
+}
+
+async function commander(p) {
+  const phone = vitrine.telephone_public || '';
+
+  // Enregistrer commande
+  try {
+    await fetch(API + '/api/commandes', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        vitrine_slug: slug,
+        produit_id: p.id,
+        produit_nom: p.nom,
+        produit_prix: p.prix,
+      })
+    });
+  } catch(e) {}
+
+  // Ouvrir WhatsApp
+  const msg = encodeURIComponent(
+    `Bonjour 👋 Je suis intéressé(e) par *${p.nom}* à ${Number(p.prix).toLocaleString('fr-FR')} FCFA.\n\nEst-ce disponible ?`
+  );
+  window.open('https://wa.me/' + phone + '?text=' + msg, '_blank');
+  closeModalBtn();
 }
 
 function closeModal(e) {
