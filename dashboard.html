@@ -145,6 +145,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .limit-banner-text{font-size:12px;color:#92400E;line-height:1.4;flex:1}
 .btn-upgrade{background:var(--o);color:white;border:none;border-radius:50px;padding:7px 12px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -695,5 +696,78 @@ function deconnexion() {
   </div>
 </div>
 
+
+<!-- QR CODE MODAL -->
+<div class="modal-overlay" id="qr-modal" onclick="closeQRModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end;">
+  <div style="background:white;border-radius:24px 24px 0 0;width:100%;padding:24px 20px 40px;text-align:center;">
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">Mon QR Code</div>
+    <div style="font-size:13px;color:var(--ink3);margin-bottom:20px;">Imprimez-le ou partagez-le avec vos clients</div>
+    <div id="qr-container" style="display:flex;justify-content:center;margin-bottom:20px;"></div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:20px;" id="qr-url-display"></div>
+    <button onclick="telechargerQR()" style="width:100%;padding:14px;background:var(--p);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">📥 Télécharger le QR Code</button>
+    <button onclick="partagerQR()" style="width:100%;padding:14px;background:var(--gl);color:var(--gd);border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">📤 Partager</button>
+    <button onclick="document.getElementById('qr-modal').style.display='none'" style="width:100%;padding:12px;background:var(--sur);color:var(--ink3);border:1px solid var(--line);border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Fermer</button>
+  </div>
+</div>
+
+<script>
+
+let qrGenerated = false;
+
+function ouvrirQR() {
+  const modal = document.getElementById('qr-modal');
+  modal.style.display = 'flex';
+  
+  if (!qrGenerated) {
+    const slug = localStorage.getItem('mv_slug') || '';
+    const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
+    
+    document.getElementById('qr-url-display').textContent = url;
+    document.getElementById('qr-container').innerHTML = '';
+    
+    new QRCode(document.getElementById('qr-container'), {
+      text: url,
+      width: 200,
+      height: 200,
+      colorDark: '#0E0E0F',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+    qrGenerated = true;
+  }
+}
+
+function closeQRModal(e) {
+  if (e.target === document.getElementById('qr-modal')) {
+    document.getElementById('qr-modal').style.display = 'none';
+  }
+}
+
+function telechargerQR() {
+  const canvas = document.querySelector('#qr-container canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'mavitrine-qrcode.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+async function partagerQR() {
+  const canvas = document.querySelector('#qr-container canvas');
+  if (!canvas) return;
+  const slug = localStorage.getItem('mv_slug') || '';
+  const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
+  if (navigator.share) {
+    await navigator.share({
+      title: 'Ma boutique MaVitrine.sn',
+      text: 'Découvrez ma boutique en ligne !',
+      url
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('Lien copié !', 'success'));
+  }
+}
+
+</script>
 </body>
 </html>
