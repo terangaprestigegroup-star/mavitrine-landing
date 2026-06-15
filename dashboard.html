@@ -225,16 +225,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Mon profil</div>
       <div class="action-d">Modifier mes infos</div>
     </a>
-    <a href="#" onclick="ouvrirQR();return false" class="action">
+    <button onclick="ouvrirQR()" class="action" style="border:none;cursor:pointer;text-align:center;">
       <div class="action-icon action-icon-p">🔲</div>
       <div class="action-t">QR Code</div>
       <div class="action-d">Imprimer ou partager</div>
-    </a>
-    <a href="#" onclick="genererCataloguePDF();return false" class="action">
+    </button>
+    <button onclick="genererCataloguePDF()" class="action" style="border:none;cursor:pointer;text-align:center;">
       <div class="action-icon action-icon-g">📄</div>
       <div class="action-t">Catalogue PDF</div>
       <div class="action-d">Exporter mes produits</div>
-    </a>
+    </button>
     <a href="paiement.html" class="action">
       <div class="action-icon action-icon-o">⭐</div>
       <div class="action-t">Passer Premium</div>
@@ -709,7 +709,7 @@ function deconnexion() {
 
 
 <!-- QR CODE MODAL -->
-<div class="modal-overlay" id="qr-modal" onclick="closeQRModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end;">
+<div class="modal-overlay" id="qr-modal" onclick="closeQRModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;>
   <div style="background:white;border-radius:24px 24px 0 0;width:100%;padding:24px 20px 40px;text-align:center;">
     <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">Mon QR Code</div>
     <div style="font-size:13px;color:var(--ink3);margin-bottom:20px;">Imprimez-le ou partagez-le avec vos clients</div>
