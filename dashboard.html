@@ -145,7 +145,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .limit-banner-text{font-size:12px;color:#92400E;line-height:1.4;flex:1}
 .btn-upgrade{background:var(--o);color:white;border:none;border-radius:50px;padding:7px 12px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -225,20 +224,21 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Mon profil</div>
       <div class="action-d">Modifier mes infos</div>
     </a>
-    <a href="javascript:void(0)" onclick="ouvrirQR()" class="action">
-      <div class="action-icon action-icon-p">🔲</div>
-      <div class="action-t">QR Code</div>
-      <div class="action-d">Imprimer ou partager</div>
-    </a>
-    <a href="javascript:void(0)" onclick="genererCataloguePDF()" class="action">
-      <div class="action-icon action-icon-g">📄</div>
-      <div class="action-t">Catalogue PDF</div>
-      <div class="action-d">Exporter mes produits</div>
-    </a>
+
     <a href="paiement.html" class="action">
       <div class="action-icon action-icon-o">⭐</div>
       <div class="action-t">Passer Premium</div>
       <div class="action-d">100 FCFA/jour</div>
+    </a>
+    <a href="paiement.html" class="action" id="btn-qr" onclick="afficherQR(event)">
+      <div class="action-icon action-icon-p">🔲</div>
+      <div class="action-t">QR Code</div>
+      <div class="action-d">Imprimer ou partager</div>
+    </a>
+    <a href="paiement.html" class="action" id="btn-pdf" onclick="exporterPDF(event)">
+      <div class="action-icon action-icon-g">📄</div>
+      <div class="action-t">Catalogue PDF</div>
+      <div class="action-d">Exporter mes produits</div>
     </a>
   </div>
 </div>
@@ -686,6 +686,112 @@ function deconnexion() {
   localStorage.removeItem('mv_slug');
   window.location.href = 'connexion.html';
 }
+
+
+// QR CODE
+function afficherQR(e) {
+  if(e) e.preventDefault();
+  const slug = localStorage.getItem('mv_slug') || '';
+  const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
+  const apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&margin=10';
+  document.getElementById('qr-img').src = apiUrl;
+  document.getElementById('qr-link-text').textContent = url;
+  document.getElementById('qr-download').href = apiUrl;
+  document.getElementById('modal-qr').style.display = 'flex';
+}
+
+function partagerQR() {
+  const slug = localStorage.getItem('mv_slug') || '';
+  const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
+  if(navigator.share) {
+    navigator.share({title:'Ma boutique', url}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(()=>showToast('Lien copié !','success'));
+  }
+}
+
+// PDF CATALOGUE
+function exporterPDF(e) {
+  if(e) e.preventDefault();
+  if(!produits || produits.length === 0) { showToast('Ajoutez des produits d\'abord','error'); return; }
+  if(!window.jspdf) { showToast('Chargement...','success'); setTimeout(()=>exporterPDF(null),1500); return; }
+  
+  showToast('Génération du PDF...','success');
+  
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p','mm','a4');
+    const user = JSON.parse(localStorage.getItem('mv_user')||'{}');
+    const nom = user.nom || 'Ma Boutique';
+    const slug = localStorage.getItem('mv_slug') || '';
+
+    // Header
+    doc.setFillColor(61,43,232);
+    doc.rect(0,0,210,35,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(18);
+    doc.setFont('helvetica','bold');
+    doc.text(nom, 15, 15);
+    doc.setFontSize(10);
+    doc.setFont('helvetica','normal');
+    doc.text('Catalogue produits — mavitrine.sn/'+slug, 15, 23);
+    doc.text(new Date().toLocaleDateString('fr-FR'), 15, 30);
+
+    // Products
+    let y = 45;
+    produits.forEach((p, i) => {
+      if(y > 260) { doc.addPage(); y = 20; }
+      
+      doc.setFillColor(247,247,248);
+      doc.roundedRect(10, y, 190, 22, 3, 3, 'F');
+      
+      doc.setTextColor(14,14,15);
+      doc.setFontSize(11);
+      doc.setFont('helvetica','bold');
+      doc.text(p.nom, 15, y+8);
+      
+      if(p.categorie) {
+        doc.setFontSize(8);
+        doc.setFont('helvetica','normal');
+        doc.setTextColor(110,110,120);
+        doc.text(p.categorie, 15, y+14);
+      }
+      
+      if(p.description) {
+        doc.setFontSize(8);
+        doc.setTextColor(110,110,120);
+        const desc = doc.splitTextToSize(p.description, 120);
+        doc.text(desc[0], 15, p.categorie ? y+14 : y+13);
+      }
+      
+      // Price
+      doc.setFillColor(61,43,232);
+      doc.roundedRect(145, y+4, 55, 13, 2, 2, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(10);
+      doc.setFont('helvetica','bold');
+      doc.text(Number(p.prix).toLocaleString('fr-FR')+' FCFA', 172, y+12, {align:'center'});
+      
+      y += 26;
+    });
+
+    // Footer
+    doc.setFillColor(247,247,248);
+    doc.rect(0,282,210,15,'F');
+    doc.setTextColor(110,110,120);
+    doc.setFontSize(8);
+    doc.setFont('helvetica','normal');
+    doc.text('MaVitrine.sn — '+nom, 15, 291);
+    doc.text(produits.length+' produits', 195, 291, {align:'right'});
+
+    doc.save('catalogue-'+slug+'.pdf');
+    showToast('Catalogue téléchargé ✅','success');
+  } catch(err) {
+    console.error(err);
+    showToast('Erreur PDF','error');
+  }
+}
+
 </script>
 
 </div><!-- end main-content -->
@@ -708,223 +814,18 @@ function deconnexion() {
 </div>
 
 
-<!-- QR CODE MODAL -->
-<div class="modal-overlay" id="qr-modal" onclick="closeQRModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end;">
-  <div style="background:white;border-radius:24px 24px 0 0;width:100%;padding:24px 20px 40px;text-align:center;">
+
+
+<div id="modal-qr" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:999;justify-content:flex-end;align-items:flex-end;">
+  <div style="background:white;border-radius:24px 24px 0 0;width:100%;padding:24px 20px 36px;text-align:center;">
     <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">Mon QR Code</div>
-    <div style="font-size:13px;color:var(--ink3);margin-bottom:20px;">Imprimez-le ou partagez-le avec vos clients</div>
-    <div id="qr-container" style="display:flex;justify-content:center;margin-bottom:20px;"></div>
-    <div style="font-size:12px;color:var(--ink3);margin-bottom:20px;" id="qr-url-display"></div>
-    <button onclick="telechargerQR()" style="width:100%;padding:14px;background:var(--p);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">📥 Télécharger le QR Code</button>
-    <button onclick="partagerQR()" style="width:100%;padding:14px;background:var(--gl);color:var(--gd);border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">📤 Partager</button>
-    <button onclick="document.getElementById('qr-modal').style.display='none'" style="width:100%;padding:12px;background:var(--sur);color:var(--ink3);border:1px solid var(--line);border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Fermer</button>
+    <div style="font-size:13px;color:#6E6E78;margin-bottom:16px;">Partagez avec vos clients</div>
+    <img id="qr-img" src="" style="width:200px;height:200px;border-radius:12px;border:1px solid #E8E8EB;" alt="QR Code">
+    <div style="font-size:11px;color:#6E6E78;margin:10px 0 16px;word-break:break-all;" id="qr-link-text"></div>
+    <a id="qr-download" href="#" download="qrcode.png" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#3D2BE8;color:white;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;">📥 Télécharger</a>
+    <button onclick="partagerQR()" style="width:100%;padding:14px;background:rgba(29,185,84,.12);color:#17a349;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">📤 Partager le lien</button>
+    <button onclick="document.getElementById('modal-qr').style.display='none'" style="width:100%;padding:12px;background:#F7F7F8;color:#6E6E78;border:1px solid #E8E8EB;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Fermer</button>
   </div>
 </div>
-
-<script>
-
-let qrGenerated = false;
-
-function ouvrirQR() {
-  const modal = document.getElementById('qr-modal');
-  modal.style.display = 'flex';
-  modal.style.alignItems = 'flex-end';
-  
-  if (!qrGenerated) {
-    const slug = localStorage.getItem('mv_slug') || '';
-    const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
-    
-    document.getElementById('qr-url-display').textContent = url;
-    
-    // Use Google Charts QR API
-    const encodedUrl = encodeURIComponent(url);
-    const qrImg = document.createElement('img');
-    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodedUrl + '&margin=10&color=0E0E0F';
-    qrImg.width = 200;
-    qrImg.height = 200;
-    qrImg.style.borderRadius = '12px';
-    qrImg.id = 'qr-img';
-    document.getElementById('qr-container').innerHTML = '';
-    document.getElementById('qr-container').appendChild(qrImg);
-    qrGenerated = true;
-  }
-}
-
-function closeQRModal(e) {
-  if (e.target === document.getElementById('qr-modal')) {
-    document.getElementById('qr-modal').style.display = 'none';
-  }
-}
-
-function telechargerQR() {
-  const img = document.getElementById('qr-img');
-  if (!img) return;
-  const link = document.createElement('a');
-  link.download = 'mavitrine-qrcode.png';
-  link.href = img.src;
-  link.target = '_blank';
-  link.click();
-}
-
-async function partagerQR() {
-  const slug = localStorage.getItem('mv_slug') || '';
-  const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
-  if (navigator.share) {
-    await navigator.share({
-      title: 'Ma boutique MaVitrine.sn',
-      text: 'Découvrez ma boutique en ligne !',
-      url
-    }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(url).then(() => showToast('Lien copié !', 'success'));
-  }
-}
-
-
-async function genererCataloguePDF() {
-  if (!produits || produits.length === 0) {
-    showToast('Ajoutez des produits d'abord', 'error');
-    return;
-  }
-  
-  showToast('Génération du catalogue...', 'success');
-  
-  try {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    
-    const user = JSON.parse(localStorage.getItem('mv_user') || '{}');
-    const nomBoutique = user.nom || 'Ma Boutique';
-    const slug = localStorage.getItem('mv_slug') || '';
-    
-    // Colors
-    const PRIMARY = [61, 43, 232];
-    const GREEN = [29, 185, 84];
-    const DARK = [14, 14, 15];
-    const GRAY = [110, 110, 120];
-    const LIGHT = [247, 247, 248];
-    
-    // Header background
-    doc.setFillColor(...PRIMARY);
-    doc.rect(0, 0, 210, 40, 'F');
-    
-    // Logo text
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(nomBoutique, 20, 18);
-    
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Catalogue de produits', 20, 26);
-    
-    doc.setFontSize(9);
-    doc.text('mavitrine.sn/' + slug, 20, 33);
-    
-    // Date
-    const today = new Date().toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
-    doc.setFontSize(9);
-    doc.text(today, 190, 33, {align: 'right'});
-    
-    // Stats bar
-    doc.setFillColor(...GREEN);
-    doc.rect(0, 40, 210, 12, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text(produits.length + ' produits disponibles', 20, 48);
-    
-    // Products
-    let y = 62;
-    const cols = 2;
-    const cardW = 82;
-    const cardH = 40;
-    const marginLeft = 14;
-    const gap = 14;
-    
-    produits.forEach((p, i) => {
-      const col = i % cols;
-      const x = marginLeft + col * (cardW + gap);
-      
-      if (col === 0 && i > 0) y += cardH + 8;
-      
-      // New page if needed
-      if (y + cardH > 270) {
-        doc.addPage();
-        y = 20;
-      }
-      
-      // Card background
-      doc.setFillColor(...LIGHT);
-      doc.roundedRect(x, y, cardW, cardH, 3, 3, 'F');
-      
-      // Product name
-      doc.setTextColor(...DARK);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      const nomLines = doc.splitTextToSize(p.nom, cardW - 10);
-      doc.text(nomLines[0], x + 5, y + 9);
-      
-      // Category
-      if (p.categorie) {
-        doc.setTextColor(...GRAY);
-        doc.setFontSize(7);
-        doc.setFont('helvetica', 'normal');
-        doc.text(p.categorie, x + 5, y + 16);
-      }
-      
-      // Description
-      if (p.description) {
-        doc.setTextColor(...GRAY);
-        doc.setFontSize(7);
-        doc.setFont('helvetica', 'normal');
-        const descLines = doc.splitTextToSize(p.description, cardW - 10);
-        doc.text(descLines.slice(0,2), x + 5, p.categorie ? y + 22 : y + 18);
-      }
-      
-      // Price badge
-      doc.setFillColor(...PRIMARY);
-      doc.roundedRect(x + 5, y + cardH - 12, cardW - 10, 9, 2, 2, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      const prix = Number(p.prix).toLocaleString('fr-FR') + ' FCFA';
-      doc.text(prix, x + cardW/2, y + cardH - 6, {align: 'center'});
-      
-      // Stock badge
-      const stockColors = {disponible: [...GREEN], limite: [245, 158, 11], rupture: [220, 38, 38]};
-      const stockLabels = {disponible: 'Dispo', limite: 'Limite', rupture: 'Rupture'};
-      const sc = stockColors[p.stock_status] || [...GREEN];
-      doc.setFillColor(...sc);
-      doc.roundedRect(x + cardW - 22, y + 4, 18, 6, 1, 1, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(6);
-      doc.text(stockLabels[p.stock_status] || 'Dispo', x + cardW - 13, y + 8.5, {align:'center'});
-    });
-    
-    // Footer on each page
-    const totalPages = doc.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-      doc.setPage(i);
-      doc.setFillColor(...LIGHT);
-      doc.rect(0, 282, 210, 15, 'F');
-      doc.setTextColor(...GRAY);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.text('MaVitrine.sn — ' + nomBoutique, 20, 291);
-      doc.text('Page ' + i + '/' + totalPages, 190, 291, {align: 'right'});
-    }
-    
-    // Save
-    doc.save('catalogue-' + slug + '.pdf');
-    showToast('Catalogue téléchargé ✅', 'success');
-    
-  } catch(e) {
-    console.error(e);
-    showToast('Erreur génération PDF', 'error');
-  }
-}
-
-</script>
 </body>
 </html>
