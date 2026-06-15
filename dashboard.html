@@ -230,17 +230,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Passer Premium</div>
       <div class="action-d">100 FCFA/jour</div>
     </a>
-    <div class="action" onclick="ouvrirAssistant()" style="cursor:pointer">
+    <div class="action" id="btn-assistant" style="cursor:pointer">
       <div class="action-icon action-icon-p">⚡</div>
       <div class="action-t">Assistant IA</div>
       <div class="action-d">Messages qui vendent</div>
     </div>
-    <a href="paiement.html" class="action" id="btn-qr" onclick="afficherQR(event);return false">
+    <a class="action" id="btn-qrcode" style="cursor:pointer">
       <div class="action-icon action-icon-p">🔲</div>
       <div class="action-t">QR Code</div>
       <div class="action-d">Imprimer ou partager</div>
     </a>
-    <a href="paiement.html" class="action" id="btn-pdf" onclick="exporterPDF(event)">
+    <a class="action" id="btn-catalogue" style="cursor:pointer">
       <div class="action-icon action-icon-g">📄</div>
       <div class="action-t">Catalogue PDF</div>
       <div class="action-d">Exporter mes produits</div>
@@ -448,6 +448,14 @@ window.onload = async () => {
 
   updateUI();
   await Promise.all([loadProfil(), loadProduits(), loadStats()]);
+
+  // Bind action buttons safely
+  const btnA = document.getElementById('btn-assistant');
+  const btnQ = document.getElementById('btn-qrcode');
+  const btnC = document.getElementById('btn-catalogue');
+  if(btnA) btnA.addEventListener('click', function(){ ouvrirAssistant(); });
+  if(btnQ) btnQ.addEventListener('click', function(){ afficherQR(); });
+  if(btnC) btnC.addEventListener('click', function(){ exporterPDF(); });
 };
 
 function updateUI() {
@@ -694,8 +702,7 @@ function deconnexion() {
 
 
 // QR CODE
-function afficherQR(e) {
-  if(e){e.preventDefault();e.stopPropagation();}
+function afficherQR() {
   const slug = localStorage.getItem('mv_slug') || '';
   const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
   const apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&margin=10';
@@ -716,8 +723,7 @@ function partagerQR() {
 }
 
 // PDF CATALOGUE
-function exporterPDF(e) {
-  if(e) e.preventDefault();
+function exporterPDF() {
   if(!produits || produits.length === 0) { showToast('Ajoutez des produits d\'abord','error'); return; }
   if(!window.jspdf) { showToast('Chargement...','success'); setTimeout(()=>exporterPDF(null),1500); return; }
   
