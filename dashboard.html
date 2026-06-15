@@ -230,6 +230,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Passer Premium</div>
       <div class="action-d">100 FCFA/jour</div>
     </a>
+    <a href="javascript:void(0)" class="action" onclick="ouvrirAssistant(event)">
+      <div class="action-icon action-icon-p">⚡</div>
+      <div class="action-t">Assistant IA</div>
+      <div class="action-d">Messages qui vendent</div>
+    </a>
     <a href="paiement.html" class="action" id="btn-qr" onclick="afficherQR(event)">
       <div class="action-icon action-icon-p">🔲</div>
       <div class="action-t">QR Code</div>
@@ -792,6 +797,77 @@ function exporterPDF(e) {
   }
 }
 
+
+function ouvrirAssistant(e) {
+  if(e) e.preventDefault();
+  const user = JSON.parse(localStorage.getItem('mv_user')||'{}');
+  if(user.plan === 'gratuit' || !user.plan) {
+    showToast('Fonctionnalité Premium — Passez Premium !', 'error');
+    setTimeout(()=>window.location.href='paiement.html', 1500);
+    return;
+  }
+  document.getElementById('modal-assistant').style.display = 'flex';
+  document.getElementById('assistant-results').style.display = 'none';
+  document.getElementById('assistant-form').style.display = 'block';
+}
+
+async function genererMessages() {
+  const produit = document.getElementById('ai-produit').value.trim();
+  const prix = document.getElementById('ai-prix').value.trim();
+  const cible = document.getElementById('ai-cible').value.trim();
+  
+  if(!produit) { showToast('Entrez le nom du produit', 'error'); return; }
+  if(!prix) { showToast('Entrez le prix', 'error'); return; }
+  
+  document.getElementById('assistant-form').style.display = 'none';
+  document.getElementById('assistant-loading').style.display = 'block';
+  
+  try {
+    const user = JSON.parse(localStorage.getItem('mv_user')||'{}');
+    const res = await fetch(API + '/api/assistant/generer', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({produit, prix, cible, type_business: user.type_business || 'Boutique', ville: 'Dakar'})
+    });
+    const data = await res.json();
+    
+    document.getElementById('assistant-loading').style.display = 'none';
+    
+    if(!res.ok) {
+      showToast(data.error || 'Erreur génération', 'error');
+      document.getElementById('assistant-form').style.display = 'block';
+      return;
+    }
+    
+    const msgs = data.messages;
+    const labels = {promo:'🎯 Promotion', urgence:'🔥 Urgence', relance:'💬 Relance', catalogue:'📋 Catalogue'};
+    
+    let html = '<div style="font-size:13px;font-weight:600;color:#2D2D30;margin-bottom:12px;">Messages générés — copiez et envoyez !</div>';
+    
+    Object.keys(msgs).forEach(type => {
+      const waUrl = data.liens_wa[type];
+      html += `<div style="background:#F7F7F8;border-radius:14px;padding:14px;margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:700;color:#3D2BE8;margin-bottom:6px;">${labels[type]||type}</div>
+        <div style="font-size:13px;color:#0E0E0F;line-height:1.6;margin-bottom:10px;">${msgs[type]}</div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="navigator.clipboard.writeText('${msgs[type].replace(/'/g,"\'")}').then(()=>showToast('Copié !','success'))" style="flex:1;padding:8px;background:rgba(61,43,232,.1);color:#3D2BE8;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">📋 Copier</button>
+          <a href="${waUrl}" target="_blank" style="flex:1;padding:8px;background:#25D366;color:white;border-radius:8px;font-size:12px;font-weight:700;text-align:center;text-decoration:none;">💬 WhatsApp</a>
+        </div>
+      </div>`;
+    });
+    
+    html += '<button onclick="document.getElementById('assistant-form').style.display='block';document.getElementById('assistant-results').style.display='none'" style="width:100%;padding:10px;background:#F7F7F8;color:#6E6E78;border:1px solid #E8E8EB;border-radius:50px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">↩ Nouveau message</button>';
+    
+    document.getElementById('assistant-results').innerHTML = html;
+    document.getElementById('assistant-results').style.display = 'block';
+    
+  } catch(err) {
+    document.getElementById('assistant-loading').style.display = 'none';
+    document.getElementById('assistant-form').style.display = 'block';
+    showToast('Erreur réseau', 'error');
+  }
+}
+
 </script>
 
 </div><!-- end main-content -->
@@ -827,5 +903,38 @@ function exporterPDF(e) {
     <button onclick="document.getElementById('modal-qr').style.display='none'" style="width:100%;padding:12px;background:#F7F7F8;color:#6E6E78;border:1px solid #E8E8EB;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Fermer</button>
   </div>
 </div>
+
+<div id="modal-assistant" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:999;align-items:flex-end;">
+  <div style="background:white;border-radius:24px 24px 0 0;width:100%;padding:20px;max-height:90vh;overflow-y:auto;">
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">⚡ Assistant Vente IA</div>
+    <div style="font-size:13px;color:#6E6E78;margin-bottom:16px;">Messages WhatsApp professionnels en 1 clic</div>
+    
+    <div id="assistant-form">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px;font-weight:600;color:#2D2D30;display:block;margin-bottom:5px;">Produit *</label>
+        <input id="ai-produit" type="text" placeholder="Ex: Robe wax bleue" style="width:100%;padding:12px;border:1.5px solid #E8E8EB;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px;font-weight:600;color:#2D2D30;display:block;margin-bottom:5px;">Prix (FCFA) *</label>
+        <input id="ai-prix" type="number" placeholder="15000" style="width:100%;padding:12px;border:1.5px solid #E8E8EB;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:600;color:#2D2D30;display:block;margin-bottom:5px;">Cible (optionnel)</label>
+        <input id="ai-cible" type="text" placeholder="Ex: Femmes 25-40 ans" style="width:100%;padding:12px;border:1.5px solid #E8E8EB;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
+      </div>
+      <button onclick="genererMessages()" id="btn-generer" style="width:100%;padding:14px;background:linear-gradient(135deg,#3D2BE8,#1a0d8a);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">⚡ Générer mes messages</button>
+    </div>
+    
+    <div id="assistant-loading" style="display:none;text-align:center;padding:20px;">
+      <div style="font-size:24px;margin-bottom:8px;">⚡</div>
+      <div style="font-size:14px;color:#6E6E78;">Génération en cours...</div>
+    </div>
+    
+    <div id="assistant-results" style="display:none;margin-top:16px;"></div>
+    
+    <button onclick="document.getElementById('modal-assistant').style.display='none'" style="width:100%;padding:12px;background:#F7F7F8;color:#6E6E78;border:1px solid #E8E8EB;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:12px;">Fermer</button>
+  </div>
+</div>
+
 </body>
 </html>
