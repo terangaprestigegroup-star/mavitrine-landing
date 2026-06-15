@@ -230,12 +230,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Passer Premium</div>
       <div class="action-d">100 FCFA/jour</div>
     </a>
-    <a href="javascript:void(0)" class="action" onclick="ouvrirAssistant(event)">
+    <div class="action" onclick="ouvrirAssistant()" style="cursor:pointer">
       <div class="action-icon action-icon-p">⚡</div>
       <div class="action-t">Assistant IA</div>
       <div class="action-d">Messages qui vendent</div>
-    </a>
-    <a href="paiement.html" class="action" id="btn-qr" onclick="afficherQR(event)">
+    </div>
+    <a href="paiement.html" class="action" id="btn-qr" onclick="afficherQR(event);return false">
       <div class="action-icon action-icon-p">🔲</div>
       <div class="action-t">QR Code</div>
       <div class="action-d">Imprimer ou partager</div>
@@ -695,7 +695,7 @@ function deconnexion() {
 
 // QR CODE
 function afficherQR(e) {
-  if(e) e.preventDefault();
+  if(e){e.preventDefault();e.stopPropagation();}
   const slug = localStorage.getItem('mv_slug') || '';
   const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
   const apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&margin=10';
@@ -798,8 +798,7 @@ function exporterPDF(e) {
 }
 
 
-function ouvrirAssistant(e) {
-  if(e) e.preventDefault();
+function ouvrirAssistant() {
   const user = JSON.parse(localStorage.getItem('mv_user')||'{}');
   if(user.plan === 'gratuit' || !user.plan) {
     showToast('Fonctionnalité Premium — Passez Premium !', 'error');
