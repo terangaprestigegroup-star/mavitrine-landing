@@ -661,11 +661,7 @@ function ouvrirCatalogue(e) {
 function ouvrirAssistant(e) {
   if (e) e.preventDefault();
   const user = JSON.parse(localStorage.getItem('mv_user') || '{}');
-  if (!user.plan || user.plan === 'gratuit') {
-    showToast('Fonctionnalité Premium !', 'e');
-    setTimeout(() => window.location.href = 'paiement.html', 1500);
-    return;
-  }
+  // Premium check disabled for testing
   document.getElementById('ai-form').style.display = 'block';
   document.getElementById('ai-loading').style.display = 'none';
   document.getElementById('ai-results').style.display = 'none';
