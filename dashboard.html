@@ -5,25 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MaVitrine.sn — Mon tableau de bord</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-:root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ob:rgba(245,97,26,.1);--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--w:#fff;--r:14px;--r2:20px;--shg:0 4px 20px rgba(29,185,84,.35);--shp:0 4px 20px rgba(61,43,232,.25);}
+:root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--r:14px;--r2:20px;--shg:0 4px 20px rgba(29,185,84,.35);--shp:0 4px 20px rgba(61,43,232,.25);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;padding-bottom:80px;}
-
-/* NAV */
 nav{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:white;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100;}
 .nav-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;color:var(--ink);text-decoration:none}
 .nav-logo span{color:var(--o)}
 .nav-user{display:flex;align-items:center;gap:8px}
 .nav-avatar{width:34px;height:34px;background:var(--gl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
 .nav-name{font-size:13px;font-weight:600;color:var(--ink2)}
-
-/* SECTIONS */
 .section{padding:16px}
 .section-title{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
-
-/* WELCOME */
 .welcome{background:linear-gradient(135deg,var(--p),#1a0d8a);border-radius:var(--r2);padding:20px;margin:16px;color:white;position:relative;overflow:hidden}
 .welcome::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.06);border-radius:50%}
 .welcome-title{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px}
@@ -31,11 +26,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .welcome-actions{display:flex;gap:8px}
 .btn-wa{display:flex;align-items:center;gap:6px;background:#25D366;color:white;border:none;border-radius:50px;padding:9px 14px;font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:none}
 .btn-link{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);color:white;border:none;border-radius:50px;padding:9px 14px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;}
-
-/* PLAN BADGE */
 .plan-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:50px;padding:4px 10px;font-size:11px;font-weight:600;color:white;margin-bottom:12px}
-
-/* STATS */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stat{background:white;border-radius:var(--r2);padding:16px;border:1px solid var(--line)}
 .stat-icon{font-size:20px;margin-bottom:8px}
@@ -44,139 +35,121 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .stat-premium{background:var(--sur);border:1px dashed var(--line)}
 .stat-lock{font-size:18px;margin-bottom:6px}
 .stat-premium .stat-val{font-size:13px;color:var(--ink3);font-weight:600}
-
-/* QUICK ACTIONS */
 .actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.action{background:white;border:1px solid var(--line);border-radius:var(--r2);padding:16px;cursor:pointer;transition:all .15s;text-decoration:none;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
-.action:active{transform:scale(.97)}
-.action-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.action{background:white;border:1px solid var(--line);border-radius:var(--r2);padding:16px;cursor:pointer;transition:all .15s;text-decoration:none;display:flex;flex-direction:column;align-items:flex-start;gap:8px;-webkit-tap-highlight-color:rgba(0,0,0,.1)}
+.action:active{transform:scale(.97);background:var(--sur)}
+.action-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .action-icon-g{background:var(--gl)}
 .action-icon-p{background:var(--pb)}
-.action-icon-o{background:var(--ob)}
+.action-icon-o{background:rgba(245,97,26,.1)}
 .action-t{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--ink)}
 .action-d{font-size:11px;color:var(--ink3)}
-
-/* PRODUITS */
 .produits-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.btn-add{display:flex;align-items:center;gap:5px;background:var(--g);color:white;border:none;border-radius:50px;padding:8px 14px;font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;box-shadow:var(--shg)}
-
-.produit-list{display:flex;flex-direction:column;gap:8px}
-.produit-item{background:white;border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;align-items:center;gap:12px}
-.produit-img{width:48px;height:48px;background:var(--sur);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
+.btn-add{display:flex;align-items:center;gap:6px;background:var(--g);color:white;border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;cursor:pointer;box-shadow:var(--shg)}
+.produit-item{background:white;border-radius:var(--r2);padding:14px 16px;border:1px solid var(--line);display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.produit-img{width:44px;height:44px;border-radius:10px;background:var(--sur);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
 .produit-img img{width:100%;height:100%;object-fit:cover}
 .produit-info{flex:1;min-width:0}
-.produit-nom{font-weight:600;font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.produit-prix{font-size:13px;color:var(--p);font-weight:700;margin-top:2px}
+.produit-nom{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.produit-prix{font-size:13px;font-weight:800;color:var(--p)}
 .produit-stock{font-size:11px;margin-top:2px}
-.stock-dispo{color:var(--gd)}
-.stock-rupture{color:#DC2626}
-.stock-limite{color:#F59E0B}
-.produit-actions{display:flex;gap:6px;flex-shrink:0}
-.btn-edit,.btn-del{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--sur);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer}
-.btn-del{border-color:#FECACA;background:#FFF1F1}
-.produit-toggle{width:36px;height:20px;background:var(--line);border-radius:50px;position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0}
-.produit-toggle.on{background:var(--g)}
-.produit-toggle::after{content:'';width:16px;height:16px;background:white;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s}
-.produit-toggle.on::after{transform:translateX(16px)}
-
-.empty-state{text-align:center;padding:32px 16px;color:var(--ink3)}
+.produit-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.toggle{width:42px;height:24px;background:var(--g);border-radius:50px;position:relative;cursor:pointer;border:none;transition:background .2s}
+.toggle.off{background:var(--line)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:left .2s}
+.toggle.off::after{left:3px}
+.toggle.on::after{left:21px}
+.btn-edit{width:34px;height:34px;background:var(--sur);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+.btn-del{width:34px;height:34px;background:#FFF1F1;border:1px solid #FECACA;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--ink3)}
 .empty-icon{font-size:40px;margin-bottom:12px}
-.empty-title{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;color:var(--ink2);margin-bottom:6px}
-.empty-sub{font-size:13px;line-height:1.5}
-
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--line);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif}
+.empty-title{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;color:var(--ink2);margin-bottom:6px}
+.limit-banner{display:none;background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-size:13px;color:#92400E;align-items:center;gap:8px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--line);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;padding:4px;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .bnav-icon{font-size:20px}
-.bnav-label{font-size:10px;font-weight:500;color:var(--ink3)}
-.bnav-item.active .bnav-label{color:var(--g);font-weight:700}
-
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;}
+.bnav-label{font-size:10px;color:var(--ink3);font-weight:500}
+.bnav-item.active .bnav-label{color:var(--p);font-weight:700}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:flex-end}
 .modal-overlay.open{display:flex}
-.modal{background:white;border-radius:24px 24px 0 0;padding:24px 20px;width:100%;max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal{background:white;border-radius:24px 24px 0 0;width:100%;max-height:85vh;overflow-y:auto}
+.modal-header{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between}
 .modal-title{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800}
-.modal-close{width:32px;height:32px;background:var(--sur);border:none;border-radius:50%;font-size:16px;cursor:pointer}
-
+.modal-close{width:32px;height:32px;background:var(--sur);border:none;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:20px}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px}
 .field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--g);background:white}
-.field textarea{resize:none;height:80px}
+.field textarea{resize:none;height:70px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .select-wrap{position:relative}
 .select-wrap::after{content:'▼';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--ink3);pointer-events:none}
-
-.btn-primary{width:100%;padding:14px;background:var(--g);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:var(--shg);display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-primary .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.btn-save{width:100%;padding:14px;background:var(--g);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:var(--shg);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-save:disabled{opacity:.6}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-
-.upload-zone{border:1.5px dashed var(--line);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;background:var(--sur);transition:border-color .2s;}
-.upload-zone:active{border-color:var(--g);background:var(--gl);}
-
-/* COMMANDES */
-.commande-card{background:white;border-radius:var(--r2);border:1px solid var(--line);padding:14px 16px;margin-bottom:10px;}
-.commande-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.commande-produit{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--ink);}
-.commande-prix{font-size:14px;font-weight:800;color:var(--p);}
-.commande-date{font-size:11px;color:var(--ink3);margin-bottom:8px;}
-.commande-statut{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;}
-.statut-nouvelle{background:#FEF3C7;color:#92400E;}
-.statut-confirmee{background:var(--gl);color:var(--gd);}
-.statut-livree{background:#EDE9FE;color:#5B21B6;}
-.commande-actions{display:flex;gap:8px;margin-top:10px;}
-.btn-confirmer{flex:1;padding:8px;background:var(--gl);color:var(--gd);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.btn-wa-reply{flex:1;padding:8px;background:#25D36622;color:#128C7E;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.commandes-empty{text-align:center;padding:30px;color:var(--ink3);}
-.commandes-tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;}
-.commandes-tabs::-webkit-scrollbar{display:none}
-.ctab{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:600;border:1.5px solid var(--line);background:white;color:var(--ink3);cursor:pointer;white-space:nowrap;}
-.ctab.active{background:var(--p);color:white;border-color:var(--p);}
-/* ALERT */
 .toast{position:fixed;top:70px;left:16px;right:16px;z-index:300;border-radius:var(--r);padding:12px 16px;font-size:14px;font-weight:600;display:none;align-items:center;gap:8px}
 .toast.show{display:flex}
-.toast-success{background:var(--gl);border:1px solid rgba(29,185,84,.3);color:var(--gd)}
-.toast-error{background:#FFF1F1;border:1px solid #FECACA;color:#DC2626}
-
-/* LIMIT BANNER */
-.limit-banner{background:#FFF8E8;border:1px solid #F5C518;border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.limit-banner-text{font-size:12px;color:#92400E;line-height:1.4;flex:1}
-.btn-upgrade{background:var(--o);color:white;border:none;border-radius:50px;padding:7px 12px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.toast-s{background:var(--gl);border:1px solid rgba(29,185,84,.3);color:var(--gd)}
+.toast-e{background:#FFF1F1;border:1px solid #FECACA;color:#DC2626}
+.commande-card{background:white;border-radius:var(--r2);border:1px solid var(--line);padding:14px 16px;margin-bottom:10px}
+.commande-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.commande-produit{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700}
+.commande-prix{font-size:14px;font-weight:800;color:var(--p)}
+.commande-date{font-size:11px;color:var(--ink3);margin-bottom:8px}
+.statut-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700}
+.s-nouvelle{background:#FEF3C7;color:#92400E}
+.s-confirmee{background:var(--gl);color:var(--gd)}
+.s-livree{background:#EDE9FE;color:#5B21B6}
+.commande-btns{display:flex;gap:8px;margin-top:10px}
+.btn-confirmer{flex:1;padding:8px;background:var(--gl);color:var(--gd);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.ctabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto}
+.ctabs::-webkit-scrollbar{display:none}
+.ctab{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:600;border:1.5px solid var(--line);background:white;color:var(--ink3);cursor:pointer;white-space:nowrap}
+.ctab.active{background:var(--p);color:white;border-color:var(--p)}
+/* Overlay modals */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:flex-end}
+.overlay.open{display:flex}
+.osheet{background:white;border-radius:24px 24px 0 0;width:100%;padding:24px 20px 36px;max-height:90vh;overflow-y:auto}
+.osheet-title{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px}
+.osheet-sub{font-size:13px;color:var(--ink3);margin-bottom:16px}
+.msg-card{background:var(--sur);border-radius:14px;padding:14px;margin-bottom:10px}
+.msg-type{font-size:11px;font-weight:700;color:var(--p);margin-bottom:6px}
+.msg-text{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:10px}
+.msg-btns{display:flex;gap:8px}
+.btn-copy{flex:1;padding:8px;background:var(--pb);color:var(--p);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-wa-msg{flex:1;padding:8px;background:#25D366;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:flex;align-items:center;justify-content:center}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
 <!-- TOAST -->
-<div class="toast toast-success" id="toast-success">✅ <span id="toast-msg"></span></div>
-<div class="toast toast-error" id="toast-error">❌ <span id="toast-err"></span></div>
+<div class="toast toast-s" id="toast-s">✅ <span id="toast-s-msg"></span></div>
+<div class="toast toast-e" id="toast-e">❌ <span id="toast-e-msg"></span></div>
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">🇸🇳 MaVitrine<span>.sn</span></a>
+  <a href="mavitrine-landing.html" class="nav-logo">🇸🇳 MaVitrine<span>.sn</span></a>
   <div class="nav-user">
     <div class="nav-avatar">👤</div>
-    <span class="nav-name" id="nav-name">...</span>
+    <div class="nav-name" id="nav-name">...</div>
   </div>
 </nav>
+
+<!-- MAIN CONTENT -->
+<div id="main-content">
 
 <!-- WELCOME -->
 <div class="welcome">
   <div class="plan-badge" id="plan-badge">🆓 Plan Gratuit</div>
   <div class="welcome-title" id="welcome-title">Bonjour 👋</div>
-  <div class="welcome-sub" id="welcome-sub">Votre boutique est en ligne</div>
+  <div class="welcome-sub" id="welcome-slug">mavitrine.sn/...</div>
   <div class="welcome-actions">
-    <a href="#" id="btn-wa-share" class="btn-wa" target="_blank">
-      💬 Partager
-    </a>
+    <a href="#" id="btn-wa" class="btn-wa" target="_blank">💬 Partager</a>
     <button class="btn-link" onclick="copyLink()">🔗 Copier le lien</button>
   </div>
 </div>
-
-<!-- MAIN CONTENT -->
-<div id="main-content">
 
 <!-- STATS -->
 <div class="section">
@@ -192,12 +165,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="stat-val" id="stat-produits">—</div>
       <div class="stat-label">Produits actifs</div>
     </div>
-    <div class="stat stat-premium" id="stat-wa-card">
+    <div class="stat stat-premium">
       <div class="stat-lock">🔒</div>
       <div class="stat-val">Clics WhatsApp</div>
       <div class="stat-label">Premium uniquement</div>
     </div>
-    <div class="stat stat-premium" id="stat-semaine-card">
+    <div class="stat stat-premium">
       <div class="stat-lock">🔒</div>
       <div class="stat-val">Vues 7 jours</div>
       <div class="stat-label">Premium uniquement</div>
@@ -205,7 +178,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   </div>
 </div>
 
-<!-- ACTIONS RAPIDES -->
+<!-- ACTIONS -->
 <div class="section">
   <div class="section-title">Actions rapides</div>
   <div class="actions-grid">
@@ -220,30 +193,29 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-d">Vue client</div>
     </a>
     <a href="profil.html" class="action">
-      <div class="action-icon action-icon-p">⚙️</div>
+      <div class="action-icon action-icon-o">⚙️</div>
       <div class="action-t">Mon profil</div>
       <div class="action-d">Modifier mes infos</div>
     </a>
-
     <a href="paiement.html" class="action">
       <div class="action-icon action-icon-o">⭐</div>
       <div class="action-t">Passer Premium</div>
       <div class="action-d">100 FCFA/jour</div>
     </a>
-    <div class="action" id="btn-assistant" style="cursor:pointer">
-      <div class="action-icon action-icon-p">⚡</div>
-      <div class="action-t">Assistant IA</div>
-      <div class="action-d">Messages qui vendent</div>
-    </div>
-    <a class="action" id="btn-qrcode" style="cursor:pointer">
+    <a href="#" id="btn-qrcode" class="action">
       <div class="action-icon action-icon-p">🔲</div>
       <div class="action-t">QR Code</div>
       <div class="action-d">Imprimer ou partager</div>
     </a>
-    <a class="action" id="btn-catalogue" style="cursor:pointer">
+    <a href="#" id="btn-catalogue" class="action">
       <div class="action-icon action-icon-g">📄</div>
       <div class="action-t">Catalogue PDF</div>
       <div class="action-d">Exporter mes produits</div>
+    </a>
+    <a href="#" id="btn-assistant" class="action">
+      <div class="action-icon action-icon-p">⚡</div>
+      <div class="action-t">Assistant IA</div>
+      <div class="action-d">Messages qui vendent</div>
     </a>
   </div>
 </div>
@@ -251,31 +223,43 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 <!-- PRODUITS -->
 <div class="section">
   <div class="produits-header">
-    <div class="section-title" style="margin-bottom:0">Mes produits</div>
+    <div class="section-title" style="margin:0">Mes produits</div>
     <button class="btn-add" onclick="openModal()">+ Ajouter</button>
   </div>
-
-  <div id="limit-banner" class="limit-banner" style="display:none">
-    <span class="limit-banner-text">Limite de 5 produits atteinte. Passez Premium pour des produits illimités.</span>
-    <button class="btn-upgrade" onclick="window.location.href='paiement.html'">Upgrade</button>
-  </div>
-
-  <div class="produit-list" id="produit-list">
+  <div class="limit-banner" id="limit-banner">⚠️ Limite de 5 produits atteinte. <a href="paiement.html" style="color:#92400E;font-weight:700;margin-left:4px">Upgrade</a></div>
+  <div id="produits-list">
     <div class="empty-state">
       <div class="empty-icon">📦</div>
       <div class="empty-title">Aucun produit encore</div>
-      <div class="empty-sub">Ajoutez votre premier produit pour commencer à vendre</div>
+      <p>Ajoutez votre premier produit pour commencer à vendre</p>
     </div>
   </div>
 </div>
 
+</div><!-- end main-content -->
+
+<!-- COMMANDES SECTION -->
+<div id="commandes-content" style="display:none;padding:16px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800">MES COMMANDES</div>
+    <button onclick="loadCommandes()" style="background:var(--sur);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">↻ Actualiser</button>
+  </div>
+  <div class="ctabs">
+    <button class="ctab active" onclick="filterCommandes('toutes',this)">Toutes</button>
+    <button class="ctab" onclick="filterCommandes('nouvelle',this)">Nouvelles</button>
+    <button class="ctab" onclick="filterCommandes('confirmee',this)">Confirmées</button>
+    <button class="ctab" onclick="filterCommandes('livree',this)">Livrées</button>
+  </div>
+  <div id="commandes-list"><div style="text-align:center;padding:30px;color:var(--ink3)">Chargement...</div></div>
+</div>
+
 <!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <button class="bnav-item active" id="nav-accueil" onclick="showSection('accueil',this)">
+  <button class="bnav-item active" id="nav-accueil" onclick="showPage('accueil')">
     <span class="bnav-icon">🏠</span>
     <span class="bnav-label">Accueil</span>
   </button>
-  <button class="bnav-item" id="nav-commandes" onclick="showSection('commandes',this)">
+  <button class="bnav-item" id="nav-commandes" onclick="showPage('commandes')">
     <span class="bnav-icon">📋</span>
     <span class="bnav-label">Commandes</span>
   </button>
@@ -290,260 +274,196 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 </div>
 
 <!-- MODAL AJOUT PRODUIT -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+<div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-title">Ajouter un produit</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-
-    <div class="field">
-      <label>Nom du produit *</label>
-      <input type="text" id="p-nom" placeholder="Ex: Robe wax bleue">
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>Prix (FCFA) *</label>
-        <input type="number" id="p-prix" placeholder="15000" inputmode="numeric">
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field">
+          <label>Prix (FCFA) *</label>
+          <input type="number" id="p-prix" placeholder="15000" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>Stock</label>
+          <div class="select-wrap">
+            <select id="p-stock">
+              <option value="disponible">✅ Disponible</option>
+              <option value="limite">⚠️ Limité</option>
+              <option value="rupture">❌ Rupture</option>
+            </select>
+          </div>
+        </div>
       </div>
       <div class="field">
-        <label>Stock</label>
+        <label>Nom du produit *</label>
+        <input type="text" id="p-nom" placeholder="Ex: Robe wax bleue">
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="p-desc" placeholder="Décrivez votre produit..."></textarea>
+      </div>
+      <div class="field">
+        <label>Catégorie</label>
         <div class="select-wrap">
-          <select id="p-stock">
-            <option value="disponible">✅ Disponible</option>
-            <option value="limite">⚠️ Limité</option>
-            <option value="rupture">❌ Rupture</option>
+          <select id="p-cat">
+            <option value="">Choisir...</option>
+            <option>Mode & Accessoires</option>
+            <option>Beauté & Cosmétique</option>
+            <option>Téléphones & Tech</option>
+            <option>Alimentation</option>
+            <option>Maison & Déco</option>
+            <option>Services</option>
+            <option>Autres</option>
           </select>
         </div>
       </div>
-    </div>
-    <div class="field">
-      <label>Description</label>
-      <textarea id="p-desc" placeholder="Décrivez votre produit..."></textarea>
-    </div>
-    <div class="field">
-      <label>Catégorie</label>
-      <div class="select-wrap">
-        <select id="p-cat">
-          <option value="">Choisir...</option>
-          <option>Mode & Accessoires</option>
-          <option>Beauté & Cosmétique</option>
-          <option>Alimentation</option>
-          <option>Téléphones</option>
-          <option>Services</option>
-          <option>Autre</option>
-        </select>
+      <div class="field">
+        <label>Lien image (URL)</label>
+        <input type="url" id="p-img" placeholder="https://... (optionnel)">
       </div>
+      <button class="btn-save" id="btn-save" onclick="sauvegarderProduit()">
+        <span id="btn-save-text">Ajouter le produit</span>
+        <span class="spinner" id="save-spinner"></span>
+      </button>
     </div>
-    <div class="field">
-      <label>Photo du produit (lien URL)</label>
-      <input type="url" id="p-img" placeholder="https://... (optionnel)">
-      <div style="font-size:11px;color:var(--ink3);margin-top:5px">💡 Copiez le lien d'une photo depuis Google ou WhatsApp</div>
-    </div>
+  </div>
+</div>
 
-    <button class="btn-primary" onclick="sauvegarderProduit()">
-      <span id="modal-btn-text">Ajouter le produit</span>
-      <span class="spinner" id="modal-spinner"></span>
-    </button>
+<!-- MODAL QR CODE -->
+<div class="overlay" id="overlay-qr">
+  <div class="osheet">
+    <div class="osheet-title">Mon QR Code 🔲</div>
+    <div class="osheet-sub">Partagez avec vos clients</div>
+    <div style="display:flex;justify-content:center;margin-bottom:12px">
+      <img id="qr-img" src="" style="width:200px;height:200px;border-radius:12px;border:1px solid var(--line)" alt="QR Code">
+    </div>
+    <div style="font-size:11px;color:var(--ink3);margin-bottom:16px;word-break:break-all;text-align:center" id="qr-url-text"></div>
+    <a id="qr-dl-link" href="#" download="qrcode-mavitrine.png" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--p);color:white;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px">📥 Télécharger</a>
+    <button onclick="partagerQR()" style="width:100%;padding:14px;background:var(--gl);color:var(--gd);border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px">📤 Partager le lien</button>
+    <button onclick="fermerOverlay('overlay-qr')" style="width:100%;padding:12px;background:var(--sur);color:var(--ink3);border:1px solid var(--line);border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">Fermer</button>
+  </div>
+</div>
+
+<!-- MODAL ASSISTANT IA -->
+<div class="overlay" id="overlay-assistant">
+  <div class="osheet">
+    <div class="osheet-title">⚡ Assistant Vente IA</div>
+    <div class="osheet-sub">Messages WhatsApp professionnels en 1 clic</div>
+    <div id="ai-form">
+      <div class="field">
+        <label>Produit *</label>
+        <input type="text" id="ai-produit" placeholder="Ex: Robe wax bleue">
+      </div>
+      <div class="field">
+        <label>Prix (FCFA) *</label>
+        <input type="number" id="ai-prix" placeholder="15000" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>Cible (optionnel)</label>
+        <input type="text" id="ai-cible" placeholder="Ex: Femmes 25-40 ans">
+      </div>
+      <button onclick="genererMessages()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--p),#1a0d8a);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer">⚡ Générer mes messages</button>
+    </div>
+    <div id="ai-loading" style="display:none;text-align:center;padding:30px">
+      <div style="font-size:32px;margin-bottom:8px">⚡</div>
+      <div style="font-size:14px;color:var(--ink3)">Génération en cours...</div>
+    </div>
+    <div id="ai-results" style="display:none"></div>
+    <button onclick="fermerOverlay('overlay-assistant')" style="width:100%;padding:12px;background:var(--sur);color:var(--ink3);border:1px solid var(--line);border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:12px">Fermer</button>
   </div>
 </div>
 
 <script>
-
-
-
-let allCommandes = [];
-let currentCommandeFilter = 'toutes';
-
-async function loadCommandes() {
-  try {
-    const res = await fetch(API + '/api/commandes/mes-commandes', {
-      headers: {'Authorization': 'Bearer ' + token}
-    });
-    const data = await res.json();
-    allCommandes = data.commandes || [];
-    renderCommandes(allCommandes);
-  } catch(e) {
-    document.getElementById('commandes-list').innerHTML = '<div class="commandes-empty">Erreur chargement</div>';
-  }
-}
-
-function filterCommandes(filtre, btn) {
-  currentCommandeFilter = filtre;
-  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const filtered = filtre === 'toutes' ? allCommandes : allCommandes.filter(c => c.statut === filtre);
-  renderCommandes(filtered);
-}
-
-function renderCommandes(commandes) {
-  const list = document.getElementById('commandes-list');
-  if (!commandes.length) {
-    list.innerHTML = '<div class="commandes-empty">📭<br>Aucune commande</div>';
-    return;
-  }
-  list.innerHTML = commandes.map(c => {
-    const date = new Date(c.created_at).toLocaleDateString('fr-FR', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-    const statutLabel = {nouvelle:'🆕 Nouvelle', confirmee:'✅ Confirmée', livree:'📦 Livrée'}[c.statut] || c.statut;
-    const statutClass = 'statut-' + c.statut;
-    return `
-    <div class="commande-card">
-      <div class="commande-header">
-        <div class="commande-produit">${c.produit_nom}</div>
-        <div class="commande-prix">${Number(c.produit_prix).toLocaleString('fr-FR')} FCFA</div>
-      </div>
-      <div class="commande-date">📅 ${date}</div>
-      <span class="commande-statut ${statutClass}">${statutLabel}</span>
-      <div class="commande-actions">
-        ${c.statut === 'nouvelle' ? `<button class="btn-confirmer" onclick="changerStatut('${c.id}','confirmee')">✅ Confirmer</button>` : ''}
-        ${c.statut === 'confirmee' ? `<button class="btn-confirmer" onclick="changerStatut('${c.id}','livree')">📦 Marquer livré</button>` : ''}
-        ${c.client_telephone ? `<button class="btn-wa-reply" onclick="window.open('https://wa.me/${c.client_telephone}','_blank')">💬 Répondre WA</button>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function changerStatut(id, statut) {
-  try {
-    await fetch(API + '/api/commandes/' + id + '/statut', {
-      method: 'PATCH',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({statut})
-    });
-    await loadCommandes();
-    showToast('Statut mis à jour ✅', 'success');
-  } catch(e) {
-    showToast('Erreur mise à jour', 'error');
-  }
-}
-
-function showSection(section, btn) {
-  // Hide all sections
-  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  if (section === 'accueil') {
-    document.getElementById('main-content').style.display = 'block';
-  } else if (section === 'commandes') {
-    document.getElementById('commandes-section').style.display = 'block';
-    loadCommandes();
-  }
-}
-
 const API = 'https://mavitrine-sn-bphm.vercel.app';
-let token = '';
-let user = {};
-let produits = [];
-let editingId = null;
-let canAdd = true;
+let token = '', produits = [], editingId = null, allCommandes = [];
 
-// Auth check
+// ===== INIT =====
 window.onload = async () => {
   token = localStorage.getItem('mv_token');
   if (!token) return window.location.href = 'connexion.html';
-
-  const userData = localStorage.getItem('mv_user');
-  if (userData) user = JSON.parse(userData);
-
-  updateUI();
   await Promise.all([loadProfil(), loadProduits(), loadStats()]);
 
-  // Bind action buttons safely
-  const btnA = document.getElementById('btn-assistant');
-  const btnQ = document.getElementById('btn-qrcode');
-  const btnC = document.getElementById('btn-catalogue');
-  if(btnA) btnA.addEventListener('click', function(){ ouvrirAssistant(); });
-  if(btnQ) btnQ.addEventListener('click', function(){ afficherQR(); });
-  if(btnC) btnC.addEventListener('click', function(){ exporterPDF(); });
+  // Bind buttons
+  document.getElementById('btn-qrcode').addEventListener('click', ouvrirQR);
+  document.getElementById('btn-catalogue').addEventListener('click', ouvrirCatalogue);
+  document.getElementById('btn-assistant').addEventListener('click', ouvrirAssistant);
 };
 
-function updateUI() {
-  document.getElementById('nav-name').textContent = user.nom || '';
-  document.getElementById('welcome-title').textContent = 'Bonjour ' + (user.nom?.split(' ')[0] || '') + ' 👋';
-
-  const plan = user.plan || 'gratuit';
-  const planLabels = { gratuit: '🆓 Plan Gratuit', premium: '⭐ Plan Premium', business: '🚀 Business' };
-  document.getElementById('plan-badge').textContent = planLabels[plan] || '🆓 Plan Gratuit';
-
-  if (plan === 'premium' || plan === 'business') {
-    document.getElementById('stat-wa-card').classList.remove('stat-premium');
-    document.getElementById('stat-semaine-card').classList.remove('stat-premium');
-  }
+// ===== NAVIGATION =====
+function showPage(page) {
+  document.getElementById('main-content').style.display = page === 'accueil' ? 'block' : 'none';
+  document.getElementById('commandes-content').style.display = page === 'commandes' ? 'block' : 'none';
+  document.getElementById('nav-accueil').classList.toggle('active', page === 'accueil');
+  document.getElementById('nav-commandes').classList.toggle('active', page === 'commandes');
+  if (page === 'commandes') loadCommandes();
 }
 
+// ===== PROFIL =====
 async function loadProfil() {
   try {
-    const res = await fetch(API + '/api/auth/moi', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
+    const res = await fetch(API + '/api/auth/moi', { headers: { 'Authorization': 'Bearer ' + token } });
     if (res.status === 401) return deconnexion();
     const data = await res.json();
     if (data.user) {
-      user = { ...user, ...data.user };
-      localStorage.setItem('mv_user', JSON.stringify(user));
-      localStorage.setItem('mv_slug', data.user.slug || '');
-
-      const slug = data.user.slug || '';
-      const boutique = data.user.nom_boutique || user.nom;
-      document.getElementById('welcome-sub').textContent = 'mavitrine.sn/' + slug;
-      document.getElementById('btn-wa-share').href =
-        'https://wa.me/?text=' + encodeURIComponent('Découvrez ma boutique 🛍️ mavitrine-sn-bphm.vercel.app/api/vitrines/' + slug);
-      document.getElementById('btn-voir-vitrine').href = 'vitrine.html?slug=' + slug;
-      updateUI();
+      const u = data.user;
+      document.getElementById('nav-name').textContent = u.nom || '';
+      document.getElementById('welcome-title').textContent = 'Bonjour ' + (u.nom?.split(' ')[0] || '') + ' 👋';
+      const slug = u.slug || localStorage.getItem('mv_slug') || '';
+      localStorage.setItem('mv_slug', slug);
+      document.getElementById('welcome-slug').textContent = 'mavitrine.sn/' + slug;
+      const vitrineUrl = 'vitrine.html?slug=' + slug;
+      const waMsg = encodeURIComponent('Bonjour 👋 Découvrez ma boutique !');
+      document.getElementById('btn-wa').href = 'https://wa.me/?text=' + encodeURIComponent(vitrineUrl);
+      document.getElementById('btn-voir-vitrine').href = vitrineUrl;
+      const plan = u.plan || 'gratuit';
+      const planLabels = { gratuit: '🆓 Plan Gratuit', premium: '⭐ Premium', business: '💎 Business' };
+      document.getElementById('plan-badge').textContent = planLabels[plan] || '🆓 Plan Gratuit';
     }
   } catch(e) {}
 }
 
+// ===== STATS =====
 async function loadStats() {
   try {
-    const res = await fetch(API + '/api/vitrines/moi', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
+    const res = await fetch(API + '/api/vitrines/moi', { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();
     if (data.vitrine) {
       document.getElementById('stat-vues').textContent = data.vitrine.total_views || 0;
-      document.getElementById('stat-produits').textContent = data.vitrine.nb_produits || 0;
     }
   } catch(e) {}
 }
 
+// ===== PRODUITS =====
 async function loadProduits() {
   try {
-    const res = await fetch(API + '/api/products', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
+    const res = await fetch(API + '/api/products', { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();
     produits = (data.produits || []).reverse();
-    canAdd = data.peut_ajouter !== false;
-
-    if (!canAdd) {
-      document.getElementById('limit-banner').style.display = 'flex';
-    }
-
+    document.getElementById('stat-produits').textContent = produits.filter(p => p.is_visible !== false).length;
     renderProduits();
   } catch(e) {}
 }
 
 function renderProduits() {
-  const list = document.getElementById('produit-list');
+  const list = document.getElementById('produits-list');
   if (!produits.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Aucun produit encore</div><div class="empty-sub">Ajoutez votre premier produit pour commencer à vendre</div></div>`;
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Aucun produit encore</div><p>Ajoutez votre premier produit pour commencer à vendre</p></div>';
     return;
   }
-
+  const stockLabels = { disponible: '✅ Disponible', limite: '⚠️ Limité', rupture: '❌ Rupture' };
   list.innerHTML = produits.map(p => `
-    <div class="produit-item" id="prod-${p.id}">
-      <div class="produit-img">${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}" onerror="this.parentElement.textContent='📦'">` : '📦'}</div>
+    <div class="produit-item">
+      <div class="produit-img">${p.image_url ? `<img src="${p.image_url}" onerror="this.parentElement.textContent='📦'">` : '📦'}</div>
       <div class="produit-info">
         <div class="produit-nom">${p.nom}</div>
         <div class="produit-prix">${Number(p.prix).toLocaleString('fr-FR')} FCFA</div>
-        <div class="produit-stock ${p.stock_status === 'disponible' ? 'stock-dispo' : p.stock_status === 'rupture' ? 'stock-rupture' : 'stock-limite'}">
-          ${p.stock_status === 'disponible' ? '✅ Disponible' : p.stock_status === 'rupture' ? '❌ Rupture' : '⚠️ Limité'}
-        </div>
+        <div class="produit-stock">${stockLabels[p.stock_status] || '✅ Disponible'}</div>
       </div>
       <div class="produit-actions">
-        <button class="produit-toggle ${p.is_visible ? 'on' : ''}" onclick="toggleVisible('${p.id}', this)" title="${p.is_visible ? 'Masquer' : 'Afficher'}"></button>
+        <button class="toggle ${p.is_visible !== false ? 'on' : 'off'}" onclick="toggleVisible('${p.id}', ${p.is_visible !== false})"></button>
         <button class="btn-edit" onclick="editProduit('${p.id}')">✏️</button>
         <button class="btn-del" onclick="supprimerProduit('${p.id}')">🗑️</button>
       </div>
@@ -551,395 +471,271 @@ function renderProduits() {
   `).join('');
 }
 
-function openModal(id=null) {
-  editingId = id;
-  document.getElementById('modal-title').textContent = id ? 'Modifier le produit' : 'Ajouter un produit';
-  document.getElementById('modal-btn-text').textContent = id ? 'Enregistrer' : 'Ajouter le produit';
-
-  if (id) {
-    const p = produits.find(x => x.id === id);
-    if (p) {
-      document.getElementById('p-nom').value = p.nom || '';
-      document.getElementById('p-prix').value = p.prix || '';
-      document.getElementById('p-stock').value = p.stock_status || 'disponible';
-      document.getElementById('p-desc').value = p.description || '';
-      document.getElementById('p-cat').value = p.categorie || '';
-      document.getElementById('p-img').value = p.image_url || '';
-    }
-  } else {
+function openModal(reset = true) {
+  if (reset) {
+    editingId = null;
+    document.getElementById('modal-title').textContent = 'Ajouter un produit';
+    document.getElementById('btn-save-text').textContent = 'Ajouter le produit';
     ['p-nom','p-prix','p-desc','p-img'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('p-stock').value = 'disponible';
     document.getElementById('p-cat').value = '';
   }
-
   document.getElementById('modal-overlay').classList.add('open');
 }
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
   editingId = null;
-  document.getElementById('p-img').value = '';
-  document.getElementById('p-img-file').value = '';
-  document.getElementById('upload-preview').style.display = 'none';
-  document.getElementById('upload-placeholder').style.display = 'block';
 }
 
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
+function editProduit(id) {
+  const p = produits.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Modifier le produit';
+  document.getElementById('btn-save-text').textContent = 'Enregistrer';
+  document.getElementById('p-nom').value = p.nom || '';
+  document.getElementById('p-prix').value = p.prix || '';
+  document.getElementById('p-stock').value = p.stock_status || 'disponible';
+  document.getElementById('p-desc').value = p.description || '';
+  document.getElementById('p-cat').value = p.categorie || '';
+  document.getElementById('p-img').value = p.image_url || '';
+  openModal(false);
 }
-
-function editProduit(id) { openModal(id); }
 
 async function sauvegarderProduit() {
   const nom = document.getElementById('p-nom').value.trim();
   const prix = document.getElementById('p-prix').value;
-  if (!nom) return showToast('Entrez le nom du produit', 'error');
-  if (!prix || isNaN(prix)) return showToast('Entrez un prix valide', 'error');
+  if (!nom) return showToast('Entrez le nom du produit', 'e');
+  if (!prix || isNaN(prix)) return showToast('Entrez un prix valide', 'e');
 
-  setModalLoading(true);
+  const btnText = document.getElementById('btn-save-text');
+  const spinner = document.getElementById('save-spinner');
+  const btn = document.getElementById('btn-save');
+  btnText.style.display = 'none'; spinner.style.display = 'block'; btn.disabled = true;
 
-  const body = {nom, prix: parseFloat(prix), stock_status: document.getElementById('p-stock').value};
+  const body = { nom, prix: parseFloat(prix), stock_status: document.getElementById('p-stock').value };
   const desc = document.getElementById('p-desc').value.trim();
   const cat = document.getElementById('p-cat').value;
   const img = document.getElementById('p-img').value.trim();
-  if(desc) body.description = desc;
-  if(cat) body.categorie = cat;
-  if(img) body.image_url = img;;
+  if (desc) body.description = desc;
+  if (cat) body.categorie = cat;
+  if (img) body.image_url = img;
 
   try {
-    const url = editingId
-      ? API + '/api/products/' + editingId
-      : API + '/api/products';
-    const method = editingId ? 'PATCH' : 'POST';
-
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify(body)
-    });
-
+    const url = editingId ? API + '/api/products/' + editingId : API + '/api/products';
+    const method = editingId ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(body) });
     const data = await res.json();
-    setModalLoading(false);
-
+    btnText.style.display = 'block'; spinner.style.display = 'none'; btn.disabled = false;
     if (!res.ok) {
-      if (res.status === 403) {
-        closeModal();
-        document.getElementById('limit-banner').style.display = 'flex';
-        return showToast('Limite atteinte. Passez Premium !', 'error');
-      }
-      return showToast(data.error || 'Données invalides', 'error');
+      if (res.status === 403) { closeModal(); document.getElementById('limit-banner').style.display = 'flex'; return; }
+      return showToast(data.error || 'Erreur', 'e');
     }
-
     closeModal();
-    showToast(editingId ? 'Produit modifié ✅' : 'Produit ajouté ✅', 'success');
-    try { await loadProduits(); await loadStats(); } catch(e2) {}
-
+    showToast(editingId ? 'Produit modifié ✅' : 'Produit ajouté ✅', 's');
+    try { await loadProduits(); await loadStats(); } catch(e) {}
   } catch(e) {
-    setModalLoading(false);
-    if(e.message && e.message.includes('fetch')) {
-      showToast('Erreur réseau. Vérifiez votre connexion.', 'error');
-    }
+    btnText.style.display = 'block'; spinner.style.display = 'none'; btn.disabled = false;
   }
+}
+
+async function toggleVisible(id, current) {
+  try {
+    await fetch(API + '/api/products/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ is_visible: !current }) });
+    await loadProduits();
+  } catch(e) {}
 }
 
 async function supprimerProduit(id) {
   if (!confirm('Supprimer ce produit ?')) return;
   try {
-    await fetch(API + '/api/products/' + id, {
-      method: 'DELETE',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    showToast('Produit supprimé', 'success');
+    await fetch(API + '/api/products/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    showToast('Produit supprimé', 's');
     await loadProduits();
-    await loadStats();
-  } catch(e) {
-    showToast('Erreur suppression', 'error');
-  }
-}
-
-async function toggleVisible(id, btn) {
-  try {
-    const res = await fetch(API + '/api/products/' + id + '/visibilite', {
-      method: 'PATCH',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const data = await res.json();
-    if (data.is_visible !== undefined) {
-      btn.classList.toggle('on', data.is_visible);
-      showToast(data.is_visible ? 'Produit visible' : 'Produit masqué', 'success');
-    }
   } catch(e) {}
 }
 
-function copyLink() {
-  const slug = localStorage.getItem('mv_slug') || '';
-  const link = 'mavitrine-sn-bphm.vercel.app/api/vitrines/' + slug;
-  navigator.clipboard.writeText(link).then(() => showToast('Lien copié !', 'success')).catch(() => {});
+// ===== COMMANDES =====
+async function loadCommandes() {
+  try {
+    const res = await fetch(API + '/api/commandes/mes-commandes', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    allCommandes = data.commandes || [];
+    renderCommandes(allCommandes);
+  } catch(e) {
+    document.getElementById('commandes-list').innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">Erreur chargement</div>';
+  }
 }
 
-function setModalLoading(loading) {
-  const btn = document.getElementById('modal-btn-text');
-  const spinner = document.getElementById('modal-spinner');
-  const submitBtn = btn.closest('button');
-  btn.style.display = loading ? 'none' : 'block';
-  spinner.style.display = loading ? 'block' : 'none';
-  submitBtn.disabled = loading;
+function filterCommandes(f, btn) {
+  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCommandes(f === 'toutes' ? allCommandes : allCommandes.filter(c => c.statut === f));
 }
 
-function showToast(msg, type='success') {
-  const el = document.getElementById('toast-' + type);
-  document.getElementById(type === 'success' ? 'toast-msg' : 'toast-err').textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
+function renderCommandes(list) {
+  const el = document.getElementById('commandes-list');
+  if (!list.length) { el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">📭 Aucune commande</div>'; return; }
+  const labels = { nouvelle: '🆕 Nouvelle', confirmee: '✅ Confirmée', livree: '📦 Livrée' };
+  const cls = { nouvelle: 's-nouvelle', confirmee: 's-confirmee', livree: 's-livree' };
+  el.innerHTML = list.map(c => `
+    <div class="commande-card">
+      <div class="commande-header">
+        <div class="commande-produit">${c.produit_nom}</div>
+        <div class="commande-prix">${Number(c.produit_prix).toLocaleString('fr-FR')} FCFA</div>
+      </div>
+      <div class="commande-date">📅 ${new Date(c.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+      <span class="statut-badge ${cls[c.statut]||'s-nouvelle'}">${labels[c.statut]||c.statut}</span>
+      <div class="commande-btns">
+        ${c.statut==='nouvelle'?`<button class="btn-confirmer" onclick="changerStatut('${c.id}','confirmee')">✅ Confirmer</button>`:''}
+        ${c.statut==='confirmee'?`<button class="btn-confirmer" onclick="changerStatut('${c.id}','livree')">📦 Livré</button>`:''}
+      </div>
+    </div>
+  `).join('');
 }
 
-function deconnexion() {
-  localStorage.removeItem('mv_token');
-  localStorage.removeItem('mv_user');
-  localStorage.removeItem('mv_slug');
-  window.location.href = 'connexion.html';
+async function changerStatut(id, statut) {
+  try {
+    await fetch(API + '/api/commandes/' + id + '/statut', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ statut }) });
+    await loadCommandes();
+    showToast('Statut mis à jour ✅', 's');
+  } catch(e) { showToast('Erreur', 'e'); }
 }
 
-
-// QR CODE
-function afficherQR() {
+// ===== QR CODE =====
+function ouvrirQR(e) {
+  if (e) e.preventDefault();
   const slug = localStorage.getItem('mv_slug') || '';
   const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
-  const apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&margin=10';
-  document.getElementById('qr-img').src = apiUrl;
-  document.getElementById('qr-link-text').textContent = url;
-  document.getElementById('qr-download').href = apiUrl;
-  document.getElementById('modal-qr').style.display = 'flex';
+  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&margin=10';
+  document.getElementById('qr-img').src = qrUrl;
+  document.getElementById('qr-url-text').textContent = url;
+  document.getElementById('qr-dl-link').href = qrUrl;
+  document.getElementById('overlay-qr').classList.add('open');
 }
 
 function partagerQR() {
   const slug = localStorage.getItem('mv_slug') || '';
   const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
-  if(navigator.share) {
-    navigator.share({title:'Ma boutique', url}).catch(()=>{});
-  } else {
-    navigator.clipboard.writeText(url).then(()=>showToast('Lien copié !','success'));
-  }
+  if (navigator.share) { navigator.share({ title: 'Ma boutique', url }).catch(() => {}); }
+  else { navigator.clipboard.writeText(url).then(() => showToast('Lien copié !', 's')); }
 }
 
-// PDF CATALOGUE
-function exporterPDF() {
-  if(!produits || produits.length === 0) { showToast('Ajoutez des produits d\'abord','error'); return; }
-  if(!window.jspdf) { showToast('Chargement...','success'); setTimeout(()=>exporterPDF(null),1500); return; }
-  
-  showToast('Génération du PDF...','success');
-  
+// ===== CATALOGUE PDF =====
+function ouvrirCatalogue(e) {
+  if (e) e.preventDefault();
+  if (!produits || produits.length === 0) { showToast('Ajoutez des produits d\'abord', 'e'); return; }
+  if (!window.jspdf) { showToast('Chargement...', 's'); setTimeout(() => ouvrirCatalogue(null), 1500); return; }
+  showToast('Génération du PDF...', 's');
   try {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p','mm','a4');
-    const user = JSON.parse(localStorage.getItem('mv_user')||'{}');
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const user = JSON.parse(localStorage.getItem('mv_user') || '{}');
     const nom = user.nom || 'Ma Boutique';
     const slug = localStorage.getItem('mv_slug') || '';
-
-    // Header
-    doc.setFillColor(61,43,232);
-    doc.rect(0,0,210,35,'F');
-    doc.setTextColor(255,255,255);
-    doc.setFontSize(18);
-    doc.setFont('helvetica','bold');
+    doc.setFillColor(61, 43, 232); doc.rect(0, 0, 210, 35, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
     doc.text(nom, 15, 15);
-    doc.setFontSize(10);
-    doc.setFont('helvetica','normal');
-    doc.text('Catalogue produits — mavitrine.sn/'+slug, 15, 23);
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+    doc.text('Catalogue — mavitrine.sn/' + slug, 15, 23);
     doc.text(new Date().toLocaleDateString('fr-FR'), 15, 30);
-
-    // Products
     let y = 45;
-    produits.forEach((p, i) => {
-      if(y > 260) { doc.addPage(); y = 20; }
-      
-      doc.setFillColor(247,247,248);
-      doc.roundedRect(10, y, 190, 22, 3, 3, 'F');
-      
-      doc.setTextColor(14,14,15);
-      doc.setFontSize(11);
-      doc.setFont('helvetica','bold');
-      doc.text(p.nom, 15, y+8);
-      
-      if(p.categorie) {
-        doc.setFontSize(8);
-        doc.setFont('helvetica','normal');
-        doc.setTextColor(110,110,120);
-        doc.text(p.categorie, 15, y+14);
-      }
-      
-      if(p.description) {
-        doc.setFontSize(8);
-        doc.setTextColor(110,110,120);
-        const desc = doc.splitTextToSize(p.description, 120);
-        doc.text(desc[0], 15, p.categorie ? y+14 : y+13);
-      }
-      
-      // Price
-      doc.setFillColor(61,43,232);
-      doc.roundedRect(145, y+4, 55, 13, 2, 2, 'F');
-      doc.setTextColor(255,255,255);
-      doc.setFontSize(10);
-      doc.setFont('helvetica','bold');
-      doc.text(Number(p.prix).toLocaleString('fr-FR')+' FCFA', 172, y+12, {align:'center'});
-      
+    produits.forEach(p => {
+      if (y > 265) { doc.addPage(); y = 20; }
+      doc.setFillColor(247, 247, 248); doc.roundedRect(10, y, 190, 22, 3, 3, 'F');
+      doc.setTextColor(14, 14, 15); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+      doc.text(p.nom, 15, y + 8);
+      if (p.categorie) { doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(110, 110, 120); doc.text(p.categorie, 15, y + 14); }
+      doc.setFillColor(61, 43, 232); doc.roundedRect(145, y + 4, 55, 13, 2, 2, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+      doc.text(Number(p.prix).toLocaleString('fr-FR') + ' FCFA', 172, y + 12, { align: 'center' });
       y += 26;
     });
-
-    // Footer
-    doc.setFillColor(247,247,248);
-    doc.rect(0,282,210,15,'F');
-    doc.setTextColor(110,110,120);
-    doc.setFontSize(8);
-    doc.setFont('helvetica','normal');
-    doc.text('MaVitrine.sn — '+nom, 15, 291);
-    doc.text(produits.length+' produits', 195, 291, {align:'right'});
-
-    doc.save('catalogue-'+slug+'.pdf');
-    showToast('Catalogue téléchargé ✅','success');
-  } catch(err) {
-    console.error(err);
-    showToast('Erreur PDF','error');
-  }
+    doc.save('catalogue-' + slug + '.pdf');
+    showToast('Catalogue téléchargé ✅', 's');
+  } catch(err) { console.error(err); showToast('Erreur PDF', 'e'); }
 }
 
-
-function ouvrirAssistant() {
-  const user = JSON.parse(localStorage.getItem('mv_user')||'{}');
-  if(user.plan === 'gratuit' || !user.plan) {
-    showToast('Fonctionnalité Premium — Passez Premium !', 'error');
-    setTimeout(()=>window.location.href='paiement.html', 1500);
+// ===== ASSISTANT IA =====
+function ouvrirAssistant(e) {
+  if (e) e.preventDefault();
+  const user = JSON.parse(localStorage.getItem('mv_user') || '{}');
+  if (!user.plan || user.plan === 'gratuit') {
+    showToast('Fonctionnalité Premium !', 'e');
+    setTimeout(() => window.location.href = 'paiement.html', 1500);
     return;
   }
-  document.getElementById('modal-assistant').style.display = 'flex';
-  document.getElementById('assistant-results').style.display = 'none';
-  document.getElementById('assistant-form').style.display = 'block';
+  document.getElementById('ai-form').style.display = 'block';
+  document.getElementById('ai-loading').style.display = 'none';
+  document.getElementById('ai-results').style.display = 'none';
+  document.getElementById('ai-results').innerHTML = '';
+  document.getElementById('overlay-assistant').classList.add('open');
 }
 
 async function genererMessages() {
   const produit = document.getElementById('ai-produit').value.trim();
   const prix = document.getElementById('ai-prix').value.trim();
   const cible = document.getElementById('ai-cible').value.trim();
-  
-  if(!produit) { showToast('Entrez le nom du produit', 'error'); return; }
-  if(!prix) { showToast('Entrez le prix', 'error'); return; }
-  
-  document.getElementById('assistant-form').style.display = 'none';
-  document.getElementById('assistant-loading').style.display = 'block';
-  
+  if (!produit) { showToast('Entrez le nom du produit', 'e'); return; }
+  if (!prix) { showToast('Entrez le prix', 'e'); return; }
+  document.getElementById('ai-form').style.display = 'none';
+  document.getElementById('ai-loading').style.display = 'block';
   try {
-    const user = JSON.parse(localStorage.getItem('mv_user')||'{}');
+    const user = JSON.parse(localStorage.getItem('mv_user') || '{}');
     const res = await fetch(API + '/api/assistant/generer', {
       method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({produit, prix, cible, type_business: user.type_business || 'Boutique', ville: 'Dakar'})
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ produit, prix, cible, type_business: user.type_business || 'Boutique', ville: 'Dakar' })
     });
     const data = await res.json();
-    
-    document.getElementById('assistant-loading').style.display = 'none';
-    
-    if(!res.ok) {
-      showToast(data.error || 'Erreur génération', 'error');
-      document.getElementById('assistant-form').style.display = 'block';
-      return;
-    }
-    
+    document.getElementById('ai-loading').style.display = 'none';
+    if (!res.ok) { showToast(data.error || 'Erreur', 'e'); document.getElementById('ai-form').style.display = 'block'; return; }
     const msgs = data.messages;
-    const labels = {promo:'🎯 Promotion', urgence:'🔥 Urgence', relance:'💬 Relance', catalogue:'📋 Catalogue'};
-    
-    let html = '<div style="font-size:13px;font-weight:600;color:#2D2D30;margin-bottom:12px;">Messages générés — copiez et envoyez !</div>';
-    
+    const liens = data.liens_wa;
+    const labels = { promo: '🎯 Promotion', urgence: '🔥 Urgence', relance: '💬 Relance', catalogue: '📋 Catalogue' };
+    let html = '<div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:12px">Messages générés ✅</div>';
     Object.keys(msgs).forEach(type => {
-      const waUrl = data.liens_wa[type];
-      html += `<div style="background:#F7F7F8;border-radius:14px;padding:14px;margin-bottom:10px;">
-        <div style="font-size:11px;font-weight:700;color:#3D2BE8;margin-bottom:6px;">${labels[type]||type}</div>
-        <div style="font-size:13px;color:#0E0E0F;line-height:1.6;margin-bottom:10px;">${msgs[type]}</div>
-        <div style="display:flex;gap:8px;">
-          <button onclick="navigator.clipboard.writeText('${msgs[type].replace(/'/g,"\'")}').then(()=>showToast('Copié !','success'))" style="flex:1;padding:8px;background:rgba(61,43,232,.1);color:#3D2BE8;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">📋 Copier</button>
-          <a href="${waUrl}" target="_blank" style="flex:1;padding:8px;background:#25D366;color:white;border-radius:8px;font-size:12px;font-weight:700;text-align:center;text-decoration:none;">💬 WhatsApp</a>
+      const txt = msgs[type].replace(/'/g, "\\'");
+      html += `<div class="msg-card">
+        <div class="msg-type">${labels[type]||type}</div>
+        <div class="msg-text">${msgs[type]}</div>
+        <div class="msg-btns">
+          <button class="btn-copy" onclick="navigator.clipboard.writeText('${txt}').then(()=>showToast('Copié !','s'))">📋 Copier</button>
+          <a href="${liens[type]}" target="_blank" class="btn-wa-msg">💬 WhatsApp</a>
         </div>
       </div>`;
     });
-    
-    html += '<button onclick="document.getElementById('assistant-form').style.display='block';document.getElementById('assistant-results').style.display='none'" style="width:100%;padding:10px;background:#F7F7F8;color:#6E6E78;border:1px solid #E8E8EB;border-radius:50px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">↩ Nouveau message</button>';
-    
-    document.getElementById('assistant-results').innerHTML = html;
-    document.getElementById('assistant-results').style.display = 'block';
-    
+    html += `<button onclick="document.getElementById('ai-form').style.display='block';document.getElementById('ai-results').style.display='none'" style="width:100%;padding:10px;background:var(--sur);color:var(--ink3);border:1px solid var(--line);border-radius:50px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px">↩ Nouveau message</button>`;
+    document.getElementById('ai-results').innerHTML = html;
+    document.getElementById('ai-results').style.display = 'block';
   } catch(err) {
-    document.getElementById('assistant-loading').style.display = 'none';
-    document.getElementById('assistant-form').style.display = 'block';
-    showToast('Erreur réseau', 'error');
+    document.getElementById('ai-loading').style.display = 'none';
+    document.getElementById('ai-form').style.display = 'block';
+    showToast('Erreur réseau', 'e');
   }
 }
 
+// ===== HELPERS =====
+function fermerOverlay(id) { document.getElementById(id).classList.remove('open'); }
+
+function copyLink() {
+  const slug = localStorage.getItem('mv_slug') || '';
+  const url = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
+  navigator.clipboard.writeText(url).then(() => showToast('Lien copié !', 's')).catch(() => {});
+}
+
+function showToast(msg, type) {
+  const el = document.getElementById('toast-' + type);
+  document.getElementById('toast-' + type + '-msg').textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function deconnexion() {
+  localStorage.clear();
+  window.location.href = 'connexion.html';
+}
 </script>
-
-</div><!-- end main-content -->
-
-<!-- COMMANDES SECTION -->
-<div class="section" id="commandes-section" style="display:none;padding:16px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;">MES COMMANDES</div>
-    <button onclick="loadCommandes()" style="background:var(--sur);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">↻ Actualiser</button>
-  </div>
-  <div class="commandes-tabs">
-    <button class="ctab active" onclick="filterCommandes('toutes',this)">Toutes</button>
-    <button class="ctab" onclick="filterCommandes('nouvelle',this)">Nouvelles</button>
-    <button class="ctab" onclick="filterCommandes('confirmee',this)">Confirmées</button>
-    <button class="ctab" onclick="filterCommandes('livree',this)">Livrées</button>
-  </div>
-  <div id="commandes-list">
-    <div class="commandes-empty">Chargement...</div>
-  </div>
-</div>
-
-
-
-
-<div id="modal-qr" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:999;justify-content:flex-end;align-items:flex-end;">
-  <div style="background:white;border-radius:24px 24px 0 0;width:100%;padding:24px 20px 36px;text-align:center;">
-    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">Mon QR Code</div>
-    <div style="font-size:13px;color:#6E6E78;margin-bottom:16px;">Partagez avec vos clients</div>
-    <img id="qr-img" src="" style="width:200px;height:200px;border-radius:12px;border:1px solid #E8E8EB;" alt="QR Code">
-    <div style="font-size:11px;color:#6E6E78;margin:10px 0 16px;word-break:break-all;" id="qr-link-text"></div>
-    <a id="qr-download" href="#" download="qrcode.png" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#3D2BE8;color:white;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;">📥 Télécharger</a>
-    <button onclick="partagerQR()" style="width:100%;padding:14px;background:rgba(29,185,84,.12);color:#17a349;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">📤 Partager le lien</button>
-    <button onclick="document.getElementById('modal-qr').style.display='none'" style="width:100%;padding:12px;background:#F7F7F8;color:#6E6E78;border:1px solid #E8E8EB;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Fermer</button>
-  </div>
-</div>
-
-<div id="modal-assistant" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:999;align-items:flex-end;">
-  <div style="background:white;border-radius:24px 24px 0 0;width:100%;padding:20px;max-height:90vh;overflow-y:auto;">
-    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">⚡ Assistant Vente IA</div>
-    <div style="font-size:13px;color:#6E6E78;margin-bottom:16px;">Messages WhatsApp professionnels en 1 clic</div>
-    
-    <div id="assistant-form">
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px;font-weight:600;color:#2D2D30;display:block;margin-bottom:5px;">Produit *</label>
-        <input id="ai-produit" type="text" placeholder="Ex: Robe wax bleue" style="width:100%;padding:12px;border:1.5px solid #E8E8EB;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
-      </div>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px;font-weight:600;color:#2D2D30;display:block;margin-bottom:5px;">Prix (FCFA) *</label>
-        <input id="ai-prix" type="number" placeholder="15000" style="width:100%;padding:12px;border:1.5px solid #E8E8EB;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
-      </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:12px;font-weight:600;color:#2D2D30;display:block;margin-bottom:5px;">Cible (optionnel)</label>
-        <input id="ai-cible" type="text" placeholder="Ex: Femmes 25-40 ans" style="width:100%;padding:12px;border:1.5px solid #E8E8EB;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
-      </div>
-      <button onclick="genererMessages()" id="btn-generer" style="width:100%;padding:14px;background:linear-gradient(135deg,#3D2BE8,#1a0d8a);color:white;border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">⚡ Générer mes messages</button>
-    </div>
-    
-    <div id="assistant-loading" style="display:none;text-align:center;padding:20px;">
-      <div style="font-size:24px;margin-bottom:8px;">⚡</div>
-      <div style="font-size:14px;color:#6E6E78;">Génération en cours...</div>
-    </div>
-    
-    <div id="assistant-results" style="display:none;margin-top:16px;"></div>
-    
-    <button onclick="document.getElementById('modal-assistant').style.display='none'" style="width:100%;padding:12px;background:#F7F7F8;color:#6E6E78;border:1px solid #E8E8EB;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:12px;">Fermer</button>
-  </div>
-</div>
-
 </body>
 </html>
