@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MaVitrine.sn — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--r:14px;--r2:20px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;padding-bottom:40px;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--ink);position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:white}
+.nav-badge{background:var(--o);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:16px}
+.stat-card{background:white;border-radius:var(--r);padding:12px;text-align:center;border:1px solid var(--line)}
+.stat-num{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--ink)}
+.stat-lbl{font-size:10px;color:var(--ink3);margin-top:2px}
+.section{padding:0 16px 16px}
+.section-title{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.refresh-btn{background:var(--sur);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer}
+.pay-card{background:white;border-radius:var(--r2);padding:14px 16px;border:1px solid var(--line);margin-bottom:10px}
+.pay-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.pay-name{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700}
+.pay-phone{font-size:11px;color:var(--ink3)}
+.pay-amount{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:var(--p)}
+.pay-meta{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.pay-tag{font-size:11px;background:var(--sur);padding:3px 10px;border-radius:50px;color:var(--ink2)}
+.pay-tx{font-size:11px;color:var(--ink3);margin-bottom:10px;font-family:monospace;background:var(--sur);padding:6px 10px;border-radius:8px}
+.pay-actions{display:flex;gap:8px}
+.btn-valider{flex:1;padding:10px;background:var(--g);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-rejeter{flex:1;padding:10px;background:#FFF1F1;color:#DC2626;border:1px solid #FECACA;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.empty{text-align:center;padding:30px;color:var(--ink3);font-size:13px}
+.toast{position:fixed;top:16px;left:16px;right:16px;z-index:300;border-radius:var(--r);padding:12px 16px;font-size:14px;font-weight:600;display:none;align-items:center;gap:8px}
+.toast.show{display:flex}
+.toast-s{background:var(--gl);border:1px solid rgba(29,185,84,.3);color:var(--gd)}
+.toast-e{background:#FFF1F1;border:1px solid #FECACA;color:#DC2626}
+.login-card{background:white;border-radius:var(--r2);padding:24px;margin:40px 16px;text-align:center;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<div class="toast toast-s" id="toast-s">✅ <span id="toast-s-msg"></span></div>
+<div class="toast toast-e" id="toast-e">❌ <span id="toast-e-msg"></span></div>
+
+<nav>
+  <div class="nav-logo">🇸🇳 MaVitrine Admin</div>
+  <div class="nav-badge">ADMIN</div>
+</nav>
+
+<div id="admin-content" style="display:none">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-attente">—</div>
+      <div class="stat-lbl">En attente</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-valides">—</div>
+      <div class="stat-lbl">Validés</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-revenus">—</div>
+      <div class="stat-lbl">Revenus 30j</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      Paiements en attente
+      <button class="refresh-btn" onclick="loadPaiements()">↻ Actualiser</button>
+    </div>
+    <div id="paiements-list">
+      <div class="empty">Chargement...</div>
+    </div>
+  </div>
+</div>
+
+<div id="no-access" style="display:none">
+  <div class="login-card">
+    <div style="font-size:32px;margin-bottom:10px">🔒</div>
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px">Accès refusé</div>
+    <div style="font-size:13px;color:var(--ink3)">Cette page est réservée aux administrateurs.</div>
+  </div>
+</div>
+
+<script>
+const API = 'https://mavitrine-sn-bphm.vercel.app';
+let token = '';
+
+window.onload = async () => {
+  token = localStorage.getItem('mv_token');
+  if (!token) return window.location.href = 'connexion.html';
+  await loadStats();
+  await loadPaiements();
+};
+
+async function loadStats() {
+  try {
+    const res = await fetch(API + '/api/payments/admin/stats', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (res.status === 403 || res.status === 401) {
+      document.getElementById('no-access').style.display = 'block';
+      document.getElementById('admin-content').style.display = 'none';
+      return;
+    }
+    const data = await res.json();
+    document.getElementById('admin-content').style.display = 'block';
+    document.getElementById('stat-attente').textContent = data.stats?.en_attente || 0;
+    document.getElementById('stat-valides').textContent = data.stats?.valides || 0;
+    const revenus = data.stats?.revenus_mois || 0;
+    document.getElementById('stat-revenus').textContent = Number(revenus).toLocaleString('fr-FR') + ' F';
+  } catch(e) {
+    document.getElementById('no-access').style.display = 'block';
+  }
+}
+
+async function loadPaiements() {
+  try {
+    const res = await fetch(API + '/api/payments/admin/attente', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    renderPaiements(data.paiements || []);
+  } catch(e) {
+    document.getElementById('paiements-list').innerHTML = '<div class="empty">Erreur chargement</div>';
+  }
+}
+
+function renderPaiements(list) {
+  const el = document.getElementById('paiements-list');
+  if (!list.length) {
+    el.innerHTML = '<div class="empty">🎉 Aucun paiement en attente</div>';
+    return;
+  }
+  const methLabels = { wave: '🌊 Wave', orange_money: '🟠 Orange Money', free_money: '🔵 Free Money' };
+  el.innerHTML = list.map(p => `
+    <div class="pay-card">
+      <div class="pay-header">
+        <div>
+          <div class="pay-name">${p.nom}</div>
+          <div class="pay-phone">📱 ${p.telephone}</div>
+        </div>
+        <div class="pay-amount">${Number(p.montant).toLocaleString('fr-FR')} F</div>
+      </div>
+      <div class="pay-meta">
+        <span class="pay-tag">${p.plan === 'premium' ? '⭐ Premium' : '💎 Business'}</span>
+        <span class="pay-tag">${methLabels[p.methode_paiement] || p.methode_paiement}</span>
+        <span class="pay-tag">📅 ${new Date(p.created_at).toLocaleDateString('fr-FR', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+      </div>
+      ${p.id_transaction ? `<div class="pay-tx">ID: ${p.id_transaction}</div>` : ''}
+      <div class="pay-actions">
+        <button class="btn-valider" onclick="validerPaiement('${p.id}')">✅ Valider</button>
+        <button class="btn-rejeter" onclick="rejeterPaiement('${p.id}')">❌ Rejeter</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function validerPaiement(id) {
+  if (!confirm('Confirmer la validation de ce paiement ?')) return;
+  try {
+    const res = await fetch(API + '/api/payments/admin/' + id + '/valider', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) return showToast(data.error || 'Erreur', 'e');
+    showToast(data.message || 'Paiement validé ✅', 's');
+    if (data.whatsapp_notification) {
+      setTimeout(() => {
+        if (confirm('Envoyer la confirmation WhatsApp au commerçant ?')) {
+          window.open(data.whatsapp_notification, '_blank');
+        }
+      }, 500);
+    }
+    await loadStats();
+    await loadPaiements();
+  } catch(e) {
+    showToast('Erreur réseau', 'e');
+  }
+}
+
+async function rejeterPaiement(id) {
+  const raison = prompt('Raison du rejet (optionnel) :', 'Transaction non trouvée');
+  if (raison === null) return;
+  try {
+    const res = await fetch(API + '/api/payments/admin/' + id + '/rejeter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ raison })
+    });
+    const data = await res.json();
+    if (!res.ok) return showToast(data.error || 'Erreur', 'e');
+    showToast('Paiement rejeté', 's');
+    if (data.whatsapp_notification) {
+      setTimeout(() => {
+        if (confirm('Envoyer la notification WhatsApp au commerçant ?')) {
+          window.open(data.whatsapp_notification, '_blank');
+        }
+      }, 500);
+    }
+    await loadStats();
+    await loadPaiements();
+  } catch(e) {
+    showToast('Erreur réseau', 'e');
+  }
+}
+
+function showToast(msg, type) {
+  const el = document.getElementById('toast-' + type);
+  document.getElementById('toast-' + type + '-msg').textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
