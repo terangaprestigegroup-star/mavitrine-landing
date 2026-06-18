@@ -197,6 +197,9 @@ async function chargerVitrine() {
       document.getElementById('loading-state').style.display = 'none';
       document.getElementById('empty-state').style.display = 'block';
       document.getElementById('empty-state').innerHTML = '<div class="empty-icon">🔍</div><div class="empty-title">Boutique introuvable</div><p>Le lien semble incorrect ou la boutique n\'existe plus.</p>';
+      document.querySelector('.actions-bar').style.display = 'none';
+      document.querySelector('.sticky-wa').style.display = 'none';
+      document.getElementById('filter-bar').style.display = 'none';
       return;
     }
     const data = await res.json();
