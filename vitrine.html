@@ -127,9 +127,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;col
   </div>
   <div class="produits-grid" id="produits-grid" style="display:none"></div>
   <div class="empty" id="empty-state" style="display:none">
-    <div class="empty-icon">📦</div>
-    <div class="empty-title">Aucun produit disponible</div>
-    <p>Cette boutique n'a pas encore ajouté de produits.</p>
+    <div class="empty-icon">🛍️</div>
+    <div class="empty-title">Le catalogue arrive bientôt !</div>
+    <p style="margin-bottom:16px">Cette boutique prépare ses produits. Contactez-la directement pour vos besoins.</p>
+    <a href="#" id="empty-wa-btn" class="btn-commander" style="max-width:280px;margin:0 auto" target="_blank">💬 Contacter sur WhatsApp</a>
   </div>
 </div>
 
@@ -195,6 +196,7 @@ async function chargerVitrine() {
       document.getElementById('b-name').textContent = 'Boutique introuvable';
       document.getElementById('loading-state').style.display = 'none';
       document.getElementById('empty-state').style.display = 'block';
+      document.getElementById('empty-state').innerHTML = '<div class="empty-icon">🔍</div><div class="empty-title">Boutique introuvable</div><p>Le lien semble incorrect ou la boutique n\'existe plus.</p>';
       return;
     }
     const data = await res.json();
@@ -233,6 +235,8 @@ async function chargerVitrine() {
     document.getElementById('btn-wa').href = waUrl;
     document.getElementById('sticky-wa-btn').href = waUrl;
     document.getElementById('btn-tel').href = 'tel:+' + phone;
+    const emptyWaBtn = document.getElementById('empty-wa-btn');
+    if (emptyWaBtn) emptyWaBtn.href = waUrl;
 
     // Filtres catégories
     const cats = [...new Set(allProduits.map(p => p.categorie).filter(Boolean))];
