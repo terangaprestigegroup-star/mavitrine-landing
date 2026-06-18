@@ -209,8 +209,14 @@ function validateField(el, isValid){
 }
 
 function validateTelephone(el){
-  const digits = el.value.replace(/\D/g,'');
-  validateField(el, digits.length >= 9);
+  // Nettoyage auto si l'utilisateur tape +221 ou 221 par erreur (préfixe déjà affiché à gauche)
+  let val = el.value.replace(/[^\d]/g,'');
+  if(val.startsWith('221') && val.length > 9){
+    val = val.slice(3);
+    el.value = val;
+  }
+  const digits = val.replace(/\D/g,'');
+  validateField(el, digits.length === 9);
 }
 
 function showAlert(msg,type='error'){
@@ -255,12 +261,13 @@ function checkPinMatch(){
 
 async function inscrire(){
   const nom=document.getElementById('nom').value.trim();
-  let tel=document.getElementById('telephone').value.trim().replace(/\s/g,'').replace(/^\+/,'');
+  let tel=document.getElementById('telephone').value.trim().replace(/\D/g,'');
+  if(tel.startsWith('221')&&tel.length>9) tel=tel.slice(3);
   const boutique=document.getElementById('nom_boutique').value.trim();
   const ville=document.getElementById('ville').value;
 
   if(!nom)return showAlert('Entrez votre nom complet');
-  if(!tel||tel.replace(/\D/g,'').length<7)return showAlert('Entrez votre numéro WhatsApp');
+  if(!tel||tel.length<7)return showAlert('Entrez votre numéro WhatsApp');
   if(!boutique)return showAlert('Entrez le nom de votre boutique');
   if(!ville)return showAlert('Choisissez votre ville');
   if(!secteur)return showAlert('Choisissez votre secteur d\'activité');
