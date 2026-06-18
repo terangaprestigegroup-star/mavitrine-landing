@@ -26,6 +26,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 .field label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px}
 .field input,.field select{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:var(--r);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--sur);outline:none;-webkit-appearance:none;transition:border-color .2s}
 .field input:focus,.field select:focus{border-color:var(--g);background:white}
+.field input.valid{border-color:var(--g)}
+.field input.invalid{border-color:#DC2626}
 .tel-row{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:var(--r);background:var(--sur);overflow:hidden;transition:border-color .2s}
 .tel-row:focus-within{border-color:var(--g);background:white}
 .tel-prefix{padding:13px 10px 13px 14px;font-size:13px;font-weight:700;color:var(--gd);white-space:nowrap;flex-shrink:0}
@@ -88,7 +90,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 
   <div class="field">
     <label>Votre nom complet *</label>
-    <input type="text" id="nom" placeholder="Ex: Aminata Diallo" autocomplete="name">
+    <input type="text" id="nom" placeholder="Ex: Aminata Diallo" autocomplete="name" oninput="validateField(this, this.value.trim().length >= 2)">
   </div>
 
   <div class="field">
@@ -96,13 +98,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
     <div class="tel-row" id="tel-row">
       <span class="tel-prefix">🇸🇳 +221</span>
       <span class="tel-sep"></span>
-      <input class="tel-input" type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric">
+      <input class="tel-input" type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric" oninput="validateTelephone(this)">
     </div>
   </div>
 
   <div class="field">
     <label>Nom de votre boutique *</label>
-    <input type="text" id="nom_boutique" placeholder="Ex: Boutique Aminata Mode">
+    <input type="text" id="nom_boutique" placeholder="Ex: Boutique Aminata Mode" oninput="validateField(this, this.value.trim().length >= 2)">
   </div>
 
   <div class="field">
@@ -149,7 +151,20 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p5" oninput="nextPin(this,'p6')" onkeydown="prevPin(event,this,'p4')">
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p6" oninput="this.classList.add('filled')" onkeydown="prevPin(event,this,'p5')">
     </div>
-    <div class="pin-hint">🔒 Ce code vous servira à chaque connexion — retenez-le bien</div>
+    <div class="pin-hint">🔒 Plus simple à retenir qu'un mot de passe — comme le code de votre carte</div>
+  </div>
+
+  <div class="field">
+    <span class="pin-label">Confirmez votre code PIN *</span>
+    <div class="pin-row">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c1" oninput="nextPin(this,'c2')" onkeydown="prevPin(event,this,'')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c2" oninput="nextPin(this,'c3')" onkeydown="prevPin(event,this,'c1')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c3" oninput="nextPin(this,'c4')" onkeydown="prevPin(event,this,'c2')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c4" oninput="nextPin(this,'c5')" onkeydown="prevPin(event,this,'c3')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c5" oninput="nextPin(this,'c6')" onkeydown="prevPin(event,this,'c4')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c6" oninput="checkPinMatch()" onkeydown="prevPin(event,this,'c5')">
+    </div>
+    <div class="pin-hint" id="pin-match-hint">&nbsp;</div>
   </div>
 
   <button class="btn-submit" onclick="inscrire()" id="btn-submit">
@@ -184,6 +199,20 @@ function sel(btn,s){
   secteur=s;
 }
 
+function validateField(el, isValid){
+  if(el.value.trim().length===0){
+    el.classList.remove('valid','invalid');
+    return;
+  }
+  el.classList.toggle('valid', isValid);
+  el.classList.toggle('invalid', !isValid);
+}
+
+function validateTelephone(el){
+  const digits = el.value.replace(/\D/g,'');
+  validateField(el, digits.length >= 9);
+}
+
 function showAlert(msg,type='error'){
   const el=document.getElementById('alert-'+type);
   el.textContent=msg;el.style.display='block';
@@ -207,6 +236,22 @@ function prevPin(e,cur,prevId){
 function getPin(){
   return ['p1','p2','p3','p4','p5','p6'].map(i=>document.getElementById(i).value).join('');
 }
+function getConfirmPin(){
+  return ['c1','c2','c3','c4','c5','c6'].map(i=>document.getElementById(i).value).join('');
+}
+function checkPinMatch(){
+  const pin=getPin();
+  const confirm=getConfirmPin();
+  const hint=document.getElementById('pin-match-hint');
+  if(confirm.length<6){hint.innerHTML='&nbsp;';return;}
+  if(pin===confirm){
+    hint.textContent='✅ Les codes correspondent';
+    hint.style.color='var(--gd)';
+  }else{
+    hint.textContent='❌ Les codes ne correspondent pas';
+    hint.style.color='#DC2626';
+  }
+}
 
 async function inscrire(){
   const nom=document.getElementById('nom').value.trim();
@@ -221,6 +266,9 @@ async function inscrire(){
   if(!secteur)return showAlert('Choisissez votre secteur d\'activité');
   const pin=getPin();
   if(pin.length!==6)return showAlert('Créez votre code PIN (6 chiffres)');
+  const confirmPin=getConfirmPin();
+  if(confirmPin.length!==6)return showAlert('Confirmez votre code PIN');
+  if(pin!==confirmPin)return showAlert('Les codes PIN ne correspondent pas');
 
   if(!tel.startsWith('221'))tel='221'+tel;
 
