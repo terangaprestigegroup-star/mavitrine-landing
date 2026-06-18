@@ -127,22 +127,22 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
 
   <div class="divider">ou</div>
 
-  <button class="btn-outline" onclick="useOTP()">Recevoir un code par SMS</button>
+  <button class="btn-outline" onclick="useOTP()">💬 Recevoir un code par WhatsApp</button>
 
-  <div class="note">PIN oublié ? <a href="#" onclick="useOTP();return false">Recevoir un code SMS</a></div>
+  <div class="note">PIN oublié ? <a href="#" onclick="useOTP();return false">Recevoir un code par WhatsApp</a></div>
 </div>
 
 <!-- OTP FALLBACK CARD -->
 <div class="card" id="card-otp" style="display:none">
   <div class="card-icon">💬</div>
   <div class="card-title">Code de vérification</div>
-  <div class="card-sub" id="otp-sub">Code envoyé par SMS</div>
+  <div class="card-sub" id="otp-sub">Code envoyé par WhatsApp</div>
 
   <div class="alert alert-error" id="err-otp"></div>
   <div class="alert alert-success" id="suc-otp"></div>
 
   <div class="otp-info">
-    📱 Code envoyé au <strong id="otp-phone-display"></strong>. Vérifiez vos messages.
+    💬 Code envoyé sur WhatsApp au <strong id="otp-phone-display"></strong>. Arrivée généralement en quelques secondes.
   </div>
 
   <div class="field">
@@ -162,6 +162,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
     <span class="spinner" id="spin-otp"></span>
   </button>
 
+  <div class="note">Pas reçu ? <a href="#" onclick="useOTP();return false">Renvoyer le code</a></div>
   <button class="btn-outline" onclick="showConnexion()">← Retour</button>
 </div>
 
