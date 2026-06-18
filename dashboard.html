@@ -62,6 +62,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .btn-edit{width:34px;height:34px;background:var(--sur);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
 .btn-del{width:34px;height:34px;background:#FFF1F1;border:1px solid #FECACA;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
 .empty-state{text-align:center;padding:40px 20px;color:var(--ink3)}
+.onboard-banner{background:linear-gradient(135deg,var(--g),#17a349);border-radius:var(--r2);padding:18px;margin-bottom:16px;color:white;display:flex;align-items:center;gap:12px}
+.onboard-icon{font-size:28px;flex-shrink:0}
+.onboard-text{flex:1}
+.onboard-title{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:800;margin-bottom:2px}
+.onboard-desc{font-size:12px;opacity:.9}
+.stat-premium-clickable{cursor:pointer;transition:transform .15s}
+.stat-premium-clickable:active{transform:scale(.97)}
+.inactivity-banner{background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:12px;color:#92400E;display:none;align-items:center;gap:8px}
 .empty-icon{font-size:40px;margin-bottom:12px}
 .empty-title{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;color:var(--ink2);margin-bottom:6px}
 .limit-banner{display:none;background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-size:13px;color:#92400E;align-items:center;gap:8px}
@@ -70,6 +78,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .bnav-icon{font-size:20px}
 .bnav-label{font-size:10px;color:var(--ink3);font-weight:500}
 .bnav-item.active .bnav-label{color:var(--p);font-weight:700}
+.bnav-icon-wrap{position:relative;display:inline-block}
+.bnav-badge{position:absolute;top:-4px;right:-8px;background:#DC2626;color:white;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:50px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:flex-end}
 .modal-overlay.open{display:flex}
 .modal{background:white;border-radius:24px 24px 0 0;width:100%;max-height:85vh;overflow-y:auto}
@@ -153,6 +163,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 
 <!-- STATS -->
 <div class="section">
+  <div class="inactivity-banner" id="inactivity-banner">
+    📢 Aucune vue depuis quelques jours. <a href="#" onclick="document.getElementById('btn-qrcode').click();return false" style="color:#92400E;font-weight:700;margin-left:4px">Partagez votre lien</a>
+  </div>
   <div class="section-title">Statistiques</div>
   <div class="stats-grid">
     <div class="stat">
@@ -165,15 +178,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="stat-val" id="stat-produits">—</div>
       <div class="stat-label">Produits actifs</div>
     </div>
-    <div class="stat stat-premium">
+    <div class="stat stat-premium stat-premium-clickable" onclick="window.location.href='paiement.html'">
       <div class="stat-lock">🔒</div>
       <div class="stat-val">Clics WhatsApp</div>
-      <div class="stat-label">Premium uniquement</div>
+      <div class="stat-label">Débloquer — 100 F/jour</div>
     </div>
-    <div class="stat stat-premium">
+    <div class="stat stat-premium stat-premium-clickable" onclick="window.location.href='paiement.html'">
       <div class="stat-lock">🔒</div>
       <div class="stat-val">Vues 7 jours</div>
-      <div class="stat-label">Premium uniquement</div>
+      <div class="stat-label">Débloquer — 100 F/jour</div>
     </div>
   </div>
 </div>
@@ -227,6 +240,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
     <button class="btn-add" onclick="openModal()">+ Ajouter</button>
   </div>
   <div class="limit-banner" id="limit-banner">⚠️ Limite de 5 produits atteinte. <a href="paiement.html" style="color:#92400E;font-weight:700;margin-left:4px">Upgrade</a></div>
+  <div id="onboard-banner" class="onboard-banner" style="display:none">
+    <div class="onboard-icon">👋</div>
+    <div class="onboard-text">
+      <div class="onboard-title">Bienvenue sur MaVitrine.sn !</div>
+      <div class="onboard-desc">Ajoutez votre premier produit pour activer votre boutique</div>
+    </div>
+  </div>
   <div id="produits-list">
     <div class="empty-state">
       <div class="empty-icon">📦</div>
@@ -260,7 +280,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
     <span class="bnav-label">Accueil</span>
   </button>
   <button class="bnav-item" id="nav-commandes" onclick="showPage('commandes')">
-    <span class="bnav-icon">📋</span>
+    <span class="bnav-icon-wrap"><span class="bnav-icon">📋</span><span class="bnav-badge" id="badge-commandes" style="display:none">0</span></span>
     <span class="bnav-label">Commandes</span>
   </button>
   <button class="bnav-item" onclick="window.location.href='profil.html'">
@@ -341,6 +361,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <img id="qr-img" src="" style="width:200px;height:200px;border-radius:12px;border:1px solid var(--line)" alt="QR Code">
     </div>
     <div style="font-size:11px;color:var(--ink3);margin-bottom:16px;word-break:break-all;text-align:center" id="qr-url-text"></div>
+    <div style="background:var(--sur);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--ink2);text-align:center">💡 Imprimez-le, collez-le en caisse, ou partagez-le en story WhatsApp</div>
     <a id="qr-dl-link" href="#" download="qrcode-mavitrine.png" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--p);color:white;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px">📥 Télécharger</a>
     <button onclick="partagerQR()" style="width:100%;padding:14px;background:var(--gl);color:var(--gd);border:none;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px">📤 Partager le lien</button>
     <button onclick="fermerOverlay('overlay-qr')" style="width:100%;padding:12px;background:var(--sur);color:var(--ink3);border:1px solid var(--line);border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">Fermer</button>
@@ -352,6 +373,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   <div class="osheet">
     <div class="osheet-title">⚡ Assistant Vente IA</div>
     <div class="osheet-sub">Messages WhatsApp professionnels en 1 clic</div>
+    <div id="ai-usage" style="font-size:11px;color:var(--ink3);margin-bottom:14px;display:none"></div>
     <div id="ai-form">
       <div class="field">
         <label>Produit *</label>
@@ -384,7 +406,7 @@ let token = '', produits = [], editingId = null, allCommandes = [];
 window.onload = async () => {
   token = localStorage.getItem('mv_token');
   if (!token) return window.location.href = 'connexion.html';
-  await Promise.all([loadProfil(), loadProduits(), loadStats()]);
+  await Promise.all([loadProfil(), loadProduits(), loadStats(), loadCommandes()]);
 
   // Bind buttons
   document.getElementById('btn-qrcode').addEventListener('click', ouvrirQR);
@@ -431,7 +453,11 @@ async function loadStats() {
     const res = await fetch(API + '/api/vitrines/moi', { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();
     if (data.vitrine) {
-      document.getElementById('stat-vues').textContent = data.vitrine.total_views || 0;
+      const vues = data.vitrine.total_views || 0;
+      document.getElementById('stat-vues').textContent = vues;
+      if (vues === 0) {
+        document.getElementById('inactivity-banner').style.display = 'flex';
+      }
     }
   } catch(e) {}
 }
@@ -449,10 +475,13 @@ async function loadProduits() {
 
 function renderProduits() {
   const list = document.getElementById('produits-list');
+  const onboardBanner = document.getElementById('onboard-banner');
   if (!produits.length) {
+    onboardBanner.style.display = 'flex';
     list.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Aucun produit encore</div><p>Ajoutez votre premier produit pour commencer à vendre</p></div>';
     return;
   }
+  onboardBanner.style.display = 'none';
   const stockLabels = { disponible: '✅ Disponible', limite: '⚠️ Limité', rupture: '❌ Rupture' };
   list.innerHTML = produits.map(p => `
     <div class="produit-item">
@@ -563,8 +592,20 @@ async function loadCommandes() {
     const data = await res.json();
     allCommandes = data.commandes || [];
     renderCommandes(allCommandes);
+    updateBadgeCommandes();
   } catch(e) {
     document.getElementById('commandes-list').innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">Erreur chargement</div>';
+  }
+}
+
+function updateBadgeCommandes() {
+  const nouvelles = allCommandes.filter(c => c.statut === 'nouvelle').length;
+  const badge = document.getElementById('badge-commandes');
+  if (nouvelles > 0) {
+    badge.textContent = nouvelles > 9 ? '9+' : nouvelles;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
   }
 }
 
@@ -577,6 +618,7 @@ function filterCommandes(f, btn) {
 function renderCommandes(list) {
   const el = document.getElementById('commandes-list');
   if (!list.length) { el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">📭 Aucune commande</div>'; return; }
+  list = [...list].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   const labels = { nouvelle: '🆕 Nouvelle', confirmee: '✅ Confirmée', livree: '📦 Livrée' };
   const cls = { nouvelle: 's-nouvelle', confirmee: 's-confirmee', livree: 's-livree' };
   el.innerHTML = list.map(c => `
@@ -623,7 +665,7 @@ function partagerQR() {
 }
 
 // ===== CATALOGUE PDF =====
-function ouvrirCatalogue(e) {
+async function ouvrirCatalogue(e) {
   if (e) e.preventDefault();
   if (!produits || produits.length === 0) { showToast('Ajoutez des produits d\'abord', 'e'); return; }
   if (!window.jspdf) { showToast('Chargement...', 's'); setTimeout(() => ouvrirCatalogue(null), 1500); return; }
@@ -634,6 +676,7 @@ function ouvrirCatalogue(e) {
     const user = JSON.parse(localStorage.getItem('mv_user') || '{}');
     const nom = user.nom || 'Ma Boutique';
     const slug = localStorage.getItem('mv_slug') || '';
+    const vitrineUrl = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
     doc.setFillColor(61, 43, 232); doc.rect(0, 0, 210, 35, 'F');
     doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
     doc.text(nom, 15, 15);
@@ -642,7 +685,7 @@ function ouvrirCatalogue(e) {
     doc.text(new Date().toLocaleDateString('fr-FR'), 15, 30);
     let y = 45;
     produits.forEach(p => {
-      if (y > 265) { doc.addPage(); y = 20; }
+      if (y > 250) { doc.addPage(); y = 20; }
       doc.setFillColor(247, 247, 248); doc.roundedRect(10, y, 190, 22, 3, 3, 'F');
       doc.setTextColor(14, 14, 15); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
       doc.text(p.nom, 15, y + 8);
@@ -652,6 +695,31 @@ function ouvrirCatalogue(e) {
       doc.text(Number(p.prix).toLocaleString('fr-FR') + ' FCFA', 172, y + 12, { align: 'center' });
       y += 26;
     });
+
+    // QR Code en bas de la dernière page
+    try {
+      const qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(vitrineUrl);
+      const qrBase64 = await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width; canvas.height = img.height;
+          canvas.getContext('2d').drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = reject;
+        img.src = qrApiUrl;
+      });
+      if (y > 230) { doc.addPage(); y = 20; }
+      doc.setFillColor(247, 247, 248); doc.roundedRect(10, y + 4, 190, 45, 3, 3, 'F');
+      doc.addImage(qrBase64, 'PNG', 15, y + 9, 35, 35);
+      doc.setTextColor(14, 14, 15); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+      doc.text('Scannez pour voir toute la boutique', 56, y + 20);
+      doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor(110, 110, 120);
+      doc.text('mavitrine.sn/' + slug, 56, y + 28);
+    } catch(qrErr) { console.error('QR PDF erreur', qrErr); }
+
     doc.save('catalogue-' + slug + '.pdf');
     showToast('Catalogue téléchargé ✅', 's');
   } catch(err) { console.error(err); showToast('Erreur PDF', 'e'); }
@@ -667,6 +735,21 @@ function ouvrirAssistant(e) {
   document.getElementById('ai-results').style.display = 'none';
   document.getElementById('ai-results').innerHTML = '';
   document.getElementById('overlay-assistant').classList.add('open');
+  chargerUsageAssistant();
+}
+
+async function chargerUsageAssistant() {
+  try {
+    const res = await fetch(API + '/api/assistant/usage', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    const el = document.getElementById('ai-usage');
+    if (data.limite === null || data.limite === -1) {
+      el.textContent = '✨ Messages illimités (plan Business)';
+    } else {
+      el.textContent = `📊 ${data.used}/${data.limite} messages utilisés ce mois`;
+    }
+    el.style.display = 'block';
+  } catch(e) {}
 }
 
 async function genererMessages() {
@@ -705,6 +788,7 @@ async function genererMessages() {
     html += `<button onclick="document.getElementById('ai-form').style.display='block';document.getElementById('ai-results').style.display='none'" style="width:100%;padding:10px;background:var(--sur);color:var(--ink3);border:1px solid var(--line);border-radius:50px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px">↩ Nouveau message</button>`;
     document.getElementById('ai-results').innerHTML = html;
     document.getElementById('ai-results').style.display = 'block';
+    chargerUsageAssistant();
   } catch(err) {
     document.getElementById('ai-loading').style.display = 'none';
     document.getElementById('ai-form').style.display = 'block';
