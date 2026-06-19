@@ -170,7 +170,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 <!-- STATS -->
 <div class="section">
   <div class="inactivity-banner" id="inactivity-banner">
-    📢 Aucune vue depuis quelques jours. <a href="#" onclick="document.getElementById('btn-qrcode').click();return false" style="color:#92400E;font-weight:700;margin-left:4px">Partagez votre lien</a>
+    📢 Aucune commande pour le moment. <a href="#" onclick="document.getElementById('btn-qrcode').click();return false" style="color:#92400E;font-weight:700;margin-left:4px">Partagez votre lien</a>
   </div>
   <div class="section-title">Statistiques</div>
   <div class="stats-grid">
@@ -417,6 +417,7 @@ window.onload = async () => {
   token = localStorage.getItem('mv_token');
   if (!token) return window.location.href = 'connexion.html';
   await Promise.all([loadProfil(), loadProduits(), loadStats(), loadCommandes()]);
+  updateStatsCommandes(); // re-vérifie une fois que produits ET commandes sont chargés
 
   // Bind buttons
   document.getElementById('btn-qrcode').addEventListener('click', ouvrirQR);
@@ -463,12 +464,7 @@ async function loadStats() {
   try {
     const res = await fetch(API + '/api/vitrines/moi', { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();
-    if (data.vitrine) {
-      const vues = data.vitrine.total_views || 0;
-      if (vues === 0) {
-        document.getElementById('inactivity-banner').style.display = 'flex';
-      }
-    }
+    // Note: total_views n'est plus affiché directement, mais conservé en base pour usage futur
   } catch(e) {}
 }
 
@@ -634,6 +630,14 @@ function updateStatsCommandes() {
 
   document.getElementById('stat-cmd-jour').textContent = cmdJour;
   document.getElementById('stat-cmd-mois').textContent = cmdMois;
+
+  // Affiche la bannière seulement si le commerçant a déjà des produits
+  // mais aucune commande du tout (sinon la bannière onboarding suffit)
+  if (allCommandes.length === 0 && produits.length > 0) {
+    document.getElementById('inactivity-banner').style.display = 'flex';
+  } else {
+    document.getElementById('inactivity-banner').style.display = 'none';
+  }
 }
 
 function filterCommandes(f, btn) {
