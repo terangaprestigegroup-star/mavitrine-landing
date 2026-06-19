@@ -27,7 +27,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .btn-wa{display:flex;align-items:center;gap:6px;background:#25D366;color:white;border:none;border-radius:50px;padding:9px 14px;font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:none}
 .btn-link{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);color:white;border:none;border-radius:50px;padding:9px 14px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;}
 .plan-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:50px;padding:4px 10px;font-size:11px;font-weight:600;color:white;margin-bottom:12px}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.premium-card{background:linear-gradient(135deg,#FBBF24,#F59E0B);border-radius:var(--r2);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 4px 16px rgba(245,158,11,.3)}
+.premium-card-icon{font-size:28px;flex-shrink:0}
+.premium-card-body{flex:1}
+.premium-card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:white;line-height:1.4;margin-bottom:4px}
+.premium-card-price{font-size:13px;font-weight:800;color:white}
 .stat{background:white;border-radius:var(--r2);padding:16px;border:1px solid var(--line)}
 .stat-icon{font-size:20px;margin-bottom:8px}
 .stat-val{font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;color:var(--ink);line-height:1}
@@ -36,6 +41,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .stat-lock{font-size:18px;margin-bottom:6px}
 .stat-premium .stat-val{font-size:13px;color:var(--ink3);font-weight:600}
 .actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.voir-plus-btn{width:100%;background:none;border:none;color:var(--p);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 0;cursor:pointer;text-align:center}
 .action{background:white;border:1px solid var(--line);border-radius:var(--r2);padding:16px;cursor:pointer;transition:all .15s;text-decoration:none;display:flex;flex-direction:column;align-items:flex-start;gap:8px;-webkit-tap-highlight-color:rgba(0,0,0,.1)}
 .action:active{transform:scale(.97);background:var(--sur)}
 .action-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
@@ -169,24 +175,30 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   <div class="section-title">Statistiques</div>
   <div class="stats-grid">
     <div class="stat">
-      <div class="stat-icon">👁️</div>
-      <div class="stat-val" id="stat-vues">—</div>
-      <div class="stat-label">Vues totales</div>
+      <div class="stat-icon">📦</div>
+      <div class="stat-val" id="stat-cmd-jour">—</div>
+      <div class="stat-label">Commandes aujourd'hui</div>
     </div>
     <div class="stat">
-      <div class="stat-icon">📦</div>
+      <div class="stat-icon">📅</div>
+      <div class="stat-val" id="stat-cmd-mois">—</div>
+      <div class="stat-label">Commandes ce mois</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">🛍️</div>
       <div class="stat-val" id="stat-produits">—</div>
       <div class="stat-label">Produits actifs</div>
     </div>
-    <div class="stat stat-premium stat-premium-clickable" onclick="window.location.href='paiement.html'">
-      <div class="stat-lock">🔒</div>
-      <div class="stat-val">Clics WhatsApp</div>
-      <div class="stat-label">Débloquer — 100 F/jour</div>
-    </div>
-    <div class="stat stat-premium stat-premium-clickable" onclick="window.location.href='paiement.html'">
-      <div class="stat-lock">🔒</div>
-      <div class="stat-val">Vues 7 jours</div>
-      <div class="stat-label">Débloquer — 100 F/jour</div>
+  </div>
+</div>
+
+<!-- PREMIUM UNIFIED CARD -->
+<div class="section" style="padding-top:0">
+  <div class="premium-card" onclick="window.location.href='paiement.html'">
+    <div class="premium-card-icon">⭐</div>
+    <div class="premium-card-body">
+      <div class="premium-card-title">Premium : Catalogue PDF + Assistant IA + Stats avancées</div>
+      <div class="premium-card-price">100 FCFA/jour →</div>
     </div>
   </div>
 </div>
@@ -205,16 +217,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Voir ma boutique</div>
       <div class="action-d">Vue client</div>
     </a>
-    <a href="profil.html" class="action">
-      <div class="action-icon action-icon-o">⚙️</div>
-      <div class="action-t">Mon profil</div>
-      <div class="action-d">Modifier mes infos</div>
-    </a>
-    <a href="paiement.html" class="action">
-      <div class="action-icon action-icon-o">⭐</div>
-      <div class="action-t">Passer Premium</div>
-      <div class="action-d">100 FCFA/jour</div>
-    </a>
     <a href="#" id="btn-qrcode" class="action">
       <div class="action-icon action-icon-p">🔲</div>
       <div class="action-t">QR Code</div>
@@ -225,10 +227,18 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Catalogue PDF</div>
       <div class="action-d">Exporter mes produits</div>
     </a>
+  </div>
+  <button class="voir-plus-btn" onclick="toggleVoirPlus()" id="voir-plus-toggle">Voir plus d'options ›</button>
+  <div class="actions-grid" id="actions-extra" style="display:none;margin-top:10px">
     <a href="#" id="btn-assistant" class="action">
       <div class="action-icon action-icon-p">⚡</div>
       <div class="action-t">Assistant IA</div>
       <div class="action-d">Messages qui vendent</div>
+    </a>
+    <a href="profil.html" class="action">
+      <div class="action-icon action-icon-o">⚙️</div>
+      <div class="action-t">Mon profil</div>
+      <div class="action-d">Modifier mes infos</div>
     </a>
   </div>
 </div>
@@ -283,13 +293,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
     <span class="bnav-icon-wrap"><span class="bnav-icon">📋</span><span class="bnav-badge" id="badge-commandes" style="display:none">0</span></span>
     <span class="bnav-label">Commandes</span>
   </button>
+  <button class="bnav-item" id="btn-nav-boutique">
+    <span class="bnav-icon">🛍️</span>
+    <span class="bnav-label">Boutique</span>
+  </button>
   <button class="bnav-item" onclick="window.location.href='profil.html'">
     <span class="bnav-icon">⚙️</span>
     <span class="bnav-label">Profil</span>
-  </button>
-  <button class="bnav-item" onclick="deconnexion()">
-    <span class="bnav-icon">🚪</span>
-    <span class="bnav-label">Déconnexion</span>
   </button>
 </div>
 
@@ -440,6 +450,7 @@ async function loadProfil() {
       const waMsg = encodeURIComponent('Bonjour 👋 Découvrez ma boutique !');
       document.getElementById('btn-wa').href = 'https://wa.me/?text=' + encodeURIComponent(vitrineUrl);
       document.getElementById('btn-voir-vitrine').href = vitrineUrl;
+      document.getElementById('btn-nav-boutique').onclick = () => window.open(vitrineUrl, '_blank');
       const plan = u.plan || 'gratuit';
       const planLabels = { gratuit: '🆓 Plan Gratuit', premium: '⭐ Premium', business: '💎 Business' };
       document.getElementById('plan-badge').textContent = planLabels[plan] || '🆓 Plan Gratuit';
@@ -454,7 +465,6 @@ async function loadStats() {
     const data = await res.json();
     if (data.vitrine) {
       const vues = data.vitrine.total_views || 0;
-      document.getElementById('stat-vues').textContent = vues;
       if (vues === 0) {
         document.getElementById('inactivity-banner').style.display = 'flex';
       }
@@ -592,6 +602,7 @@ async function loadCommandes() {
     const data = await res.json();
     allCommandes = data.commandes || [];
     renderCommandes(allCommandes);
+    updateStatsCommandes();
     updateBadgeCommandes();
   } catch(e) {
     document.getElementById('commandes-list').innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">Erreur chargement</div>';
@@ -607,6 +618,22 @@ function updateBadgeCommandes() {
   } else {
     badge.style.display = 'none';
   }
+}
+
+function updateStatsCommandes() {
+  const now = new Date();
+  const todayStr = now.toDateString();
+  const curMonth = now.getMonth();
+  const curYear = now.getFullYear();
+
+  const cmdJour = allCommandes.filter(c => new Date(c.created_at).toDateString() === todayStr).length;
+  const cmdMois = allCommandes.filter(c => {
+    const d = new Date(c.created_at);
+    return d.getMonth() === curMonth && d.getFullYear() === curYear;
+  }).length;
+
+  document.getElementById('stat-cmd-jour').textContent = cmdJour;
+  document.getElementById('stat-cmd-mois').textContent = cmdMois;
 }
 
 function filterCommandes(f, btn) {
@@ -798,6 +825,14 @@ async function genererMessages() {
 
 // ===== HELPERS =====
 function fermerOverlay(id) { document.getElementById(id).classList.remove('open'); }
+
+function toggleVoirPlus() {
+  const extra = document.getElementById('actions-extra');
+  const btn = document.getElementById('voir-plus-toggle');
+  const isOpen = extra.style.display === 'grid';
+  extra.style.display = isOpen ? 'none' : 'grid';
+  btn.textContent = isOpen ? 'Voir plus d\'options ›' : 'Voir moins ‹';
+}
 
 function copyLink() {
   const slug = localStorage.getItem('mv_slug') || '';
