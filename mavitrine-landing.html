@@ -144,6 +144,15 @@ section{padding:48px 0}
 
 /* WAITLIST / CTA BOTTOM */
 .cta-section{padding:48px 20px;background:var(--ink);color:white;text-align:center;}
+.faq-section{padding:40px 20px;background:var(--sur);}
+.faq-list{margin-top:24px;display:flex;flex-direction:column;gap:10px;}
+.faq-item{background:white;border-radius:var(--r2);border:1px solid var(--line);overflow:hidden;}
+.faq-question{width:100%;background:none;border:none;padding:16px;display:flex;align-items:center;justify-content:space-between;text-align:left;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;gap:12px;}
+.faq-icon{font-size:18px;color:var(--p);font-weight:700;flex-shrink:0;transition:transform .2s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .25s ease;padding:0 16px;}
+.faq-item.open .faq-answer{max-height:300px;padding:0 16px 16px;}
+.faq-answer{font-size:13px;color:var(--ink3);line-height:1.6;}
 .cta-title{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;line-height:1.3;}
 .cta-sub{font-size:14px;opacity:.7;margin-bottom:24px;}
 .waitlist-form{max-width:340px;margin:0 auto;}
@@ -457,6 +466,49 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.1);padding:2
   <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--g);font-weight:600">🎁 2 mois Premium offerts aux 50 premiers — valeur 6 000 FCFA</div>
 </section>
 
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="section-tag">QUESTIONS FRÉQUENTES</div>
+  <div class="section-title">Vous vous demandez sûrement...</div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Est-ce vraiment gratuit pour commencer ?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">Oui, totalement. Le plan Gratuit n'a pas de durée limite — vous pouvez créer votre boutique, ajouter jusqu'à 5 produits et recevoir des commandes sans jamais payer. Aucune carte bancaire n'est demandée.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Mon client a-t-il besoin d'installer une application ?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">Non. Votre client clique simplement sur votre lien ou scanne votre QR Code, voit votre catalogue dans son navigateur, et vous contacte directement sur WhatsApp — l'application qu'il utilise déjà tous les jours.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Comment se passe une commande concrètement ?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">Votre client choisit un ou plusieurs produits sur votre boutique, puis un message WhatsApp pré-rempli s'ouvre automatiquement avec le détail et le total. Vous recevez ce message directement, comme une conversation WhatsApp normale.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Je ne suis pas à l'aise avec la technologie, est-ce compliqué ?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">Pas du tout. L'inscription prend 2 minutes : votre nom, votre numéro, le nom de votre boutique, et un code à 6 chiffres pour vous connecter. Pas de mot de passe compliqué à retenir, pas d'étape technique.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Comment puis-je payer l'abonnement Premium ?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">Par Wave ou Orange Money, directement depuis votre téléphone. Vous envoyez le montant, indiquez votre référence de transaction, et votre compte Premium est activé en quelques heures.</div>
+    </div>
+  </div>
+</section>
+
 <!-- CTA BOTTOM -->
 <section class="cta-section">
   <div class="cta-title">Commencez à vendre<br>dès aujourd'hui.</div>
@@ -483,6 +535,13 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.1);padding:2
 
 <script>
 const API = 'https://mavitrine-sn-bphm.vercel.app';
+
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
 
 async function submitWaitlist() {
   const phone = document.getElementById('wl-phone').value.trim().replace(/\s/g,'');
