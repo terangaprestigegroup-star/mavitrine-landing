@@ -36,6 +36,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .completude-bar-bg{height:8px;background:var(--sur);border-radius:50px;overflow:hidden;margin-bottom:8px}
 .completude-bar-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--gd));border-radius:50px;transition:width .4s ease}
 .completude-tip{font-size:11px;color:var(--ink3)}
+.top-produit-item{display:flex;align-items:center;gap:10px;background:white;border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
+.top-produit-rank{width:26px;height:26px;border-radius:50%;background:var(--pb);color:var(--p);font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.top-produit-rank.gold{background:#FEF3C7;color:#92400E}
+.top-produit-info{flex:1;min-width:0}
+.top-produit-nom{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-produit-count{font-size:11px;color:var(--ink3)}
 .premium-card-icon{font-size:28px;flex-shrink:0}
 .premium-card-body{flex:1}
 .premium-card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:white;line-height:1.4;margin-bottom:4px}
@@ -208,6 +214,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="stat-val" id="stat-produits">—</div>
       <div class="stat-label">Produits actifs</div>
     </div>
+  </div>
+  <div id="top-produits-section" style="display:none;margin-top:14px">
+    <div class="section-title" style="margin-bottom:10px">🏆 Top produits commandés</div>
+    <div id="top-produits-list"></div>
   </div>
 </div>
 
@@ -661,6 +671,43 @@ function updateStatsCommandes() {
   } else {
     document.getElementById('inactivity-banner').style.display = 'none';
   }
+
+  updateTopProduits();
+}
+
+function updateTopProduits() {
+  const section = document.getElementById('top-produits-section');
+  if (allCommandes.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  // Regroupe les commandes par nom de produit, compte les occurrences
+  const counts = {};
+  allCommandes.forEach(c => {
+    const nom = c.produit_nom || 'Produit';
+    counts[nom] = (counts[nom] || 0) + 1;
+  });
+
+  const top = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  if (top.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  document.getElementById('top-produits-list').innerHTML = top.map(([nom, count], i) => `
+    <div class="top-produit-item">
+      <div class="top-produit-rank${i === 0 ? ' gold' : ''}">${i + 1}</div>
+      <div class="top-produit-info">
+        <div class="top-produit-nom">${nom}</div>
+        <div class="top-produit-count">${count} commande${count > 1 ? 's' : ''}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
 function filterCommandes(f, btn) {
