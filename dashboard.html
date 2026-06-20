@@ -29,6 +29,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .plan-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:50px;padding:4px 10px;font-size:11px;font-weight:600;color:white;margin-bottom:12px}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .premium-card{background:linear-gradient(135deg,#FBBF24,#F59E0B);border-radius:var(--r2);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 4px 16px rgba(245,158,11,.3)}
+.completude-card{background:white;border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;cursor:pointer}
+.completude-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.completude-label{font-size:13px;font-weight:600;color:var(--ink2)}
+.completude-pct{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:800;color:var(--p)}
+.completude-bar-bg{height:8px;background:var(--sur);border-radius:50px;overflow:hidden;margin-bottom:8px}
+.completude-bar-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--gd));border-radius:50px;transition:width .4s ease}
+.completude-tip{font-size:11px;color:var(--ink3)}
 .premium-card-icon{font-size:28px;flex-shrink:0}
 .premium-card-body{flex:1}
 .premium-card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:white;line-height:1.4;margin-bottom:4px}
@@ -164,6 +171,18 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   <div class="welcome-actions">
     <a href="#" id="btn-wa" class="btn-wa" target="_blank">💬 Partager</a>
     <button class="btn-link" onclick="copyLink()">🔗 Copier le lien</button>
+  </div>
+</div>
+
+<!-- SCORE COMPLETUDE -->
+<div class="section" style="padding-top:0;padding-bottom:0">
+  <div class="completude-card" id="completude-card" style="display:none" onclick="toggleCompletudeDetail()">
+    <div class="completude-header">
+      <div class="completude-label">Complétude de votre boutique</div>
+      <div class="completude-pct" id="completude-pct">0%</div>
+    </div>
+    <div class="completude-bar-bg"><div class="completude-bar-fill" id="completude-bar-fill" style="width:0%"></div></div>
+    <div class="completude-tip" id="completude-tip"></div>
   </div>
 </div>
 
@@ -418,6 +437,7 @@ window.onload = async () => {
   if (!token) return window.location.href = 'connexion.html';
   await Promise.all([loadProfil(), loadProduits(), loadStats(), loadCommandes()]);
   updateStatsCommandes(); // re-vérifie une fois que produits ET commandes sont chargés
+  calculerCompletude();
 
   // Bind buttons
   document.getElementById('btn-qrcode').addEventListener('click', ouvrirQR);
@@ -460,10 +480,13 @@ async function loadProfil() {
 }
 
 // ===== STATS =====
+let vitrineData = {};
+
 async function loadStats() {
   try {
     const res = await fetch(API + '/api/vitrines/moi', { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();
+    vitrineData = data.vitrine || {};
     // Note: total_views n'est plus affiché directement, mais conservé en base pour usage futur
   } catch(e) {}
 }
@@ -829,6 +852,36 @@ async function genererMessages() {
 
 // ===== HELPERS =====
 function fermerOverlay(id) { document.getElementById(id).classList.remove('open'); }
+
+// ===== SCORE COMPLÉTUDE =====
+function calculerCompletude() {
+  const criteres = [
+    { ok: produits.some(p => !!p.image_url), label: 'Ajoutez une photo à au moins un produit' },
+    { ok: produits.length >= 3, label: 'Ajoutez au moins 3 produits' },
+    { ok: produits.some(p => p.description && p.description.trim().length > 0), label: 'Ajoutez une description à vos produits' },
+    { ok: !!(vitrineData.ville && vitrineData.ville.trim()), label: 'Renseignez votre ville dans votre profil' },
+    { ok: !!(vitrineData.horaires && vitrineData.horaires.trim()), label: 'Ajoutez vos horaires d\'ouverture' },
+  ];
+
+  const validés = criteres.filter(c => c.ok).length;
+  const pct = Math.round((validés / criteres.length) * 100);
+
+  const card = document.getElementById('completude-card');
+  if (pct >= 100) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  document.getElementById('completude-pct').textContent = pct + '%';
+  document.getElementById('completude-bar-fill').style.width = pct + '%';
+
+  const manquant = criteres.find(c => !c.ok);
+  document.getElementById('completude-tip').textContent = manquant ? '💡 ' + manquant.label : '';
+}
+
+function toggleCompletudeDetail() {
+  window.location.href = 'profil.html';
+}
 
 function toggleVoirPlus() {
   const extra = document.getElementById('actions-extra');
