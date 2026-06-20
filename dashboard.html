@@ -683,9 +683,11 @@ function updateTopProduits() {
   }
 
   // Regroupe les commandes par nom de produit, compte les occurrences
+  // (on retire le suffixe " (xN)" ajouté par le panier multi-articles
+  // pour regrouper correctement le même produit peu importe la quantité)
   const counts = {};
   allCommandes.forEach(c => {
-    const nom = c.produit_nom || 'Produit';
+    const nom = (c.produit_nom || 'Produit').replace(/\s*\(x\d+\)\s*$/, '');
     counts[nom] = (counts[nom] || 0) + 1;
   });
 
