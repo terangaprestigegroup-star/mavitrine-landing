@@ -50,7 +50,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;col
 .produit-nom{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;line-height:1.3}
 .produit-cat{font-size:10px;color:var(--ink3);margin-bottom:6px}
 .produit-prix{font-size:15px;font-weight:800;color:var(--p);font-family:'Bricolage Grotesque',sans-serif}
-.produit-btn{display:block;width:100%;margin-top:8px;padding:8px;background:var(--gl);color:var(--gd);border:none;border-radius:8px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center}
+.produit-actions-row{display:flex;gap:6px;margin-top:8px}
+.produit-btn{flex:1;display:block;padding:8px;background:var(--gl);color:var(--gd);border:none;border-radius:8px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center}
+.produit-btn-panier{flex:1;display:block;padding:8px;background:var(--pb);color:var(--p);border:none;border-radius:8px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center}
+.panier-bar{position:fixed;bottom:0;left:0;right:0;background:var(--p);padding:12px 16px calc(12px + env(safe-area-inset-bottom));z-index:110;display:none;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.15)}
+.panier-bar.show{display:flex}
+.panier-info{flex:1;color:white}
+.panier-count{font-size:11px;opacity:.85}
+.panier-total{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800}
+.panier-btn-voir{background:white;color:var(--p);border:none;border-radius:50px;padding:10px 18px;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
 
 /* EMPTY */
 .empty{text-align:center;padding:40px 16px;color:var(--ink3)}
@@ -148,6 +156,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;col
   </a>
 </div>
 
+<!-- PANIER BAR -->
+<div class="panier-bar" id="panier-bar" onclick="ouvrirPanier()">
+  <div class="panier-info">
+    <div class="panier-count" id="panier-count">0 article</div>
+    <div class="panier-total" id="panier-total">0 FCFA</div>
+  </div>
+  <button class="panier-btn-voir">Voir le panier 🛒</button>
+</div>
+
+<!-- MODAL PANIER -->
+<div class="modal-overlay" id="modal-panier-overlay" onclick="closePanierModal(event)">
+  <div class="modal" style="position:relative;max-width:400px">
+    <button class="modal-close-btn" onclick="closePanierModalBtn()">✕</button>
+    <div class="modal-body">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:14px">🛒 Mon panier</div>
+      <div id="panier-items"></div>
+      <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:600;color:var(--ink2)">Total</span>
+        <span id="panier-modal-total" style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--p)">0 FCFA</span>
+      </div>
+      <button onclick="commanderPanier()" style="width:100%;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:white;border:none;border-radius:50px;padding:14px;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;cursor:pointer">💬 Commander tout sur WhatsApp</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DETAIL PRODUIT -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal" style="position:relative">
@@ -169,6 +202,7 @@ const API = 'https://mavitrine-sn-bphm.vercel.app';
 let vitrine = {};
 let allProduits = [];
 let currentCat = '';
+let panier = [];
 
 // Récupérer slug depuis URL
 const slug = new URLSearchParams(window.location.search).get('slug') || '';
@@ -299,7 +333,10 @@ function renderProduits(produits) {
         <div class="produit-nom">${p.nom}</div>
         ${p.categorie ? `<div class="produit-cat">${p.categorie}</div>` : ''}
         <div class="produit-prix">${Number(p.prix).toLocaleString('fr-FR')} FCFA</div>
-        <button class="produit-btn">💬 Commander</button>
+        <div class="produit-actions-row">
+          <button class="produit-btn-panier" onclick="event.stopPropagation();ajouterAuPanier('${p.id}')">+ Panier</button>
+          <button class="produit-btn" onclick="event.stopPropagation();commander(allProduits.find(x=>x.id==='${p.id}'))">💬 Direct</button>
+        </div>
       </div>
     </div>
   `).join('');
@@ -323,6 +360,130 @@ function ouvrirProduit(id) {
   };
 
   document.getElementById('modal-overlay').classList.add('open');
+}
+
+// ===== PANIER =====
+function ajouterAuPanier(id) {
+  const p = allProduits.find(x => x.id === id);
+  if (!p) return;
+  const existing = panier.find(x => x.id === id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    panier.push({ id: p.id, nom: p.nom, prix: p.prix, qty: 1 });
+  }
+  updatePanierBar();
+  showToastPanier(`${p.nom} ajouté au panier ✅`);
+}
+
+function showToastPanier(msg) {
+  let toast = document.getElementById('panier-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'panier-toast';
+    toast.style.cssText = 'position:fixed;top:70px;left:16px;right:16px;background:var(--ink);color:white;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;z-index:200;opacity:0;transition:opacity .3s';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  setTimeout(() => toast.style.opacity = '0', 1800);
+}
+
+function updatePanierBar() {
+  const bar = document.getElementById('panier-bar');
+  const stickyWa = document.querySelector('.sticky-wa');
+  const totalQty = panier.reduce((s, i) => s + i.qty, 0);
+  const totalPrix = panier.reduce((s, i) => s + i.qty * i.prix, 0);
+
+  if (totalQty === 0) {
+    bar.classList.remove('show');
+    if (stickyWa) stickyWa.style.display = '';
+    return;
+  }
+  bar.classList.add('show');
+  if (stickyWa) stickyWa.style.display = 'none';
+  document.getElementById('panier-count').textContent = totalQty + (totalQty > 1 ? ' articles' : ' article');
+  document.getElementById('panier-total').textContent = totalPrix.toLocaleString('fr-FR') + ' FCFA';
+}
+
+function ouvrirPanier() {
+  renderPanierItems();
+  document.getElementById('modal-panier-overlay').classList.add('open');
+}
+
+function renderPanierItems() {
+  const el = document.getElementById('panier-items');
+  if (panier.length === 0) {
+    el.innerHTML = '<div style="text-align:center;color:var(--ink3);font-size:13px;padding:20px 0">Panier vide</div>';
+    document.getElementById('panier-modal-total').textContent = '0 FCFA';
+    return;
+  }
+  el.innerHTML = panier.map(item => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:var(--ink)">${item.nom}</div>
+        <div style="font-size:12px;color:var(--ink3)">${Number(item.prix).toLocaleString('fr-FR')} FCFA × ${item.qty}</div>
+      </div>
+      <button onclick="changerQty('${item.id}',-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:white;cursor:pointer;font-size:14px">−</button>
+      <span style="font-size:13px;font-weight:700;min-width:18px;text-align:center">${item.qty}</span>
+      <button onclick="changerQty('${item.id}',1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:white;cursor:pointer;font-size:14px">+</button>
+    </div>
+  `).join('');
+  const total = panier.reduce((s, i) => s + i.qty * i.prix, 0);
+  document.getElementById('panier-modal-total').textContent = total.toLocaleString('fr-FR') + ' FCFA';
+}
+
+function changerQty(id, delta) {
+  const item = panier.find(x => x.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) {
+    panier = panier.filter(x => x.id !== id);
+  }
+  renderPanierItems();
+  updatePanierBar();
+}
+
+function closePanierModal(e) {
+  if (e.target === document.getElementById('modal-panier-overlay')) {
+    document.getElementById('modal-panier-overlay').classList.remove('open');
+  }
+}
+function closePanierModalBtn() {
+  document.getElementById('modal-panier-overlay').classList.remove('open');
+}
+
+async function commanderPanier() {
+  if (panier.length === 0) return;
+  const phone = vitrine.telephone_public || '';
+
+  // Enregistrer chaque ligne du panier comme commande
+  for (const item of panier) {
+    try {
+      await fetch(API + '/api/commandes', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          vitrine_slug: slug,
+          produit_id: item.id,
+          produit_nom: item.nom + (item.qty > 1 ? ` (x${item.qty})` : ''),
+          produit_prix: item.prix * item.qty,
+        })
+      });
+    } catch(e) {}
+  }
+
+  // Construire le message groupé
+  let lignes = panier.map(i => `• ${i.nom} x${i.qty} — ${(i.prix*i.qty).toLocaleString('fr-FR')} FCFA`).join('\n');
+  const total = panier.reduce((s, i) => s + i.qty * i.prix, 0);
+  const msg = encodeURIComponent(
+    `Bonjour 👋 Je souhaite commander :\n\n${lignes}\n\n*Total : ${total.toLocaleString('fr-FR')} FCFA*\n\nEst-ce disponible ?`
+  );
+  window.open('https://wa.me/' + phone + '?text=' + msg, '_blank');
+
+  panier = [];
+  updatePanierBar();
+  closePanierModalBtn();
 }
 
 async function commander(p) {
