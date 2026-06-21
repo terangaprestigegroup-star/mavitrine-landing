@@ -702,7 +702,7 @@ async function sauvegarderProduit() {
 
   try {
     const url = editingId ? API + '/api/products/' + editingId : API + '/api/products';
-    const method = editingId ? 'PUT' : 'POST';
+    const method = editingId ? 'PATCH' : 'POST';
     const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(body) });
     const data = await res.json();
     btnText.style.display = 'block'; spinner.style.display = 'none'; btn.disabled = false;
@@ -720,7 +720,7 @@ async function sauvegarderProduit() {
 
 async function toggleVisible(id, current) {
   try {
-    await fetch(API + '/api/products/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ is_visible: !current }) });
+    await fetch(API + '/api/products/' + id + '/visibilite', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } });
     await loadProduits();
   } catch(e) {}
 }
