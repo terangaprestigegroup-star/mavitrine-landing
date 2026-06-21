@@ -129,8 +129,9 @@ window.onload=async()=>{
   await charger();
 };
 function updateLink(){
-  document.getElementById('link-display').textContent='mavitrine-sn-bphm.vercel.app/api/vitrines/'+slug;
-  document.getElementById('btn-voir').href='vitrine.html?slug='+slug;
+  const url='https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug='+slug;
+  document.getElementById('link-display').textContent='mavitrine.sn/'+slug;
+  document.getElementById('btn-voir').href=url;
 }
 async function charger(){
   try{
@@ -178,7 +179,8 @@ async function sauvegarder(){
   btn.style.display='block';sp.style.display='none';submitBtn.disabled=false;
 }
 function copyLink(){
-  navigator.clipboard.writeText('mavitrine-sn-bphm.vercel.app/api/vitrines/'+slug).then(()=>showToast('Lien copié !','success')).catch(()=>{});
+  const url='https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug='+slug;
+  navigator.clipboard.writeText(url).then(()=>showToast('Lien copié !','success')).catch(()=>{});
 }
 function showToast(msg,type='success'){
   const el=document.getElementById('toast-'+type);
