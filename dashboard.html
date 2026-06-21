@@ -632,13 +632,14 @@ async function previewEtUploadImage(input) {
   }
 
   try {
-    const ext = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const nameParts = (file.name || 'photo.jpg').split('.');
+    const ext = nameParts.length > 1 ? nameParts.pop() : (file.type ? file.type.split('/')[1] : 'jpg');
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext || 'jpg'}`;
     const filePath = fileName;
 
     const { data, error } = await client.storage
       .from('produits')
-      .upload(filePath, file, { cacheControl: '3600', upsert: false });
+      .upload(filePath, file, { cacheControl: '3600', upsert: false, contentType: file.type || 'image/jpeg' });
 
     if (error) throw error;
 
@@ -648,7 +649,8 @@ async function previewEtUploadImage(input) {
     statusEl.style.color = 'var(--gd)';
   } catch (err) {
     console.error('Upload error', err);
-    statusEl.textContent = '❌ Échec de l\'envoi, réessayez';
+    const errMsg = err?.message || err?.error_description || JSON.stringify(err) || 'Erreur inconnue';
+    statusEl.textContent = '❌ ' + errMsg;
     statusEl.style.color = '#DC2626';
   }
 }
