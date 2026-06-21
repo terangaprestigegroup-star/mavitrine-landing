@@ -72,7 +72,7 @@ nav{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;
   <div class="hero-tag">⭐ Offre limitée — 50 premiers</div>
   <div class="hero-title">Vendez encore plus</div>
   <div class="hero-price" id="hero-price">3 000 FCFA</div>
-  <div class="hero-day">/mois · = 100 FCFA/jour seulement</div>
+  <div class="hero-day" id="hero-day">/mois · = 100 FCFA/jour seulement</div>
   <ul class="feats-list">
     <li>Produits illimités</li>
     <li>Statistiques de visites</li>
@@ -150,6 +150,8 @@ function selectPlan(plan,montant,btn){
   document.querySelectorAll('.plan-opt').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   document.getElementById('hero-price').textContent=montant.toLocaleString('fr-FR')+' FCFA';
+  const parJour=Math.round(montant/30);
+  document.getElementById('hero-day').textContent='/mois · = '+parJour+' FCFA/jour seulement';
   if(selectedMethode)updateInstructions();
 }
 
