@@ -6,6 +6,7 @@
 <title>MaVitrine.sn — Mon tableau de bord</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--r:14px;--r2:20px;--shg:0 4px 20px rgba(29,185,84,.35);--shp:0 4px 20px rgba(61,43,232,.25);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -380,8 +381,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
         </div>
       </div>
       <div class="field">
-        <label>Lien image (URL)</label>
-        <input type="url" id="p-img" placeholder="https://... (optionnel)">
+        <label>Photo du produit</label>
+        <div id="img-upload-zone" onclick="document.getElementById('p-img-file').click()" style="border:1.5px dashed var(--line);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;background:var(--sur)">
+          <div id="img-preview-empty">
+            <div style="font-size:24px;margin-bottom:4px">📷</div>
+            <div style="font-size:12px;color:var(--ink3)">Touchez pour choisir une photo</div>
+          </div>
+          <img id="img-preview" style="display:none;max-width:100%;max-height:140px;border-radius:8px" alt="Aperçu">
+        </div>
+        <input type="file" id="p-img-file" accept="image/*" style="display:none" onchange="previewEtUploadImage(this)">
+        <div id="img-upload-status" style="font-size:11px;color:var(--ink3);margin-top:6px"></div>
+        <input type="hidden" id="p-img">
       </div>
       <button class="btn-save" id="btn-save" onclick="sauvegarderProduit()">
         <span id="btn-save-text">Ajouter le produit</span>
@@ -440,6 +450,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 <script>
 const API = 'https://mavitrine-sn-bphm.vercel.app';
 let token = '', produits = [], editingId = null, allCommandes = [];
+
+const SUPABASE_URL = 'https://nzetabvpyhmzqzzyvpqn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56ZXRhYnZweWhtenF6enl2cHFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTI0NjAsImV4cCI6MjA5NDg4ODQ2MH0.WzoYEH4b93HLhf5lYzYeX3VnzpHQ1wEOczLMf02d19c';
+let supabaseClient = null;
+try {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) { console.error('Supabase init error', e); }
 
 // ===== INIT =====
 window.onload = async () => {
@@ -547,8 +564,69 @@ function openModal(reset = true) {
     ['p-nom','p-prix','p-desc','p-img'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('p-stock').value = 'disponible';
     document.getElementById('p-cat').value = '';
+    resetImagePreview();
   }
   document.getElementById('modal-overlay').classList.add('open');
+}
+
+function resetImagePreview() {
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('img-preview-empty').style.display = 'block';
+  document.getElementById('img-upload-status').textContent = '';
+  document.getElementById('p-img-file').value = '';
+}
+
+async function previewEtUploadImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    document.getElementById('img-upload-status').textContent = '❌ Image trop lourde (max 2 Mo)';
+    document.getElementById('img-upload-status').style.color = '#DC2626';
+    input.value = '';
+    return;
+  }
+
+  // Aperçu instantané
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('img-preview').src = e.target.result;
+    document.getElementById('img-preview').style.display = 'block';
+    document.getElementById('img-preview-empty').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+
+  // Upload réel vers Supabase Storage
+  const statusEl = document.getElementById('img-upload-status');
+  statusEl.style.color = 'var(--ink3)';
+  statusEl.textContent = '⏳ Envoi en cours...';
+
+  if (!supabaseClient) {
+    statusEl.textContent = '❌ Service indisponible, réessayez';
+    statusEl.style.color = '#DC2626';
+    return;
+  }
+
+  try {
+    const ext = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const filePath = fileName;
+
+    const { data, error } = await supabaseClient.storage
+      .from('produits')
+      .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+    if (error) throw error;
+
+    const { data: urlData } = supabaseClient.storage.from('produits').getPublicUrl(filePath);
+    document.getElementById('p-img').value = urlData.publicUrl;
+    statusEl.textContent = '✅ Photo envoyée';
+    statusEl.style.color = 'var(--gd)';
+  } catch (err) {
+    console.error('Upload error', err);
+    statusEl.textContent = '❌ Échec de l\'envoi, réessayez';
+    statusEl.style.color = '#DC2626';
+  }
 }
 
 function closeModal() {
@@ -568,6 +646,12 @@ function editProduit(id) {
   document.getElementById('p-desc').value = p.description || '';
   document.getElementById('p-cat').value = p.categorie || '';
   document.getElementById('p-img').value = p.image_url || '';
+  resetImagePreview();
+  if (p.image_url) {
+    document.getElementById('img-preview').src = p.image_url;
+    document.getElementById('img-preview').style.display = 'block';
+    document.getElementById('img-preview-empty').style.display = 'none';
+  }
   openModal(false);
 }
 
