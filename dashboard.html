@@ -6,7 +6,7 @@
 <title>MaVitrine.sn — Mon tableau de bord</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--r:14px;--r2:20px;--shg:0 4px 20px rgba(29,185,84,.35);--shp:0 4px 20px rgba(61,43,232,.25);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -458,14 +458,20 @@ let supabaseClient = null;
 function getSupabaseClient() {
   if (supabaseClient) return supabaseClient;
   try {
-    if (window.supabase && window.supabase.createClient) {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      return supabaseClient;
+    if (typeof window.supabase === 'undefined') {
+      console.warn('window.supabase non défini - SDK pas encore chargé');
+      return null;
     }
+    if (!window.supabase.createClient) {
+      console.warn('createClient non disponible sur window.supabase');
+      return null;
+    }
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return supabaseClient;
   } catch(e) {
     console.error('Supabase init error', e);
+    return null;
   }
-  return null;
 }
 
 // ===== INIT =====
@@ -613,12 +619,14 @@ async function previewEtUploadImage(input) {
 
   let client = getSupabaseClient();
   if (!client) {
-    // Le SDK met parfois un instant à charger, on retente une fois après 800ms
-    await new Promise(r => setTimeout(r, 800));
-    client = getSupabaseClient();
+    // Le SDK peut mettre du temps sur connexion mobile lente, on retente plusieurs fois
+    for (let i = 0; i < 5 && !client; i++) {
+      await new Promise(r => setTimeout(r, 1000));
+      client = getSupabaseClient();
+    }
   }
   if (!client) {
-    statusEl.textContent = '❌ Service indisponible, réessayez';
+    statusEl.textContent = '❌ Connexion lente, réessayez dans un instant';
     statusEl.style.color = '#DC2626';
     return;
   }
