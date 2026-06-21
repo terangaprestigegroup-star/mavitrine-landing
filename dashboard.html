@@ -454,9 +454,19 @@ let token = '', produits = [], editingId = null, allCommandes = [];
 const SUPABASE_URL = 'https://nzetabvpyhmzqzzyvpqn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56ZXRhYnZweWhtenF6enl2cHFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTI0NjAsImV4cCI6MjA5NDg4ODQ2MH0.WzoYEH4b93HLhf5lYzYeX3VnzpHQ1wEOczLMf02d19c';
 let supabaseClient = null;
-try {
-  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} catch(e) { console.error('Supabase init error', e); }
+
+function getSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  try {
+    if (window.supabase && window.supabase.createClient) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      return supabaseClient;
+    }
+  } catch(e) {
+    console.error('Supabase init error', e);
+  }
+  return null;
+}
 
 // ===== INIT =====
 window.onload = async () => {
@@ -601,7 +611,13 @@ async function previewEtUploadImage(input) {
   statusEl.style.color = 'var(--ink3)';
   statusEl.textContent = '⏳ Envoi en cours...';
 
-  if (!supabaseClient) {
+  let client = getSupabaseClient();
+  if (!client) {
+    // Le SDK met parfois un instant à charger, on retente une fois après 800ms
+    await new Promise(r => setTimeout(r, 800));
+    client = getSupabaseClient();
+  }
+  if (!client) {
     statusEl.textContent = '❌ Service indisponible, réessayez';
     statusEl.style.color = '#DC2626';
     return;
@@ -612,13 +628,13 @@ async function previewEtUploadImage(input) {
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
     const filePath = fileName;
 
-    const { data, error } = await supabaseClient.storage
+    const { data, error } = await client.storage
       .from('produits')
       .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
     if (error) throw error;
 
-    const { data: urlData } = supabaseClient.storage.from('produits').getPublicUrl(filePath);
+    const { data: urlData } = client.storage.from('produits').getPublicUrl(filePath);
     document.getElementById('p-img').value = urlData.publicUrl;
     statusEl.textContent = '✅ Photo envoyée';
     statusEl.style.color = 'var(--gd)';
