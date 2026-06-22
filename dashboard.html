@@ -981,8 +981,19 @@ async function genererImageCatalogue(e) {
     const nomBoutique = user.nom_boutique || vitrineData.nom_boutique || user.nom || 'Ma Boutique';
     const slug = localStorage.getItem('mv_slug') || '';
 
-    // Canvas format story (1080x1920, ratio 9:16) adapté WhatsApp/Instagram
-    const W = 1080, H = 1920;
+    // Canvas largeur fixe (format story), hauteur calculée dynamiquement
+    // selon le nombre réel de produits pour éviter tout espace vide
+    // ou découpage du pied de page
+    const W = 1080;
+    const cols = 2;
+    const gap = 24;
+    const cardH = 280;
+    const startY = 280;
+    const nbRows = Math.ceil(items.length / cols);
+    const gridHeight = nbRows * (cardH + gap);
+    const footerHeight = 140;
+    const H = startY + gridHeight + footerHeight;
+
     const canvas = document.createElement('canvas');
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
@@ -1006,11 +1017,7 @@ async function genererImageCatalogue(e) {
     ctx.globalAlpha = 1;
 
     // Grille produits (2 colonnes)
-    const cols = 2;
-    const gap = 24;
     const cardW = (W - 80 - gap) / cols;
-    const cardH = 280;
-    let startY = 280;
 
     for (let i = 0; i < items.length; i++) {
       const p = items[i];
