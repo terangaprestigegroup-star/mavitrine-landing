@@ -257,6 +257,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Imprimer mon catalogue</div>
       <div class="action-d">PDF prêt à imprimer</div>
     </a>
+    <a href="#" id="btn-image-catalogue" class="action">
+      <div class="action-icon action-icon-p">🖼️</div>
+      <div class="action-t">Image à partager</div>
+      <div class="action-d">Pour story ou statut</div>
+    </a>
   </div>
   <button class="voir-plus-btn" onclick="toggleVoirPlus()" id="voir-plus-toggle">Voir plus d'options ›</button>
   <div class="actions-grid" id="actions-extra" style="display:none;margin-top:10px">
@@ -417,6 +422,26 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   </div>
 </div>
 
+<!-- MODAL IMAGE CATALOGUE -->
+<div class="overlay" id="overlay-image-catalogue">
+  <div class="osheet">
+    <div class="osheet-title">Image à partager 🖼️</div>
+    <div class="osheet-sub">Pour vos stories et statuts WhatsApp</div>
+    <div id="img-cat-loading" style="text-align:center;padding:30px">
+      <div style="font-size:32px;margin-bottom:8px">🖼️</div>
+      <div style="font-size:14px;color:var(--ink3)">Génération en cours...</div>
+    </div>
+    <div id="img-cat-result" style="display:none">
+      <div style="display:flex;justify-content:center;margin-bottom:14px">
+        <img id="img-cat-preview" style="max-width:100%;border-radius:12px;border:1px solid var(--line)" alt="Aperçu catalogue">
+      </div>
+      <div style="background:var(--sur);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--ink2);text-align:center">💡 Postez-la directement en story ou statut WhatsApp</div>
+      <a id="img-cat-dl-link" href="#" download="catalogue-mavitrine.png" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--p);color:white;border-radius:50px;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px">📥 Télécharger l'image</a>
+    </div>
+    <button onclick="fermerOverlay('overlay-image-catalogue')" style="width:100%;padding:12px;background:var(--sur);color:var(--ink3);border:1px solid var(--line);border-radius:50px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">Fermer</button>
+  </div>
+</div>
+
 <!-- MODAL ASSISTANT IA -->
 <div class="overlay" id="overlay-assistant">
   <div class="osheet">
@@ -485,6 +510,7 @@ window.onload = async () => {
   // Bind buttons
   document.getElementById('btn-qrcode').addEventListener('click', ouvrirQR);
   document.getElementById('btn-catalogue').addEventListener('click', ouvrirCatalogue);
+  document.getElementById('btn-image-catalogue').addEventListener('click', genererImageCatalogue);
   document.getElementById('btn-assistant').addEventListener('click', ouvrirAssistant);
 };
 
@@ -936,6 +962,185 @@ async function ouvrirCatalogue(e) {
     doc.save('catalogue-' + slug + '.pdf');
     showToast('Catalogue téléchargé ✅', 's');
   } catch(err) { console.error(err); showToast('Erreur PDF', 'e'); }
+}
+
+// ===== IMAGE CATALOGUE PARTAGEABLE =====
+async function genererImageCatalogue(e) {
+  if (e) e.preventDefault();
+  if (!produits || produits.length === 0) { showToast('Ajoutez des produits d\'abord', 'e'); return; }
+
+  document.getElementById('overlay-image-catalogue').classList.add('open');
+  document.getElementById('img-cat-loading').style.display = 'block';
+  document.getElementById('img-cat-result').style.display = 'none';
+
+  try {
+    const visibles = produits.filter(p => p.is_visible !== false);
+    const items = visibles.length <= 6 ? visibles : visibles.slice(0, 6);
+
+    const user = JSON.parse(localStorage.getItem('mv_user') || '{}');
+    const nomBoutique = user.nom_boutique || vitrineData.nom_boutique || user.nom || 'Ma Boutique';
+    const slug = localStorage.getItem('mv_slug') || '';
+
+    // Canvas format story (1080x1920, ratio 9:16) adapté WhatsApp/Instagram
+    const W = 1080, H = 1920;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // Fond dégradé violet
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#1a0d8a');
+    grad.addColorStop(1, '#3D2BE8');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // En-tête
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 64px sans-serif';
+    ctx.textAlign = 'center';
+    wrapText(ctx, nomBoutique, W/2, 140, W - 120, 70);
+
+    ctx.font = '32px sans-serif';
+    ctx.globalAlpha = 0.85;
+    ctx.fillText('Catalogue produits', W/2, 220);
+    ctx.globalAlpha = 1;
+
+    // Grille produits (2 colonnes)
+    const cols = 2;
+    const gap = 24;
+    const cardW = (W - 80 - gap) / cols;
+    const cardH = 280;
+    let startY = 280;
+
+    for (let i = 0; i < items.length; i++) {
+      const p = items[i];
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const x = 40 + col * (cardW + gap);
+      const y = startY + row * (cardH + gap);
+
+      // Carte blanche
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, x, y, cardW, cardH, 20);
+      ctx.fill();
+
+      // Image produit (si disponible)
+      const imgH = 160;
+      if (p.image_url) {
+        try {
+          const img = await loadImageSafe(p.image_url);
+          ctx.save();
+          roundRectTopOnly(ctx, x + 10, y + 10, cardW - 20, imgH, 14);
+          ctx.clip();
+          drawImageCover(ctx, img, x + 10, y + 10, cardW - 20, imgH);
+          ctx.restore();
+        } catch(_) {
+          drawPlaceholder(ctx, x + 10, y + 10, cardW - 20, imgH);
+        }
+      } else {
+        drawPlaceholder(ctx, x + 10, y + 10, cardW - 20, imgH);
+      }
+
+      // Nom produit
+      ctx.fillStyle = '#0E0E0F';
+      ctx.font = 'bold 28px sans-serif';
+      ctx.textAlign = 'left';
+      const nomTrunc = p.nom.length > 18 ? p.nom.slice(0,16) + '…' : p.nom;
+      ctx.fillText(nomTrunc, x + 16, y + imgH + 50);
+
+      // Prix
+      ctx.fillStyle = '#3D2BE8';
+      ctx.font = 'bold 30px sans-serif';
+      ctx.fillText(Number(p.prix).toLocaleString('fr-FR') + ' FCFA', x + 16, y + imgH + 90);
+    }
+
+    // Pied de page avec lien
+    const footerY = startY + Math.ceil(items.length / cols) * (cardH + gap) + 40;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('💬 Commandez sur WhatsApp', W/2, footerY);
+    ctx.font = '28px sans-serif';
+    ctx.globalAlpha = 0.85;
+    ctx.fillText('mavitrine.sn/' + slug, W/2, footerY + 50);
+    ctx.globalAlpha = 1;
+
+    const dataUrl = canvas.toDataURL('image/png');
+    document.getElementById('img-cat-preview').src = dataUrl;
+    document.getElementById('img-cat-dl-link').href = dataUrl;
+    document.getElementById('img-cat-loading').style.display = 'none';
+    document.getElementById('img-cat-result').style.display = 'block';
+  } catch (err) {
+    console.error('Erreur génération image catalogue', err);
+    document.getElementById('img-cat-loading').style.display = 'none';
+    showToast('Erreur génération image', 'e');
+    document.getElementById('overlay-image-catalogue').classList.remove('open');
+  }
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  let lines = [];
+  for (const word of words) {
+    const test = line + word + ' ';
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = word + ' ';
+    } else {
+      line = test;
+    }
+  }
+  lines.push(line);
+  lines.forEach((l, i) => ctx.fillText(l.trim(), x, y + i * lineHeight));
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function roundRectTopOnly(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x, y + h);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h);
+  ctx.closePath();
+}
+
+function drawImageCover(ctx, img, x, y, w, h) {
+  const ratio = Math.max(w / img.width, h / img.height);
+  const newW = img.width * ratio, newH = img.height * ratio;
+  const offsetX = x + (w - newW) / 2, offsetY = y + (h - newH) / 2;
+  ctx.drawImage(img, offsetX, offsetY, newW, newH);
+}
+
+function drawPlaceholder(ctx, x, y, w, h) {
+  ctx.fillStyle = '#F7F7F8';
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = '#6E6E78';
+  ctx.font = '48px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('📦', x + w/2, y + h/2 + 16);
+}
+
+function loadImageSafe(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+    setTimeout(() => reject(new Error('timeout')), 5000);
+  });
 }
 
 // ===== ASSISTANT IA =====
