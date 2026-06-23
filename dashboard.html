@@ -982,8 +982,9 @@ async function genererImageCatalogue(e) {
     const slug = localStorage.getItem('mv_slug') || '';
 
     // Canvas largeur fixe (format story), hauteur calculée dynamiquement
-    // selon le nombre réel de produits pour éviter tout espace vide
-    // ou découpage du pied de page
+    // selon le nombre réel de produits pour éviter tout découpage du
+    // pied de page, mais avec une hauteur minimale garantissant
+    // toujours un format vertical présentable (pas plat/large)
     const W = 1080;
     const cols = 2;
     const gap = 24;
@@ -992,7 +993,8 @@ async function genererImageCatalogue(e) {
     const nbRows = Math.ceil(items.length / cols);
     const gridHeight = nbRows * (cardH + gap);
     const footerHeight = 140;
-    const H = startY + gridHeight + footerHeight;
+    const MIN_H = Math.round(W * 16 / 9); // garde au minimum un ratio story 9:16
+    const H = Math.max(MIN_H, startY + gridHeight + footerHeight);
 
     const canvas = document.createElement('canvas');
     canvas.width = W; canvas.height = H;
@@ -1062,7 +1064,7 @@ async function genererImageCatalogue(e) {
     }
 
     // Pied de page avec lien
-    const footerY = startY + Math.ceil(items.length / cols) * (cardH + gap) + 40;
+    const footerY = H - 90;
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 36px sans-serif';
     ctx.textAlign = 'center';
