@@ -180,7 +180,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.1);padding:2
   <a href="#" class="nav-logo">🇸🇳 MaVitrine<span>.sn</span></a>
   <div class="nav-links">
     <a href="#tarifs" class="nav-link">Tarifs</a>
-    <a href="inscription.html" class="nav-cta">Commencer</a>
+    <a href="inscription.html" id="nav-cta-btn" class="nav-cta">Commencer</a>
   </div>
 </nav>
 
@@ -535,6 +535,16 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.1);padding:2
 
 <script>
 const API = 'https://mavitrine-sn-bphm.vercel.app';
+
+// Si l'utilisateur est déjà connecté, tous les boutons qui mènent
+// normalement à l'inscription redirigent plutôt vers son dashboard
+if (localStorage.getItem('mv_token')) {
+  document.querySelectorAll('a[href="inscription.html"]').forEach(a => {
+    a.href = 'dashboard.html';
+  });
+  const navBtn = document.getElementById('nav-cta-btn');
+  if (navBtn) navBtn.textContent = 'Mon dashboard';
+}
 
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
