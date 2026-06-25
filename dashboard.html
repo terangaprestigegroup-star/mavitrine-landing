@@ -132,6 +132,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .s-nouvelle{background:#FEF3C7;color:#92400E}
 .s-confirmee{background:var(--gl);color:var(--gd)}
 .s-livree{background:#EDE9FE;color:#5B21B6}
+.s-annulee{background:#FFF1F1;color:#DC2626}
+.cmd-summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.cmd-summary-item{background:white;border:1px solid var(--line);border-radius:var(--r);padding:10px 8px;text-align:center}
+.cmd-summary-val{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:var(--ink)}
+.cmd-summary-label{font-size:10px;color:var(--ink3);margin-top:2px}
 .commande-btns{display:flex;gap:8px;margin-top:10px}
 .btn-confirmer{flex:1;padding:8px;background:var(--gl);color:var(--gd);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 .ctabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto}
@@ -309,11 +314,26 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
     <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800">MES COMMANDES</div>
     <button onclick="loadCommandes()" style="background:var(--sur);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">↻ Actualiser</button>
   </div>
+  <div class="cmd-summary-grid">
+    <div class="cmd-summary-item">
+      <div class="cmd-summary-val" id="cmd-sum-jour">—</div>
+      <div class="cmd-summary-label">📦 Aujourd'hui</div>
+    </div>
+    <div class="cmd-summary-item">
+      <div class="cmd-summary-val" id="cmd-sum-ca-jour">—</div>
+      <div class="cmd-summary-label">💰 CA aujourd'hui</div>
+    </div>
+    <div class="cmd-summary-item">
+      <div class="cmd-summary-val" id="cmd-sum-mois">—</div>
+      <div class="cmd-summary-label">📅 Ce mois</div>
+    </div>
+  </div>
   <div class="ctabs">
     <button class="ctab active" onclick="filterCommandes('toutes',this)">Toutes</button>
     <button class="ctab" onclick="filterCommandes('nouvelle',this)">Nouvelles</button>
     <button class="ctab" onclick="filterCommandes('confirmee',this)">Confirmées</button>
     <button class="ctab" onclick="filterCommandes('livree',this)">Livrées</button>
+    <button class="ctab" onclick="filterCommandes('annulee',this)">Annulées</button>
   </div>
   <div id="commandes-list"><div style="text-align:center;padding:30px;color:var(--ink3)">Chargement...</div></div>
 </div>
@@ -800,6 +820,21 @@ function updateStatsCommandes() {
   document.getElementById('stat-cmd-jour').textContent = cmdJour;
   document.getElementById('stat-cmd-mois').textContent = cmdMois;
 
+  // Résumé écran Commandes — le CA ne compte que les commandes
+  // confirmées ou livrées, pas les "nouvelle" ou "annulee", pour
+  // ne pas surestimer artificiellement le chiffre affiché
+  const estComptee = c => c.statut === 'confirmee' || c.statut === 'livree';
+  const caJour = allCommandes
+    .filter(c => new Date(c.created_at).toDateString() === todayStr && estComptee(c))
+    .reduce((s, c) => s + Number(c.produit_prix), 0);
+
+  const elSumJour = document.getElementById('cmd-sum-jour');
+  if (elSumJour) {
+    elSumJour.textContent = cmdJour;
+    document.getElementById('cmd-sum-ca-jour').textContent = caJour.toLocaleString('fr-FR') + ' F';
+    document.getElementById('cmd-sum-mois').textContent = cmdMois;
+  }
+
   // Affiche la bannière seulement si le commerçant a déjà des produits
   // mais aucune commande du tout (sinon la bannière onboarding suffit)
   if (allCommandes.length === 0 && produits.length > 0) {
@@ -858,8 +893,8 @@ function renderCommandes(list) {
   const el = document.getElementById('commandes-list');
   if (!list.length) { el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">📭 Aucune commande</div>'; return; }
   list = [...list].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  const labels = { nouvelle: '🆕 Nouvelle', confirmee: '✅ Confirmée', livree: '📦 Livrée' };
-  const cls = { nouvelle: 's-nouvelle', confirmee: 's-confirmee', livree: 's-livree' };
+  const labels = { nouvelle: '🆕 Nouvelle', confirmee: '✅ Confirmée', livree: '📦 Livrée', annulee: '❌ Annulée' };
+  const cls = { nouvelle: 's-nouvelle', confirmee: 's-confirmee', livree: 's-livree', annulee: 's-annulee' };
   el.innerHTML = list.map(c => `
     <div class="commande-card">
       <div class="commande-header">
@@ -869,11 +904,18 @@ function renderCommandes(list) {
       <div class="commande-date">📅 ${new Date(c.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
       <span class="statut-badge ${cls[c.statut]||'s-nouvelle'}">${labels[c.statut]||c.statut}</span>
       <div class="commande-btns">
+        ${c.client_telephone ? `<a href="https://wa.me/${c.client_telephone}" target="_blank" class="btn-confirmer" style="background:var(--gl);color:var(--gd);text-decoration:none;display:inline-flex;align-items:center;justify-content:center">💬 Contacter</a>` : ''}
         ${c.statut==='nouvelle'?`<button class="btn-confirmer" onclick="changerStatut('${c.id}','confirmee')">✅ Confirmer</button>`:''}
         ${c.statut==='confirmee'?`<button class="btn-confirmer" onclick="changerStatut('${c.id}','livree')">📦 Livré</button>`:''}
+        ${(c.statut==='nouvelle'||c.statut==='confirmee')?`<button class="btn-confirmer" style="background:#FFF1F1;color:#DC2626" onclick="annulerCommande('${c.id}')">❌ Annuler</button>`:''}
       </div>
     </div>
   `).join('');
+}
+
+async function annulerCommande(id) {
+  if (!confirm('Annuler cette commande ?')) return;
+  await changerStatut(id, 'annulee');
 }
 
 async function changerStatut(id, statut) {
