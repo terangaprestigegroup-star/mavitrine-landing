@@ -7,6 +7,7 @@
 <meta name="description" content="Transformez votre WhatsApp en boutique professionnelle. Catalogue en ligne, lien unique, QR Code. Gratuit pour démarrer.">
 <meta property="og:title" content="MaVitrine.sn — Boutique WhatsApp professionnelle">
 <meta property="og:description" content="Créez votre boutique en 2 minutes. Partagez un seul lien. Vendez plus.">
+<meta name="theme-color" content="#0E0E0F">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{--g:#1DB954;--gd:#17a349;--gl:rgba(29,185,84,.12);--p:#3D2BE8;--pb:rgba(61,43,232,.08);--o:#F5611A;--ink:#0E0E0F;--ink2:#2D2D30;--ink3:#6E6E78;--sur:#F7F7F8;--line:#E8E8EB;--w:#fff;--r:14px;--r2:20px;--shg:0 4px 20px rgba(29,185,84,.35);--shp:0 4px 20px rgba(61,43,232,.25);}
@@ -177,7 +178,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.1);padding:2
 
 <!-- NAV -->
 <nav class="nav">
-  <a href="#" class="nav-logo">🇸🇳 MaVitrine<span>.sn</span></a>
+  <a href="mavitrine-landing.html" class="nav-logo">🇸🇳 MaVitrine<span>.sn</span></a>
   <div class="nav-links">
     <a href="#tarifs" class="nav-link">Tarifs</a>
     <a href="inscription.html" id="nav-cta-btn" class="nav-cta">Commencer</a>
@@ -515,6 +516,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.1);padding:2
   <div class="cta-sub">Créez votre boutique gratuitement en 2 minutes.</div>
   <div class="waitlist-form">
     <input type="tel" class="waitlist-input" id="wl-phone" placeholder="Votre numéro WhatsApp (77 123 45 67)" inputmode="numeric">
+    <div id="wl-error" style="display:none;background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#FCA5A5;margin-bottom:10px"></div>
     <button class="waitlist-btn" onclick="submitWaitlist()">Créer ma boutique gratuitement →</button>
     <div class="waitlist-success" id="wl-success">✅ Inscrit ! Créez votre boutique maintenant.</div>
   </div>
@@ -554,22 +556,27 @@ function toggleFaq(btn) {
 }
 
 async function submitWaitlist() {
+  const errEl = document.getElementById('wl-error');
+  errEl.style.display = 'none';
   const phone = document.getElementById('wl-phone').value.trim().replace(/\s/g,'');
   if (!phone || phone.replace(/\D/g,'').length < 7) {
-    alert('Entrez votre numéro WhatsApp');
+    errEl.textContent = '⚠️ Entrez votre numéro WhatsApp (ex: 77 123 45 67)';
+    errEl.style.display = 'block';
     return;
   }
-  let tel = phone;
-  if (!tel.startsWith('221')) tel = '221' + tel;
+  let tel = phone.replace(/\D/g,'');
+  if (tel.startsWith('221') && tel.length > 9) tel = tel.slice(3);
+  const telFull = '221' + tel;
   try {
     await fetch(API + '/api/auth/waitlist', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({telephone: tel, source: 'landing'})
+      body: JSON.stringify({telephone: telFull, source: 'landing'})
     });
   } catch(e) {}
   document.getElementById('wl-success').style.display = 'block';
-  setTimeout(() => window.location.href = 'inscription.html', 1500);
+  // Passe le numéro en paramètre URL pour éviter la double saisie sur inscription.html
+  setTimeout(() => window.location.href = 'inscription.html?tel=' + tel, 1500);
 }
 
 const obs = new IntersectionObserver(entries => {
