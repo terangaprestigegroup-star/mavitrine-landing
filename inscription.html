@@ -98,7 +98,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
     <div class="tel-row" id="tel-row">
       <span class="tel-prefix">🇸🇳 +221</span>
       <span class="tel-sep"></span>
-      <input class="tel-input" type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric" oninput="validateTelephone(this)">
+      <input class="tel-input" type="tel" id="telephone" placeholder="77 123 45 67" inputmode="numeric" autocomplete="tel" oninput="validateTelephone(this)">
     </div>
   </div>
 
@@ -149,7 +149,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p3" oninput="nextPin(this,'p4')" onkeydown="prevPin(event,this,'p2')">
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p4" oninput="nextPin(this,'p5')" onkeydown="prevPin(event,this,'p3')">
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p5" oninput="nextPin(this,'p6')" onkeydown="prevPin(event,this,'p4')">
-      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p6" oninput="this.classList.add('filled')" onkeydown="prevPin(event,this,'p5')">
+      <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p6" oninput="nextPin(this,'c1')" onkeydown="prevPin(event,this,'p5')">
     </div>
     <div class="pin-hint">🔒 Plus simple à retenir qu'un mot de passe — comme le code de votre carte</div>
   </div>
@@ -173,7 +173,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
   </button>
 
   <div class="login-link">Déjà un compte ? <a href="connexion.html">Se connecter</a></div>
-  <div class="cgu">En vous inscrivant, vous acceptez nos <a href="#" style="color:var(--p)">conditions d'utilisation</a></div>
+  <div class="cgu">En vous inscrivant, vous acceptez nos <a href="cgv.html" style="color:var(--p)">conditions d'utilisation</a></div>
 </div>
 
 <div class="card" id="success-card" style="display:none">
@@ -191,6 +191,13 @@ let secteur='';
 
 window.onload=()=>{
   if(localStorage.getItem('mv_token'))window.location.href='dashboard.html';
+  const params = new URLSearchParams(window.location.search);
+  const tel = params.get('tel');
+  if (tel) {
+    const telField = document.getElementById('telephone');
+    telField.value = tel;
+    validateTelephone(telField);
+  }
 };
 
 function sel(btn,s){
