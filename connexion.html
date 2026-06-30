@@ -102,7 +102,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
     <div class="tel-row">
       <span class="tel-prefix">🇸🇳 +221</span>
       <span class="tel-sep"></span>
-      <input class="tel-input" type="tel" id="tel-connexion" placeholder="77 123 45 67" inputmode="numeric">
+      <input class="tel-input" type="tel" id="tel-connexion" placeholder="77 123 45 67" inputmode="numeric" autocomplete="tel" onkeydown="if(event.key==='Enter'){document.getElementById('d1').focus();}">
     </div>
     <div class="field-hint">Le numéro utilisé lors de votre inscription</div>
   </div>
@@ -117,6 +117,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c5" oninput="nextPin(this,'c6')" onkeydown="prevPin(event,this,'c4')">
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="c6" oninput="autoConnect()" onkeydown="prevPin(event,this,'c5')">
     </div>
+    <div style="text-align:center;margin-top:6px">
+      <button type="button" onclick="togglePinVisibility('c')" id="toggle-pin-c" style="background:none;border:none;color:var(--ink3);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px">👁️ Afficher le code</button>
+    </div>
     <div class="pin-hint">Votre code PIN créé lors de l'inscription</div>
   </div>
 
@@ -128,8 +131,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
   <div class="divider">ou</div>
 
   <button class="btn-outline" onclick="useOTP()">💬 Recevoir un code par WhatsApp</button>
-
-  <div class="note">PIN oublié ? <a href="#" onclick="useOTP();return false">Recevoir un code par WhatsApp</a></div>
 </div>
 
 <!-- OTP FALLBACK CARD -->
@@ -162,7 +163,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
     <span class="spinner" id="spin-otp"></span>
   </button>
 
-  <div class="note">Pas reçu ? <a href="#" onclick="useOTP();return false">Renvoyer le code</a></div>
+  <div class="note">Pas reçu ? <button onclick="useOTP()" style="background:none;border:none;color:var(--p);font-size:13px;font-weight:600;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif">Renvoyer le code</button></div>
   <button class="btn-outline" onclick="showConnexion()">← Retour</button>
 </div>
 
@@ -185,7 +186,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px;b
     Créer mon compte gratuitement →
   </a>
   <div style="text-align:center;font-size:13px;color:var(--ink3);margin-top:14px">
-    Déjà inscrit ? <button onclick="showTab('connexion',document.querySelector('.tab'))" style="background:none;border:none;color:var(--p);font-weight:600;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Se connecter</button>
+    Déjà inscrit ? <button onclick="document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab')[0].classList.add('active');showTab('connexion',document.querySelectorAll('.tab')[0])" style="background:none;border:none;color:var(--p);font-weight:600;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Se connecter</button>
   </div>
 </div>
 
@@ -208,6 +209,16 @@ function showTab(tab, btn){
 function showConnexion(){
   document.getElementById('card-otp').style.display='none';
   document.getElementById('card-connexion').style.display='block';
+}
+
+function togglePinVisibility(prefix){
+  const btn = document.getElementById('toggle-pin-'+prefix);
+  const isHidden = btn.textContent.includes('Afficher');
+  ['1','2','3','4','5','6'].forEach(i=>{
+    const el = document.getElementById(prefix+i);
+    if(el) el.type = isHidden ? 'text' : 'password';
+  });
+  btn.textContent = isHidden ? '🙈 Masquer le code' : '👁️ Afficher le code';
 }
 
 function nextPin(cur, nextId){
@@ -247,12 +258,12 @@ function setLoading(btnId, spinnerId, loading){
 
 function autoConnect(){
   const pin=getPin('c');
-  if(pin.length===6) setTimeout(connecter, 200);
+  if(pin.length===6) setTimeout(connecter, 400);
 }
 
 function autoVerify(){
   const code=getPin('o');
-  if(code.length===6) setTimeout(verifierOTP, 200);
+  if(code.length===6) setTimeout(verifierOTP, 400);
 }
 
 async function connecter(){
@@ -331,7 +342,7 @@ async function useOTP(){
 
     document.getElementById('card-connexion').style.display='none';
     document.getElementById('card-otp').style.display='block';
-    document.getElementById('otp-phone-display').textContent='+221 '+tel.replace('221','');
+    document.getElementById('otp-phone-display').textContent='+221 '+tel.slice(3);
 
     if(data.code){
       document.getElementById('suc-otp').textContent='Code test : '+data.code;
