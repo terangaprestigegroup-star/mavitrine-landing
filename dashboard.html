@@ -153,6 +153,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .msg-type{font-size:11px;font-weight:700;color:var(--p);margin-bottom:6px}
 .msg-text{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:10px}
 .msg-btns{display:flex;gap:8px}
+.confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-modal.open{display:flex}
+.confirm-box{background:white;border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center}
+.confirm-title{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;margin-bottom:8px}
+.confirm-sub{font-size:13px;color:var(--ink3);margin-bottom:20px}
+.confirm-btns{display:flex;gap:10px}
+.confirm-btn-cancel{flex:1;padding:12px;background:var(--sur);border:1px solid var(--line);border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.confirm-btn-ok{flex:1;padding:12px;background:#DC2626;color:white;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif}
 .btn-copy{flex:1;padding:8px;background:var(--pb);color:var(--p);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
 .btn-wa-msg{flex:1;padding:8px;background:#25D366;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:flex;align-items:center;justify-content:center}
 </style>
@@ -201,7 +209,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 <!-- STATS -->
 <div class="section">
   <div class="inactivity-banner" id="inactivity-banner">
-    📢 Aucune commande pour le moment. <a href="#" onclick="document.getElementById('btn-qrcode').click();return false" style="color:#92400E;font-weight:700;margin-left:4px">Partagez votre lien</a>
+    📢 Aucune commande pour le moment. <button onclick="document.getElementById('btn-qrcode').click()" style="background:none;border:none;color:#92400E;font-weight:700;margin-left:4px;text-decoration:underline;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;padding:0">Partagez votre lien</button>
   </div>
   <div class="section-title">Statistiques</div>
   <div class="stats-grid">
@@ -257,11 +265,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">QR Code</div>
       <div class="action-d">Imprimer ou partager</div>
     </a>
-    <a href="#" id="btn-catalogue" class="action">
-      <div class="action-icon action-icon-g">📄</div>
-      <div class="action-t">Imprimer mon catalogue</div>
-      <div class="action-d">PDF prêt à imprimer</div>
-    </a>
     <a href="#" id="btn-image-catalogue" class="action">
       <div class="action-icon action-icon-p">🖼️</div>
       <div class="action-t">Image à partager</div>
@@ -270,6 +273,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   </div>
   <button class="voir-plus-btn" onclick="toggleVoirPlus()" id="voir-plus-toggle">Voir plus d'options ›</button>
   <div class="actions-grid" id="actions-extra" style="display:none;margin-top:10px">
+    <a href="#" id="btn-catalogue" class="action">
+      <div class="action-icon action-icon-g">📄</div>
+      <div class="action-t">Imprimer mon catalogue</div>
+      <div class="action-d">PDF prêt à imprimer</div>
+    </a>
     <a href="#" id="btn-assistant" class="action">
       <div class="action-icon action-icon-p">⚡</div>
       <div class="action-t">Assistant IA</div>
@@ -359,13 +367,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 </div>
 
 <!-- MODAL AJOUT PRODUIT -->
-<div class="modal-overlay" id="modal-overlay">
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-title">Ajouter un produit</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
+      <div class="field">
+        <label>Nom du produit *</label>
+        <input type="text" id="p-nom" placeholder="Ex: Robe wax bleue">
+      </div>
       <div class="field-row">
         <div class="field">
           <label>Prix (FCFA) *</label>
@@ -381,10 +393,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
             </select>
           </div>
         </div>
-      </div>
-      <div class="field">
-        <label>Nom du produit *</label>
-        <input type="text" id="p-nom" placeholder="Ex: Robe wax bleue">
       </div>
       <div class="field">
         <label>Description</label>
@@ -492,6 +500,18 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   </div>
 </div>
 
+<!-- MODAL CONFIRMATION -->
+<div class="confirm-modal" id="confirm-modal">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Confirmer</div>
+    <div class="confirm-sub" id="confirm-sub"></div>
+    <div class="confirm-btns">
+      <button class="confirm-btn-cancel" onclick="fermerConfirm()">Annuler</button>
+      <button class="confirm-btn-ok" id="confirm-ok-btn">Confirmer</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API = 'https://mavitrine-sn-bphm.vercel.app';
 let token = '', produits = [], editingId = null, allCommandes = [];
@@ -551,14 +571,16 @@ async function loadProfil() {
     const data = await res.json();
     if (data.user) {
       const u = data.user;
+      localStorage.setItem('mv_user', JSON.stringify(u));
       document.getElementById('nav-name').textContent = u.nom || '';
       document.getElementById('welcome-title').textContent = 'Bonjour ' + (u.nom?.split(' ')[0] || '') + ' 👋';
       const slug = u.slug || localStorage.getItem('mv_slug') || '';
       localStorage.setItem('mv_slug', slug);
       document.getElementById('welcome-slug').textContent = 'mavitrine.sn/' + slug;
-      const vitrineUrl = 'vitrine.html?slug=' + slug;
-      const waMsg = encodeURIComponent('Bonjour 👋 Découvrez ma boutique !');
-      document.getElementById('btn-wa').href = 'https://wa.me/?text=' + encodeURIComponent(vitrineUrl);
+      const vitrineUrl = 'https://terangaprestigegroup-star.github.io/mavitrine-landing/vitrine.html?slug=' + slug;
+      const nomBoutique = u.nom_boutique || u.nom || 'Ma boutique';
+      const waMsg = encodeURIComponent('👋 Découvrez ' + nomBoutique + ' — tous mes produits et prix disponibles ici :\n' + vitrineUrl);
+      document.getElementById('btn-wa').href = 'https://wa.me/?text=' + waMsg;
       document.getElementById('btn-voir-vitrine').href = vitrineUrl;
       document.getElementById('btn-nav-boutique').onclick = () => window.open(vitrineUrl, '_blank');
       const plan = u.plan || 'gratuit';
@@ -772,12 +794,13 @@ async function toggleVisible(id, current) {
 }
 
 async function supprimerProduit(id) {
-  if (!confirm('Supprimer ce produit ?')) return;
-  try {
-    await fetch(API + '/api/products/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
-    showToast('Produit supprimé', 's');
-    await loadProduits();
-  } catch(e) {}
+  showConfirm('Supprimer ce produit ?', 'Cette action est irréversible.', async () => {
+    try {
+      await fetch(API + '/api/products/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+      showToast('Produit supprimé', 's');
+      await loadProduits();
+    } catch(e) {}
+  }, '🗑️ Supprimer');
 }
 
 // ===== COMMANDES =====
@@ -914,8 +937,9 @@ function renderCommandes(list) {
 }
 
 async function annulerCommande(id) {
-  if (!confirm('Annuler cette commande ?')) return;
-  await changerStatut(id, 'annulee');
+  showConfirm('Annuler cette commande ?', 'Le client sera considéré comme non confirmé.', async () => {
+    await changerStatut(id, 'annulee');
+  }, '❌ Annuler la commande');
 }
 
 async function changerStatut(id, statut) {
@@ -1265,7 +1289,19 @@ async function genererMessages() {
   }
 }
 
-// ===== HELPERS =====
+function showConfirm(title, sub, onOk, btnLabel = 'Confirmer') {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-sub').textContent = sub;
+  const okBtn = document.getElementById('confirm-ok-btn');
+  okBtn.textContent = btnLabel;
+  okBtn.onclick = () => { fermerConfirm(); onOk(); };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function fermerConfirm() {
+  document.getElementById('confirm-modal').classList.remove('open');
+}
+
 function fermerOverlay(id) { document.getElementById(id).classList.remove('open'); }
 
 // ===== SCORE COMPLÉTUDE =====
