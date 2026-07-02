@@ -64,7 +64,7 @@ nav{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;
 <div class="toast toast-success" id="toast-success">✅ <span id="toast-msg"></span></div>
 <div class="toast toast-error" id="toast-error">❌ <span id="toast-err"></span></div>
 <nav>
-  <button class="nav-back" onclick="history.back()">←</button>
+  <button class="nav-back" onclick="retourDashboard()">←</button>
   <div class="nav-title">Passer Premium</div>
 </nav>
 
@@ -78,7 +78,6 @@ nav{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;
     <li>Statistiques de visites</li>
     <li>Assistant Vente IA WhatsApp</li>
     <li>Catalogue à imprimer</li>
-    <li>Boutique certifiée MaVitrine</li>
     <li>Sans branding MaVitrine</li>
   </ul>
 </div>
@@ -145,6 +144,14 @@ window.onload=()=>{
   if(!token)return window.location.href='connexion.html';
 };
 
+function retourDashboard(){
+  if(document.referrer && document.referrer.includes('dashboard')){
+    history.back();
+  } else {
+    window.location.href='dashboard.html';
+  }
+}
+
 function selectPlan(plan,montant,btn){
   selectedPlan=plan;selectedMontant=montant;
   document.querySelectorAll('.plan-opt').forEach(b=>b.classList.remove('selected'));
@@ -169,6 +176,8 @@ function updateInstructions(){
   const appNames={'wave':'Wave','orange_money':'Orange Money'};
   document.querySelectorAll('.instr-step div')[0].textContent='Ouvrez votre application '+appNames[selectedMethode];
   document.getElementById('numero-dest').textContent=NUMERO.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,'$1 $2 $3 $4 $5');
+  const placeholders={'wave':'Ex: WV-123456789','orange_money':'Ex: OM-123456789'};
+  document.getElementById('id-transaction').placeholder=placeholders[selectedMethode]||'Ex: 123456789';
 }
 
 function copyNum(){
@@ -178,7 +187,7 @@ function copyNum(){
 async function soumettre(){
   const idTx=document.getElementById('id-transaction').value.trim();
   if(!selectedMethode)return showToast('Choisissez un mode de paiement','error');
-  if(!idTx)return showToast('Entrez l\'ID de transaction','error');
+  if(!idTx||idTx.length<4)return showToast('Entrez un ID de transaction valide','error');
 
   const btn=document.getElementById('btn-text');
   const sp=document.getElementById('spinner');
