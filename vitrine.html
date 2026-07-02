@@ -106,7 +106,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;col
   <div class="b-logo" id="b-logo">🛍️</div>
   <div class="b-name" id="b-name">Chargement...</div>
   <div class="b-tag" id="b-tag"></div>
-  <div class="b-certified" id="b-certified" style="display:none">✓ Boutique certifiée MaVitrine</div>
   <div class="b-info-row" id="b-info-row"></div>
 </div>
 
@@ -246,10 +245,6 @@ async function chargerVitrine() {
     // Update header
     document.getElementById('b-name').textContent = vitrine.nom_boutique || 'Ma Boutique';
     document.getElementById('b-tag').textContent = vitrine.slogan || '';
-
-    if (vitrine.is_verified) {
-      document.getElementById('b-certified').style.display = 'inline-flex';
-    }
 
     // Info row
     const infoItems = [];
