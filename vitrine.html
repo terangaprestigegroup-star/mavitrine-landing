@@ -326,7 +326,7 @@ function renderProduits(produits) {
   grid.innerHTML = produits.map(p => `
     <div class="produit-card" onclick="ouvrirProduit('${p.id}')">
       <div class="produit-img">
-        ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}" onerror="this.parentElement.textContent='📦'">` : '📦'}
+        ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}" onerror="this.style.display='none';this.previousElementSibling?.remove();this.insertAdjacentText('beforebegin','📦')">` : '📦'}
         ${stockBadge(p.stock_status)}
       </div>
       <div class="produit-body">
@@ -527,7 +527,7 @@ async function partager() {
   if (navigator.share) {
     await navigator.share({ title: nom, text: 'Découvrez ' + nom, url }).catch(()=>{});
   } else {
-    navigator.clipboard.writeText(url).then(() => alert('Lien copié !')).catch(()=>{});
+    navigator.clipboard.writeText(url).then(() => showToastPanier('Lien copié ✅')).catch(()=>{});
   }
 }
 </script>
