@@ -36,6 +36,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 .toast-s{background:var(--gl);border:1px solid rgba(29,185,84,.3);color:var(--gd)}
 .toast-e{background:#FFF1F1;border:1px solid #FECACA;color:#DC2626}
 .login-card{background:white;border-radius:var(--r2);padding:24px;margin:40px 16px;text-align:center;border:1px solid var(--line)}
+.confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-modal.open{display:flex}
+.confirm-box{background:white;border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center}
+.confirm-title{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;margin-bottom:8px}
+.confirm-sub{font-size:13px;color:var(--ink3);margin-bottom:16px}
+.confirm-input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:16px;background:var(--sur)}
+.confirm-btns{display:flex;gap:10px}
+.confirm-btn-cancel{flex:1;padding:12px;background:var(--sur);border:1px solid var(--line);border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.confirm-btn-ok{flex:1;padding:12px;background:var(--g);color:white;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif}
+.loading-state{text-align:center;padding:60px 20px;color:var(--ink3)}
 </style>
 </head>
 <body>
@@ -47,6 +57,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   <div class="nav-logo">🇸🇳 MaVitrine Admin</div>
   <div class="nav-badge">ADMIN</div>
 </nav>
+
+<div id="loading-state" class="loading-state">
+  <div style="font-size:32px;margin-bottom:10px">⏳</div>
+  <div>Vérification des accès...</div>
+</div>
 
 <div id="admin-content" style="display:none">
   <div class="stats-row">
@@ -83,6 +98,19 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   </div>
 </div>
 
+<!-- MODAL CONFIRMATION -->
+<div class="confirm-modal" id="confirm-modal">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Confirmer</div>
+    <div class="confirm-sub" id="confirm-sub"></div>
+    <input type="text" class="confirm-input" id="confirm-input" style="display:none" placeholder="Raison (optionnel)">
+    <div class="confirm-btns">
+      <button class="confirm-btn-cancel" onclick="fermerConfirm()">Annuler</button>
+      <button class="confirm-btn-ok" id="confirm-ok-btn">Confirmer</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API = 'https://mavitrine-sn-bphm.vercel.app';
 let token = '';
@@ -97,6 +125,7 @@ window.onload = async () => {
 async function loadStats() {
   try {
     const res = await fetch(API + '/api/payments/admin/stats', { headers: { 'Authorization': 'Bearer ' + token } });
+    document.getElementById('loading-state').style.display = 'none';
     if (res.status === 403 || res.status === 401) {
       document.getElementById('no-access').style.display = 'block';
       document.getElementById('admin-content').style.display = 'none';
@@ -109,6 +138,7 @@ async function loadStats() {
     const revenus = data.stats?.revenus_mois || 0;
     document.getElementById('stat-revenus').textContent = Number(revenus).toLocaleString('fr-FR') + ' F';
   } catch(e) {
+    document.getElementById('loading-state').style.display = 'none';
     document.getElementById('no-access').style.display = 'block';
   }
 }
@@ -131,7 +161,7 @@ function renderPaiements(list) {
   }
   const methLabels = { wave: '🌊 Wave', orange_money: '🟠 Orange Money', free_money: '🔵 Free Money' };
   el.innerHTML = list.map(p => `
-    <div class="pay-card">
+    <div class="pay-card" data-pay-id="${p.id}">
       <div class="pay-header">
         <div>
           <div class="pay-name">${p.nom}</div>
@@ -153,54 +183,87 @@ function renderPaiements(list) {
   `).join('');
 }
 
-async function validerPaiement(id) {
-  if (!confirm('Confirmer la validation de ce paiement ?')) return;
-  try {
-    const res = await fetch(API + '/api/payments/admin/' + id + '/valider', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const data = await res.json();
-    if (!res.ok) return showToast(data.error || 'Erreur', 'e');
-    showToast(data.message || 'Paiement validé ✅', 's');
-    if (data.whatsapp_notification) {
-      setTimeout(() => {
-        if (confirm('Envoyer la confirmation WhatsApp au commerçant ?')) {
-          window.open(data.whatsapp_notification, '_blank');
+function validerPaiement(id) {
+  showConfirm(
+    'Valider ce paiement ?',
+    'Le compte du commerçant sera immédiatement mis à niveau.',
+    async () => {
+      const btn = document.querySelector(`[data-pay-id="${id}"] .btn-valider`);
+      if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+      try {
+        const res = await fetch(API + '/api/payments/admin/' + id + '/valider', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (!res.ok) return showToast(data.error || 'Erreur', 'e');
+        showToast(data.message || 'Paiement validé ✅', 's');
+        if (data.whatsapp_notification) {
+          showConfirm(
+            'Notifier le commerçant ?',
+            'Envoyer la confirmation par WhatsApp.',
+            () => window.open(data.whatsapp_notification, '_blank'),
+            'Envoyer'
+          );
         }
-      }, 500);
-    }
-    await loadStats();
-    await loadPaiements();
-  } catch(e) {
-    showToast('Erreur réseau', 'e');
-  }
+        await loadStats();
+        await loadPaiements();
+      } catch(e) {
+        showToast('Erreur réseau', 'e');
+      }
+    },
+    '✅ Valider'
+  );
 }
 
-async function rejeterPaiement(id) {
-  const raison = prompt('Raison du rejet (optionnel) :', 'Transaction non trouvée');
-  if (raison === null) return;
-  try {
-    const res = await fetch(API + '/api/payments/admin/' + id + '/rejeter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ raison })
-    });
-    const data = await res.json();
-    if (!res.ok) return showToast(data.error || 'Erreur', 'e');
-    showToast('Paiement rejeté', 's');
-    if (data.whatsapp_notification) {
-      setTimeout(() => {
-        if (confirm('Envoyer la notification WhatsApp au commerçant ?')) {
-          window.open(data.whatsapp_notification, '_blank');
+function rejeterPaiement(id) {
+  showConfirm(
+    'Rejeter ce paiement ?',
+    'Précisez une raison si besoin.',
+    async () => {
+      const raison = document.getElementById('confirm-input').value.trim() || 'Transaction non trouvée';
+      try {
+        const res = await fetch(API + '/api/payments/admin/' + id + '/rejeter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ raison })
+        });
+        const data = await res.json();
+        if (!res.ok) return showToast(data.error || 'Erreur', 'e');
+        showToast('Paiement rejeté', 's');
+        if (data.whatsapp_notification) {
+          showConfirm(
+            'Notifier le commerçant ?',
+            'Envoyer la notification par WhatsApp.',
+            () => window.open(data.whatsapp_notification, '_blank'),
+            'Envoyer'
+          );
         }
-      }, 500);
-    }
-    await loadStats();
-    await loadPaiements();
-  } catch(e) {
-    showToast('Erreur réseau', 'e');
-  }
+        await loadStats();
+        await loadPaiements();
+      } catch(e) {
+        showToast('Erreur réseau', 'e');
+      }
+    },
+    '❌ Rejeter',
+    true
+  );
+}
+
+function showConfirm(title, sub, onOk, btnLabel = 'Confirmer', withInput = false) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-sub').textContent = sub;
+  const input = document.getElementById('confirm-input');
+  input.style.display = withInput ? 'block' : 'none';
+  input.value = '';
+  const okBtn = document.getElementById('confirm-ok-btn');
+  okBtn.textContent = btnLabel;
+  okBtn.onclick = () => { fermerConfirm(); onOk(); };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function fermerConfirm() {
+  document.getElementById('confirm-modal').classList.remove('open');
 }
 
 function showToast(msg, type) {
