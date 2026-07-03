@@ -276,11 +276,10 @@ async function connecter(){
   setLoading('btn-conn-text','spin-conn',true);
 
   try{
-    // Use OTP verify endpoint with PIN as code
-    const res=await fetch(API+'/api/auth/otp/verifier',{
+    const res=await fetch(API+'/api/auth/connexion',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({telephone:tel, code:pin})
+      body:JSON.stringify({telephone:tel, pin:pin})
     });
     const data=await res.json();
     setLoading('btn-conn-text','spin-conn',false);
@@ -292,7 +291,8 @@ async function connecter(){
         el.value='';el.classList.remove('filled');
       });
       document.getElementById('c1').focus();
-      if(res.status===400) return showErr('err-connexion','Code PIN incorrect');
+      if(res.status===429) return showErr('err-connexion', data.error||'Trop de tentatives, réessayez plus tard');
+      if(res.status===401) return showErr('err-connexion','Code PIN incorrect');
       if(res.status===404) return showErr('err-connexion','Numéro non trouvé. Inscrivez-vous d\'abord.');
       return showErr('err-connexion', data.error||'Erreur connexion');
     }
