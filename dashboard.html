@@ -240,8 +240,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
   <div class="premium-card" onclick="window.location.href='paiement.html'">
     <div class="premium-card-icon">⭐</div>
     <div class="premium-card-body">
-      <div class="premium-card-title">Premium : Catalogue à imprimer + Assistant IA + Stats avancées</div>
-      <div class="premium-card-price">100 FCFA/jour →</div>
+      <div class="premium-card-title">Pro : Produits illimités + Catalogue PDF + Stats avancées</div>
+      <div class="premium-card-price">167 FCFA/jour →</div>
     </div>
   </div>
 </div>
@@ -270,23 +270,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="action-t">Image à partager</div>
       <div class="action-d">Pour story ou statut</div>
     </a>
-  </div>
-  <button class="voir-plus-btn" onclick="toggleVoirPlus()" id="voir-plus-toggle">Voir plus d'options ›</button>
-  <div class="actions-grid" id="actions-extra" style="display:none;margin-top:10px">
-    <a href="#" id="btn-catalogue" class="action">
-      <div class="action-icon action-icon-g">📄</div>
-      <div class="action-t">Imprimer mon catalogue</div>
-      <div class="action-d">PDF prêt à imprimer</div>
-    </a>
-    <a href="#" id="btn-assistant" class="action">
-      <div class="action-icon action-icon-p">⚡</div>
-      <div class="action-t">Assistant IA</div>
-      <div class="action-d">Messages qui vendent</div>
-    </a>
     <a href="profil.html" class="action">
       <div class="action-icon action-icon-o">⚙️</div>
       <div class="action-t">Mon profil</div>
       <div class="action-d">Modifier mes infos</div>
+    </a>
+    <a href="#" id="btn-catalogue" class="action" onclick="event.preventDefault();checkProFeature('catalogue')">
+      <div class="action-icon action-icon-g">📄</div>
+      <div class="action-t">Imprimer mon catalogue</div>
+      <div class="action-d">PDF — Pro</div>
     </a>
   </div>
 </div>
@@ -515,6 +507,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
 <script>
 const API = 'https://mavitrine-sn-bphm.vercel.app';
 let token = '', produits = [], editingId = null, allCommandes = [];
+let currentPlan = 'gratuit';
 
 const SUPABASE_URL = 'https://nzetabvpyhmzqzzyvpqn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56ZXRhYnZweWhtenF6enl2cHFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTI0NjAsImV4cCI6MjA5NDg4ODQ2MH0.WzoYEH4b93HLhf5lYzYeX3VnzpHQ1wEOczLMf02d19c';
@@ -549,9 +542,7 @@ window.onload = async () => {
 
   // Bind buttons
   document.getElementById('btn-qrcode').addEventListener('click', ouvrirQR);
-  document.getElementById('btn-catalogue').addEventListener('click', ouvrirCatalogue);
   document.getElementById('btn-image-catalogue').addEventListener('click', genererImageCatalogue);
-  document.getElementById('btn-assistant').addEventListener('click', ouvrirAssistant);
 };
 
 // ===== NAVIGATION =====
@@ -584,6 +575,7 @@ async function loadProfil() {
       document.getElementById('btn-voir-vitrine').href = vitrineUrl;
       document.getElementById('btn-nav-boutique').onclick = () => window.open(vitrineUrl, '_blank');
       const plan = u.plan || 'gratuit';
+      currentPlan = plan;
       const planLabels = { gratuit: '🆓 Plan Gratuit', premium: '⭐ Premium', business: '💎 Business' };
       document.getElementById('plan-badge').textContent = planLabels[plan] || '🆓 Plan Gratuit';
     }
@@ -1287,6 +1279,26 @@ async function genererMessages() {
     document.getElementById('ai-form').style.display = 'block';
     showToast('Erreur réseau', 'e');
   }
+}
+
+// ===== DÉCLENCHEURS PRO (Blueprint) =====
+// Affiche un message contextuel uniquement quand une limite Starter
+// est atteinte — jamais de publicité intrusive, jamais préventif
+function checkProFeature(feature) {
+  if (currentPlan !== 'gratuit') {
+    // Utilisateur déjà Pro : action normale
+    if (feature === 'catalogue') ouvrirCatalogue();
+    return;
+  }
+  const messages = {
+    catalogue: 'Le catalogue PDF imprimable fait partie du Plan Pro, avec plusieurs modèles et affiches QR Code.',
+  };
+  showConfirm(
+    '⭐ Fonctionnalité Pro',
+    messages[feature] || 'Cette fonctionnalité fait partie du Plan Pro.',
+    () => window.location.href = 'paiement.html',
+    'Découvrir le Pro'
+  );
 }
 
 function showConfirm(title, sub, onOk, btnLabel = 'Confirmer') {
