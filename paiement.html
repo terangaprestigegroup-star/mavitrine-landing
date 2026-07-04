@@ -65,33 +65,32 @@ nav{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;
 <div class="toast toast-error" id="toast-error">❌ <span id="toast-err"></span></div>
 <nav>
   <button class="nav-back" onclick="retourDashboard()">←</button>
-  <div class="nav-title">Passer Premium</div>
+  <div class="nav-title">Passer Pro</div>
 </nav>
 
 <div class="hero-prix">
   <div class="hero-tag">⭐ Offre limitée — 50 premiers</div>
   <div class="hero-title">Vendez encore plus</div>
-  <div class="hero-price" id="hero-price">3 000 FCFA</div>
-  <div class="hero-day" id="hero-day">/mois · = 100 FCFA/jour seulement</div>
+  <div class="hero-price" id="hero-price">5 000 FCFA</div>
+  <div class="hero-day" id="hero-day">/mois · = 167 FCFA/jour seulement</div>
   <ul class="feats-list">
     <li>Produits illimités</li>
-    <li>Statistiques de visites</li>
-    <li>Assistant Vente IA WhatsApp</li>
-    <li>Catalogue à imprimer</li>
+    <li>Jusqu'à 5 photos par produit</li>
+    <li>Produits vedettes</li>
+    <li>Couleurs personnalisées</li>
+    <li>Statistiques avancées</li>
+    <li>Catalogue PDF (plusieurs modèles)</li>
+    <li>Affiches avec QR Code</li>
     <li>Sans branding MaVitrine</li>
   </ul>
 </div>
 
 <div class="card">
-  <div class="card-title">Choisir un plan</div>
+  <div class="card-title">Confirmer votre plan</div>
   <div class="plan-select">
-    <div class="plan-opt selected" onclick="selectPlan('premium',3000,this)">
-      <div class="plan-opt-name">Premium</div>
-      <div class="plan-opt-price">3 000 FCFA/mois</div>
-    </div>
-    <div class="plan-opt" onclick="selectPlan('business',7000,this)">
-      <div class="plan-opt-name">Business</div>
-      <div class="plan-opt-price">7 000 FCFA/mois</div>
+    <div class="plan-opt selected" onclick="selectPlan('pro',5000,this)">
+      <div class="plan-opt-name">Pro</div>
+      <div class="plan-opt-price">5 000 FCFA/mois</div>
     </div>
   </div>
 </div>
@@ -137,7 +136,7 @@ nav{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;
 <script>
 const API='https://mavitrine-sn-bphm.vercel.app';
 const NUMERO='221711288439';
-let token='',selectedPlan='premium',selectedMethode='',selectedMontant=3000;
+let token='',selectedPlan='pro',selectedMethode='',selectedMontant=5000;
 
 window.onload=()=>{
   token=localStorage.getItem('mv_token');
