@@ -802,9 +802,27 @@ async function loadCommandes() {
     renderCommandes(allCommandes);
     updateStatsCommandes();
     updateBadgeCommandes();
+    checkPremiereCommande();
   } catch(e) {
     document.getElementById('commandes-list').innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">Erreur chargement</div>';
   }
+}
+
+// ===== FÉLICITATIONS PREMIÈRE COMMANDE (Blueprint) =====
+// Se déclenche une seule fois, quand le commerçant a exactement 1
+// commande ET n'a jamais vu ce message auparavant (marqueur localStorage
+// par compte, pas global, pour éviter tout conflit entre commerçants)
+function checkPremiereCommande() {
+  if (allCommandes.length !== 1) return;
+  const key = 'mv_premiere_commande_vue_' + (JSON.parse(localStorage.getItem('mv_user') || '{}').id || '');
+  if (localStorage.getItem(key)) return;
+  localStorage.setItem(key, '1');
+  showConfirm(
+    '🎉 Bravo, votre première commande !',
+    'Votre boutique fonctionne. Continuez à la partager pour vendre encore plus.',
+    () => {},
+    'Super !'
+  );
 }
 
 function updateBadgeCommandes() {
