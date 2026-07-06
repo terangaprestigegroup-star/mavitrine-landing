@@ -39,6 +39,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--sur);min-height:100vh;col
 .produits-section{padding:16px}
 .produits-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .produit-card{background:white;border-radius:var(--r2);overflow:hidden;border:1px solid var(--line);cursor:pointer;transition:transform .15s}
+.produit-card.produit-vedette{border:1.5px solid #F59E0B;box-shadow:0 2px 12px rgba(245,158,11,.15)}
+.vedette-badge{position:absolute;top:8px;left:8px;background:#F59E0B;color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:50px;z-index:1}
 .produit-card:active{transform:scale(.97)}
 .produit-img{height:130px;background:var(--sur);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;overflow:hidden}
 .produit-img img{width:100%;height:100%;object-fit:cover}
@@ -312,16 +314,20 @@ function renderProduits(produits) {
   grid.style.display = 'grid';
   empty.style.display = 'none';
 
+  // Produits vedettes affichés en premier (fonctionnalité Pro)
+  const produitsTries = [...produits].sort((a, b) => (b.is_vedette ? 1 : 0) - (a.is_vedette ? 1 : 0));
+
   const stockBadge = s => {
     if (s === 'rupture') return '<div class="stock-badge badge-rupture">Rupture</div>';
     if (s === 'limite') return '<div class="stock-badge badge-limite">Limité</div>';
     return '<div class="stock-badge badge-dispo">Dispo</div>';
   };
 
-  grid.innerHTML = produits.map(p => `
-    <div class="produit-card" onclick="ouvrirProduit('${p.id}')">
+  grid.innerHTML = produitsTries.map(p => `
+    <div class="produit-card${p.is_vedette ? ' produit-vedette' : ''}" onclick="ouvrirProduit('${p.id}')">
       <div class="produit-img">
         ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}" onerror="this.style.display='none';this.previousElementSibling?.remove();this.insertAdjacentText('beforebegin','📦')">` : '📦'}
+        ${p.is_vedette ? '<div class="vedette-badge">⭐ Vedette</div>' : ''}
         ${stockBadge(p.stock_status)}
       </div>
       <div class="produit-body">
