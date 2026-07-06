@@ -626,15 +626,17 @@ function renderProduits() {
   }
   onboardBanner.style.display = 'none';
   const stockLabels = { disponible: '✅ Disponible', limite: '⚠️ Limité', rupture: '❌ Rupture' };
+  const estPro = currentPlan !== 'gratuit';
   list.innerHTML = produits.map(p => `
     <div class="produit-item">
       <div class="produit-img">${p.image_url ? `<img src="${p.image_url}" onerror="this.parentElement.textContent='📦'">` : '📦'}</div>
       <div class="produit-info">
-        <div class="produit-nom">${p.nom}</div>
+        <div class="produit-nom">${p.is_vedette ? '⭐ ' : ''}${p.nom}</div>
         <div class="produit-prix">${Number(p.prix).toLocaleString('fr-FR')} FCFA</div>
         <div class="produit-stock">${stockLabels[p.stock_status] || '✅ Disponible'}</div>
       </div>
       <div class="produit-actions">
+        ${estPro ? `<button class="btn-edit" style="${p.is_vedette ? 'background:#FEF3C7;border-color:#FCD34D' : ''}" onclick="toggleVedette('${p.id}')" title="Mettre en vedette">${p.is_vedette ? '⭐' : '☆'}</button>` : ''}
         <button class="toggle ${p.is_visible !== false ? 'on' : 'off'}" onclick="toggleVisible('${p.id}', ${p.is_visible !== false})"></button>
         <button class="btn-edit" onclick="editProduit('${p.id}')">✏️</button>
         <button class="btn-del" onclick="supprimerProduit('${p.id}')">🗑️</button>
@@ -794,6 +796,18 @@ async function toggleVisible(id, current) {
     await fetch(API + '/api/products/' + id + '/visibilite', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } });
     await loadProduits();
   } catch(e) {}
+}
+
+async function toggleVedette(id) {
+  try {
+    const res = await fetch(API + '/api/products/' + id + '/vedette', { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || 'Erreur', 'e'); return; }
+    showToast(data.message || 'Mis à jour', 's');
+    await loadProduits();
+  } catch(e) {
+    showToast('Erreur réseau', 'e');
+  }
 }
 
 async function supprimerProduit(id) {
