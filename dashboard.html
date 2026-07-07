@@ -387,9 +387,50 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
           </div>
           <img id="img-preview" style="display:none;max-width:100%;max-height:140px;border-radius:8px" alt="Aperçu">
         </div>
-        <input type="file" id="p-img-file" accept="image/*" style="display:none" onchange="previewEtUploadImage(this)">
+        <input type="file" id="p-img-file" accept="image/*" style="display:none" onchange="previewEtUploadImage(this,'p-img','img-preview','img-preview-empty','img-upload-status')">
         <div id="img-upload-status" style="font-size:11px;color:var(--ink3);margin-top:6px"></div>
         <input type="hidden" id="p-img">
+      </div>
+      <div class="field" id="photos-pro-section" style="display:none">
+        <label>Photos additionnelles (jusqu'à 4, Pro)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div id="img-upload-zone-2" onclick="document.getElementById('p-img-file-2').click()" style="border:1.5px dashed var(--line);border-radius:var(--r);padding:10px;text-align:center;cursor:pointer;background:var(--sur);height:70px;display:flex;align-items:center;justify-content:center">
+              <div id="img-preview-empty-2"><div style="font-size:18px">📷</div></div>
+              <img id="img-preview-2" style="display:none;max-width:100%;max-height:60px;border-radius:6px" alt="Aperçu 2">
+            </div>
+            <input type="file" id="p-img-file-2" accept="image/*" style="display:none" onchange="previewEtUploadImage(this,'p-img-2','img-preview-2','img-preview-empty-2','img-upload-status-2')">
+            <div id="img-upload-status-2" style="font-size:10px;color:var(--ink3);margin-top:3px"></div>
+            <input type="hidden" id="p-img-2">
+          </div>
+          <div>
+            <div id="img-upload-zone-3" onclick="document.getElementById('p-img-file-3').click()" style="border:1.5px dashed var(--line);border-radius:var(--r);padding:10px;text-align:center;cursor:pointer;background:var(--sur);height:70px;display:flex;align-items:center;justify-content:center">
+              <div id="img-preview-empty-3"><div style="font-size:18px">📷</div></div>
+              <img id="img-preview-3" style="display:none;max-width:100%;max-height:60px;border-radius:6px" alt="Aperçu 3">
+            </div>
+            <input type="file" id="p-img-file-3" accept="image/*" style="display:none" onchange="previewEtUploadImage(this,'p-img-3','img-preview-3','img-preview-empty-3','img-upload-status-3')">
+            <div id="img-upload-status-3" style="font-size:10px;color:var(--ink3);margin-top:3px"></div>
+            <input type="hidden" id="p-img-3">
+          </div>
+          <div>
+            <div id="img-upload-zone-4" onclick="document.getElementById('p-img-file-4').click()" style="border:1.5px dashed var(--line);border-radius:var(--r);padding:10px;text-align:center;cursor:pointer;background:var(--sur);height:70px;display:flex;align-items:center;justify-content:center">
+              <div id="img-preview-empty-4"><div style="font-size:18px">📷</div></div>
+              <img id="img-preview-4" style="display:none;max-width:100%;max-height:60px;border-radius:6px" alt="Aperçu 4">
+            </div>
+            <input type="file" id="p-img-file-4" accept="image/*" style="display:none" onchange="previewEtUploadImage(this,'p-img-4','img-preview-4','img-preview-empty-4','img-upload-status-4')">
+            <div id="img-upload-status-4" style="font-size:10px;color:var(--ink3);margin-top:3px"></div>
+            <input type="hidden" id="p-img-4">
+          </div>
+          <div>
+            <div id="img-upload-zone-5" onclick="document.getElementById('p-img-file-5').click()" style="border:1.5px dashed var(--line);border-radius:var(--r);padding:10px;text-align:center;cursor:pointer;background:var(--sur);height:70px;display:flex;align-items:center;justify-content:center">
+              <div id="img-preview-empty-5"><div style="font-size:18px">📷</div></div>
+              <img id="img-preview-5" style="display:none;max-width:100%;max-height:60px;border-radius:6px" alt="Aperçu 5">
+            </div>
+            <input type="file" id="p-img-file-5" accept="image/*" style="display:none" onchange="previewEtUploadImage(this,'p-img-5','img-preview-5','img-preview-empty-5','img-upload-status-5')">
+            <div id="img-upload-status-5" style="font-size:10px;color:var(--ink3);margin-top:3px"></div>
+            <input type="hidden" id="p-img-5">
+          </div>
+        </div>
       </div>
       <div class="field">
         <label>Nom du produit *</label>
@@ -649,28 +690,35 @@ function openModal(reset = true) {
     editingId = null;
     document.getElementById('modal-title').textContent = 'Ajouter un produit';
     document.getElementById('btn-save-text').textContent = 'Publier le produit';
-    ['p-nom','p-prix','p-desc','p-img'].forEach(id => document.getElementById(id).value = '');
+    ['p-nom','p-prix','p-desc','p-img','p-img-2','p-img-3','p-img-4','p-img-5'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('p-stock').value = 'disponible';
     document.getElementById('p-cat').value = '';
-    resetImagePreview();
+    resetAllImagePreviews();
   }
+  document.getElementById('photos-pro-section').style.display = (currentPlan !== 'gratuit') ? 'block' : 'none';
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-function resetImagePreview() {
-  document.getElementById('img-preview').style.display = 'none';
-  document.getElementById('img-preview-empty').style.display = 'block';
-  document.getElementById('img-upload-status').textContent = '';
-  document.getElementById('p-img-file').value = '';
+function resetImagePreview(suffix = '') {
+  document.getElementById('img-preview' + suffix).style.display = 'none';
+  document.getElementById('img-preview-empty' + suffix).style.display = 'block';
+  document.getElementById('img-upload-status' + suffix).textContent = '';
+  document.getElementById('p-img-file' + suffix).value = '';
 }
 
-async function previewEtUploadImage(input) {
+function resetAllImagePreviews() {
+  ['', '-2', '-3', '-4', '-5'].forEach(s => resetImagePreview(s));
+}
+
+async function previewEtUploadImage(input, hiddenId, previewId, previewEmptyId, statusId) {
   const file = input.files[0];
   if (!file) return;
 
+  const statusEl = document.getElementById(statusId);
+
   if (file.size > 2 * 1024 * 1024) {
-    document.getElementById('img-upload-status').textContent = '❌ Image trop lourde (max 2 Mo)';
-    document.getElementById('img-upload-status').style.color = '#DC2626';
+    statusEl.textContent = '❌ Image trop lourde (max 2 Mo)';
+    statusEl.style.color = '#DC2626';
     input.value = '';
     return;
   }
@@ -678,27 +726,26 @@ async function previewEtUploadImage(input) {
   // Aperçu instantané
   const reader = new FileReader();
   reader.onload = (e) => {
-    document.getElementById('img-preview').src = e.target.result;
-    document.getElementById('img-preview').style.display = 'block';
-    document.getElementById('img-preview-empty').style.display = 'none';
+    const previewEl = document.getElementById(previewId);
+    previewEl.src = e.target.result;
+    previewEl.style.display = 'block';
+    document.getElementById(previewEmptyId).style.display = 'none';
   };
   reader.readAsDataURL(file);
 
   // Upload réel vers Supabase Storage
-  const statusEl = document.getElementById('img-upload-status');
   statusEl.style.color = 'var(--ink3)';
-  statusEl.textContent = '⏳ Envoi en cours...';
+  statusEl.textContent = '⏳ Envoi...';
 
   let client = getSupabaseClient();
   if (!client) {
-    // Le SDK peut mettre du temps sur connexion mobile lente, on retente plusieurs fois
     for (let i = 0; i < 5 && !client; i++) {
       await new Promise(r => setTimeout(r, 1000));
       client = getSupabaseClient();
     }
   }
   if (!client) {
-    statusEl.textContent = '❌ Connexion lente, réessayez dans un instant';
+    statusEl.textContent = '❌ Connexion lente, réessayez';
     statusEl.style.color = '#DC2626';
     return;
   }
@@ -707,21 +754,20 @@ async function previewEtUploadImage(input) {
     const nameParts = (file.name || 'photo.jpg').split('.');
     const ext = nameParts.length > 1 ? nameParts.pop() : (file.type ? file.type.split('/')[1] : 'jpg');
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext || 'jpg'}`;
-    const filePath = fileName;
 
     const { data, error } = await client.storage
       .from('produits')
-      .upload(filePath, file, { cacheControl: '3600', upsert: false, contentType: file.type || 'image/jpeg' });
+      .upload(fileName, file, { cacheControl: '3600', upsert: false, contentType: file.type || 'image/jpeg' });
 
     if (error) throw error;
 
-    const { data: urlData } = client.storage.from('produits').getPublicUrl(filePath);
-    document.getElementById('p-img').value = urlData.publicUrl;
-    statusEl.textContent = '✅ Photo envoyée';
+    const { data: urlData } = client.storage.from('produits').getPublicUrl(fileName);
+    document.getElementById(hiddenId).value = urlData.publicUrl;
+    statusEl.textContent = '✅ Envoyée';
     statusEl.style.color = 'var(--gd)';
   } catch (err) {
     console.error('Upload error', err);
-    const errMsg = err?.message || err?.error_description || JSON.stringify(err) || 'Erreur inconnue';
+    const errMsg = err?.message || err?.error_description || 'Erreur inconnue';
     statusEl.textContent = '❌ ' + errMsg;
     statusEl.style.color = '#DC2626';
   }
@@ -743,13 +789,24 @@ function editProduit(id) {
   document.getElementById('p-stock').value = p.stock_status || 'disponible';
   document.getElementById('p-desc').value = p.description || '';
   document.getElementById('p-cat').value = p.categorie || '';
-  document.getElementById('p-img').value = p.image_url || '';
-  resetImagePreview();
-  if (p.image_url) {
-    document.getElementById('img-preview').src = p.image_url;
-    document.getElementById('img-preview').style.display = 'block';
-    document.getElementById('img-preview-empty').style.display = 'none';
-  }
+
+  resetAllImagePreviews();
+  const photoFields = [
+    { suffix: '', url: p.image_url },
+    { suffix: '-2', url: p.image_url_2 },
+    { suffix: '-3', url: p.image_url_3 },
+    { suffix: '-4', url: p.image_url_4 },
+    { suffix: '-5', url: p.image_url_5 },
+  ];
+  photoFields.forEach(({ suffix, url }) => {
+    document.getElementById('p-img' + suffix).value = url || '';
+    if (url) {
+      document.getElementById('img-preview' + suffix).src = url;
+      document.getElementById('img-preview' + suffix).style.display = 'block';
+      document.getElementById('img-preview-empty' + suffix).style.display = 'none';
+    }
+  });
+
   openModal(false);
 }
 
@@ -771,6 +828,16 @@ async function sauvegarderProduit() {
   if (desc) body.description = desc;
   if (cat) body.categorie = cat;
   if (img) body.image_url = img;
+
+  // Photos additionnelles : envoyées uniquement si plan Pro (cohérent
+  // avec le gating déjà appliqué côté backend, qui les ignorerait
+  // de toute façon pour un compte gratuit)
+  if (currentPlan !== 'gratuit') {
+    ['2','3','4','5'].forEach(n => {
+      const val = document.getElementById('p-img-' + n).value.trim();
+      body['image_url_' + n] = val || null;
+    });
+  }
 
   try {
     const url = editingId ? API + '/api/products/' + editingId : API + '/api/products';
