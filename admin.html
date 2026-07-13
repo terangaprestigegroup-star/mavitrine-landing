@@ -88,6 +88,25 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 1
       <div class="empty">Chargement...</div>
     </div>
   </div>
+
+  <div class="section">
+    <div class="section-title">
+      👋 Sans produit ajouté (3j+)
+      <button class="refresh-btn" onclick="loadInactifs()">↻ Actualiser</button>
+    </div>
+    <div id="inactifs-sans-produit-list">
+      <div class="empty">Chargement...</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      💤 Inactifs depuis 7j+
+    </div>
+    <div id="inactifs-sans-connexion-list">
+      <div class="empty">Chargement...</div>
+    </div>
+  </div>
 </div>
 
 <div id="no-access" style="display:none">
@@ -120,6 +139,7 @@ window.onload = async () => {
   if (!token) return window.location.href = 'connexion.html';
   await loadStats();
   await loadPaiements();
+  await loadInactifs();
 };
 
 async function loadStats() {
@@ -151,6 +171,50 @@ async function loadPaiements() {
   } catch(e) {
     document.getElementById('paiements-list').innerHTML = '<div class="empty">Erreur chargement</div>';
   }
+}
+
+async function loadInactifs() {
+  try {
+    const res = await fetch(API + '/api/admin/inactifs', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    renderInactifs('inactifs-sans-produit-list', data.sans_produit || [], 'sans_produit');
+    renderInactifs('inactifs-sans-connexion-list', data.sans_connexion || [], 'sans_connexion');
+  } catch(e) {
+    document.getElementById('inactifs-sans-produit-list').innerHTML = '<div class="empty">Erreur chargement</div>';
+    document.getElementById('inactifs-sans-connexion-list').innerHTML = '<div class="empty">Erreur chargement</div>';
+  }
+}
+
+function renderInactifs(elId, list, type) {
+  const el = document.getElementById(elId);
+  if (!list.length) {
+    el.innerHTML = '<div class="empty">🎉 Aucun compte concerné</div>';
+    return;
+  }
+  const messages = {
+    sans_produit: (nom) => `Bonjour ${nom} 👋 Je suis de l'équipe MaVitrine.sn. Besoin d'aide pour ajouter votre premier produit ?`,
+    sans_connexion: (nom) => `Bonjour ${nom} 👋 On ne vous a pas vu depuis un moment sur MaVitrine.sn, tout va bien ? N'hésitez pas si vous avez besoin d'aide.`,
+  };
+  el.innerHTML = list.map(u => {
+    const dateRef = type === 'sans_connexion' && u.last_login_at ? u.last_login_at : u.created_at;
+    const msg = encodeURIComponent(messages[type](u.nom || ''));
+    return `
+    <div class="pay-card">
+      <div class="pay-header">
+        <div>
+          <div class="pay-name">${u.nom || 'Sans nom'}</div>
+          <div class="pay-phone">📱 ${u.telephone}</div>
+        </div>
+      </div>
+      <div class="pay-meta">
+        <span class="pay-tag">📅 ${new Date(dateRef).toLocaleDateString('fr-FR', {day:'numeric',month:'short'})}</span>
+        ${u.nom_boutique ? `<span class="pay-tag">🏪 ${u.nom_boutique}</span>` : ''}
+      </div>
+      <div class="pay-actions">
+        <a href="https://wa.me/${u.telephone}?text=${msg}" target="_blank" class="btn-valider" style="text-decoration:none;display:flex;align-items:center;justify-content:center">💬 Relancer</a>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderPaiements(list) {
